@@ -1,0 +1,6 @@
+@VEXEmcee.API.Local_HostAddress = http://localhost:5181
+
+GET {{VEXEmcee.API.Local_HostAddress}}/vexemcee/
+Accept: application/json
+
+###

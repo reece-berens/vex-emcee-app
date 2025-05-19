@@ -1,0 +1,57 @@
+API methods that need to be used
+
+GET
+	Program (V5, IQ, U, etc.)
+		Populates dropdown on main page
+		no search criteria
+	Event List
+		Populates list of events to select
+		If only program, return top x items from RE site (probably 5-10)
+		Search criteria
+			program
+			season (server config, not user selectable)
+			event name
+			region/state
+			sku
+	Division List
+		Populates list of divisions to select once the event has been selected
+		Search criteria
+			eventID
+	Match List
+		Shows matches for the Match page once an event/division is selected
+		no search criteria, use session cookie to determine event/division
+		Either return the list or some message that the data is being loaded (lambda or other process triggered by register event/division API is still running)
+	Team List
+		Shows teams in the event/division that is selected by the user
+		no search criteria, use session cookie to determine event/division
+		Either return the list or some message that the data is being loaded (lambda or other process triggered by register event/division API is still running)
+	Match Info
+		Returns all stats for a specific match
+		Search criteria
+			matchID
+			eventID and divisionID should come from session (if needed)
+		Either return the list or some message that the data is being loaded (lambda or other process triggered by register event/division API is still running)
+	
+	
+	Future potential items
+	
+	Get Field for a Match
+		Return the field that a match will be hosted on (used by "Start Match" button, but maybe this can all come from TM?)
+	
+POST
+	Register session
+		returns a cookie and OK status, no payload
+	Register Event/Division
+		Used to register an event and division with a session cookie
+		returns OK status, no payload
+		Once this occurs, run a lambda or some process to populate all event data and cache existing tourney results
+	
+Background
+	Load event data
+		Poll API for event data
+			Event name/sku/divisions
+			Team list for all divisions
+		For each team in the match
+			Get list of finalized events attended - for each event not saved in cache, load all info for the event
+			Build "completed" stats for all events before today (include league sessions from previous days - event may not be completed but should still include those stats)
+

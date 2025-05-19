@@ -1,0 +1,18 @@
+API project structure
+
+Local API - used for local development and testing
+Lambdas - code that's uploaded to lambdas for running the API code
+	hopefully this allows session cookie stuff... otherwise ben will have to do some funky stuff
+
+
+
+RE.API - classes/objects used to call the RE API
+RE.Objects - object library for API data
+VEXEmcee.Objects - object library for internal objects and API request/response objects
+VEXEmcee.DB.Common - interfaces/etc. for the methods that will interact with database and data storage
+VEXEmcee.DB.Dynamo - AWS DynamoDB implementation of VEXEmcee.DB.Common interface
+VEXEmcee.DB.SQLLite - SQLLite implementation of VEXEmcee.DB.Common interface (not high priority, something for the future if people want to run this locally)
+VEXEmcee.Logic - all logic needed for running API methods, performing background tasks, etc.
+
+
+

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36109.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RE.Objects", "RE.Objects\RE.Objects.csproj", "{02C8AD78-B1BD-4072-8162-FC6A4A8FCBC1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEXEmcee.API.Local", "VEXEmcee.API.Local\VEXEmcee.API.Local.csproj", "{18763783-E915-40B3-8E66-5D42AFC88B68}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{02C8AD78-B1BD-4072-8162-FC6A4A8FCBC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02C8AD78-B1BD-4072-8162-FC6A4A8FCBC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02C8AD78-B1BD-4072-8162-FC6A4A8FCBC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02C8AD78-B1BD-4072-8162-FC6A4A8FCBC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18763783-E915-40B3-8E66-5D42AFC88B68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18763783-E915-40B3-8E66-5D42AFC88B68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18763783-E915-40B3-8E66-5D42AFC88B68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18763783-E915-40B3-8E66-5D42AFC88B68}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {627E66E7-A3F1-4FED-9AAF-19C005F194E9}
+	EndGlobalSection
+EndGlobal
