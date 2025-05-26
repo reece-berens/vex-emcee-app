@@ -1,8 +1,8 @@
 namespace RE.Objects
 {
-    public class PaginatedRanking
-    {
-        public PageMeta Meta { get; set; }
-        public List<Ranking> Data { get; set; }
-    }
+	public class PaginatedRanking : BaseAPIResponse
+	{
+		public PageMeta Meta { get; set; }
+		public List<Ranking> Data { get; set; }
+	}
 }

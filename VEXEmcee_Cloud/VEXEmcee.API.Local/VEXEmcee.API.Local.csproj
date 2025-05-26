@@ -9,4 +9,10 @@
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\RE.API\RE.API.csproj" />
+	  <ProjectReference Include="..\RE.Objects\RE.Objects.csproj" />
+	  <ProjectReference Include="..\VEXEmcee.Objects\VEXEmcee.Objects.csproj" />
+	</ItemGroup>
+
 </Project>
