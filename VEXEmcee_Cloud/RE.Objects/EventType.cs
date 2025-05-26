@@ -2,13 +2,13 @@ using System.Text.Json.Serialization;
 
 namespace RE.Objects
 {
-    [JsonConverter(typeof(JsonStringEnumConverter))]
+	[JsonConverter(typeof(JsonStringEnumConverter))]
 	public enum EventType
-    {
-        tournament,
-        league,
-        workshop,
-        [JsonPropertyName("virtual")]
-        Virtual
-    }
+	{
+		tournament,
+		league,
+		workshop,
+		[JsonPropertyName("virtual")]
+		Virtual
+	}
 }
