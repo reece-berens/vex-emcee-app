@@ -7,7 +7,7 @@ namespace RE.API
 	{
 		private static string _accessToken = string.Empty;
 		private static readonly Uri _baseUri = new("https://www.robotevents.com/api/v2/");
-		private static readonly HttpClient _httpClient = new(new HttpClientHandler() { AllowAutoRedirect = false});
+		private static readonly HttpClient _httpClient = new();
 
 		internal static JsonSerializerOptions SerializerReadOptions { get; } = new()
 		{
