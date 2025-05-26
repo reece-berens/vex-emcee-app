@@ -21,6 +21,8 @@ namespace VEXEmcee.API.Local
 			{
 				app.UseSwagger();
 				app.UseSwaggerUI();
+
+				RE.API.Accessor.SetAccessToken(builder.Configuration.GetValue<string>("RE.API.AccessToken") ?? string.Empty);
 			}
 
 			app.UseAuthorization();

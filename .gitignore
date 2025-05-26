@@ -54,3 +54,5 @@ TestResult.xml
 nunit-*.xml
 
 .vs/
+
+VEXEmcee_Cloud/VEXEmcee.API.Local/appsettings.json
