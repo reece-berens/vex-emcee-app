@@ -1,0 +1,142 @@
+//Compiled season stats from completed events (TeamStats_Season table, Stats column)
+{
+	"denormData": {
+		"allMatches": {
+			"matchCount": 0,
+			"pointsFor_total": 0,
+			"pointsAgainst_total": 0,
+			"pointsFor_avg": 0,
+			"pointsAgainst_avg": 0,
+			"winPercentage": 0,
+			"win": 0,
+			"loss": 0,
+			"tie": 0
+		},
+		"qualiMatches": {
+			"matchCount": 0,
+			"wp_total": 0,
+			"ap_total": 0,
+			"sp_total": 0,
+			"wp_avg": 0,
+			"ap_avg": 0,
+			"sp_avg": 0,
+			"pointsFor_total": 0,
+			"pointsAgainst_total": 0,
+			"pointsFor_avg": 0,
+			"pointsAgainst_avg": 0,
+			"winPercentage": 0,
+			"win": 0,
+			"loss": 0,
+			"tie": 0
+		},
+		"elimMatches": {
+			"matchCount": 0,
+			"pointsFor_total": 0,
+			"pointsAgainst_total": 0,
+			"pointsFor_avg": 0,
+			"pointsAgainst_avg": 0,
+			"winPercentage": 0,
+			"win": 0,
+			"loss": 0,
+			"tie": 0
+		}
+	},
+	"awards": [
+		{
+			"eventID": 0,
+			"eventName_denorm": "",
+			"awardName": "",
+			"qualifications": [""],
+			"otherTeamWinners": [
+				{
+					"id": 0,
+					"number": ""
+				}
+			]
+		}
+	],
+	"skills": {
+		"type": {
+			"attemptList": {
+				"eventID": {
+					"attempt": 0,
+					"highScore": 0
+				}
+			},
+			"seasonAttempt": 0,
+			"seasonHighScore": 0
+		}
+	},
+	"events": [
+		{
+			"eventID": 0,
+			"eventName_denorm": "",
+			"qualiStats": {
+				"win": 0,
+				"loss": 0,
+				"tie": 0,
+				"rank": 0,
+				"wp": 0,
+				"ap": 0,
+				"sp": 0,
+				"highScore": 0,
+				"averagePPM": 0,
+				"totalPoints": 0
+			},
+			"qualiMatches": [
+				{
+					"round_enum": 0,
+					"instance": 0,
+					"matchNum": 0,
+					"name": "",
+					"alliances": [
+						{
+							"color": "blue/red",
+							"score": 0,
+							"teams": [
+								{
+									"id": 0,
+									"number": ""
+								}
+							]
+						}
+					],
+					"allianceColor_denorm": "blue/red",
+					"allianceScore_denorm": 0,
+					"outcome_denorm": "win/loss/tie",
+					"divisionID": 0
+				}
+			],
+			"elimPartners": [
+				{
+					"id": 0,
+					"number": ""
+				}
+			],
+			"elimMatches": [
+				{
+					"round_enum": 0,
+					"instance": 0,
+					"matchNum": 0,
+					"name": "",
+					"alliances": [
+						{
+							"color": "blue/red",
+							"score": 0,
+							"teams": [
+								{
+									"id": 0,
+									"number": ""
+								}
+							]
+						}
+					],
+					"teamAlliance_denorm": "blue/red",
+					"teamScore_denorm": 0,
+					"outcome_denorm": "win/loss/tie",
+					"divisionID": 0
+				}
+			]
+		}
+	]
+}

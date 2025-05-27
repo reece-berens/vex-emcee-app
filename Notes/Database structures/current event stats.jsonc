@@ -1,0 +1,57 @@
+//Stats related to current event for a team (TeamStats_CurrentEvent table, EventStats column)
+//Information on matches should be pulled from the LiveMatches table
+{
+	"denormData": {
+		"allMatches": {
+			"matchCount": 0,
+			"pointsFor_total": 0,
+			"pointsAgainst_total": 0,
+			"pointsFor_avg": 0,
+			"pointsAgainst_avg": 0,
+			"winPercentage": 0,
+			"win": 0,
+			"loss": 0,
+			"tie": 0
+		},
+		"qualiMatches": {
+			"matchCount": 0,
+			"wp_total": 0,
+			"ap_total": 0,
+			"sp_total": 0,
+			"wp_avg": 0,
+			"ap_avg": 0,
+			"sp_avg": 0,
+			"pointsFor_total": 0,
+			"pointsAgainst_total": 0,
+			"pointsFor_avg": 0,
+			"pointsAgainst_avg": 0,
+			"winPercentage": 0,
+			"win": 0,
+			"loss": 0,
+			"tie": 0
+		},
+		"elimMatches": {
+			"matchCount": 0,
+			"pointsFor_total": 0,
+			"pointsAgainst_total": 0,
+			"pointsFor_avg": 0,
+			"pointsAgainst_avg": 0,
+			"winPercentage": 0,
+			"win": 0,
+			"loss": 0,
+			"tie": 0
+		}
+	},
+	"skills": {
+		"type": {
+			"attempt": 0,
+			"highScore": 0
+		}
+	},
+	"elimPartners": [
+		{
+			"id": 0,
+			"number": ""
+		}
+	]
+}

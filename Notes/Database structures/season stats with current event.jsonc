@@ -1,0 +1,51 @@
+//Season stats + current event stats (TeamStats_CurrentEvent table, CompiledStats column)
+{
+	"denormData": {
+		"allMatches": {
+			"matchCount": 0,
+			"pointsFor_total": 0,
+			"pointsAgainst_total": 0,
+			"pointsFor_avg": 0,
+			"pointsAgainst_avg": 0,
+			"winPercentage": 0,
+			"win": 0,
+			"loss": 0,
+			"tie": 0
+		},
+		"qualiMatches": {
+			"matchCount": 0,
+			"wp_total": 0,
+			"ap_total": 0,
+			"sp_total": 0,
+			"wp_avg": 0,
+			"ap_avg": 0,
+			"sp_avg": 0,
+			"pointsFor_total": 0,
+			"pointsAgainst_total": 0,
+			"pointsFor_avg": 0,
+			"pointsAgainst_avg": 0,
+			"winPercentage": 0,
+			"win": 0,
+			"loss": 0,
+			"tie": 0
+		},
+		"elimMatches": {
+			"matchCount": 0,
+			"pointsFor_total": 0,
+			"pointsAgainst_total": 0,
+			"pointsFor_avg": 0,
+			"pointsAgainst_avg": 0,
+			"winPercentage": 0,
+			"win": 0,
+			"loss": 0,
+			"tie": 0
+		}
+	},
+	"skills": {
+		"type": {
+			"seasonAttempt": 0,
+			"seasonHighScore": 0,
+			"seasonHighScoreToday": false //was the season's high score achieved today?
+		}
+	}
+}
