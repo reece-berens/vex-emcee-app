@@ -59,11 +59,11 @@
 		"type": {
 			"attemptList": {
 				"eventID": {
-					"attempt": 0,
+					"attempts": 0,
 					"highScore": 0
 				}
 			},
-			"seasonAttempt": 0,
+			"seasonAttempts": 0,
 			"seasonHighScore": 0
 		}
 	},

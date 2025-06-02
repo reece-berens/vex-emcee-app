@@ -43,7 +43,7 @@
 	},
 	"skills": {
 		"type": {
-			"seasonAttempt": 0,
+			"seasonAttempts": 0,
 			"seasonHighScore": 0,
 			"seasonHighScoreToday": false //was the season's high score achieved today?
 		}

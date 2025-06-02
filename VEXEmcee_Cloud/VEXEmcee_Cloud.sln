@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RE.API", "RE.API\RE.API.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEXEmcee.Objects", "VEXEmcee.Objects\VEXEmcee.Objects.csproj", "{9EBDC5B8-2192-4A2F-9532-6828CBFEF84B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEXEmcee.DB.Dynamo", "VEXEmcee.DB.Dynamo\VEXEmcee.DB.Dynamo.csproj", "{69D63A85-D5B6-4911-81DE-6256C725E7A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{9EBDC5B8-2192-4A2F-9532-6828CBFEF84B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9EBDC5B8-2192-4A2F-9532-6828CBFEF84B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9EBDC5B8-2192-4A2F-9532-6828CBFEF84B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69D63A85-D5B6-4911-81DE-6256C725E7A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69D63A85-D5B6-4911-81DE-6256C725E7A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69D63A85-D5B6-4911-81DE-6256C725E7A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69D63A85-D5B6-4911-81DE-6256C725E7A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

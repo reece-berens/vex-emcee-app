@@ -44,7 +44,7 @@
 	},
 	"skills": {
 		"type": {
-			"attempt": 0,
+			"attempts": 0,
 			"highScore": 0
 		}
 	},

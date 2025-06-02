@@ -6,7 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="4.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\RE.Objects\RE.Objects.csproj" />
+    <ProjectReference Include="..\VEXEmcee.Objects\VEXEmcee.Objects.csproj" />
   </ItemGroup>
 
 </Project>
