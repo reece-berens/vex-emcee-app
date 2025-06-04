@@ -1,6 +1,5 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
 using RE.Objects;
-using System.Diagnostics.Contracts;
 
 namespace VEXEmcee.DB.Dynamo.Definitions
 {
