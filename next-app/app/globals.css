@@ -1,0 +1,123 @@
+:root {
+    --primary-color: #333333; /* Dark gray */
+    --secondary-color: #686868; /* Medium gray */
+    --background-color1: #fff2dd;
+    --background-color2: #d4cab8;
+    --font-family: "Inter", Arial, sans-serif;
+    --border-radius: 6px;
+    --transition: 0.2s ease;
+
+    /* Alternating red and blue for lists, tables, etc. */
+    --alt-color-1: #ff0000; /* Red */
+    --alt-color-2: #0070f3; /* Blue */
+    --alt-bg-1: #fff5f5; /* Light red background */
+    --alt-bg-2: #f0f6ff; /* Light blue background */
+}
+
+/* Classic 3-Column Layout using Flexbox */
+.layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: var(--background-color1);
+    font-family: var(--font-family);
+    margin: 0 !important;
+}
+
+.layout-header {
+    background: var(--primary-color);
+    color: #fff;
+    padding: 1rem;
+    transition: background var(--transition);
+}
+
+.layout-content {
+    display: flex;
+    flex: 1 1 0;
+    min-height: 0;
+}
+
+.layout-content__filters {
+    display: flex;
+    flex-direction: column;
+    background: var(--background-color2);
+    color: #fff;
+    padding: 1rem;
+    transition: background var(--transition);
+    flex: 0 0 auto; /* Fixed width */
+    max-width: 500px; /* Fixed width for filters */
+    min-width: 200px; /* Minimum width */
+    border-radius: var(--border-radius);
+}
+
+select {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--secondary-color);
+    border-radius: var(--border-radius);
+    background: var(--background-color1);
+    color: var(--primary-color);
+}
+
+.layout-sidebar {
+    background: var(--alt-bg-1);
+    border-right: 1px solid var(--primary-color);
+    width: 200px;
+    min-width: 150px;
+    box-sizing: border-box;
+    /* Removed: transition, padding (already in .layout-extra), font-family (inherited), min-width (already set) */
+    padding: 1rem;
+}
+
+.layout-main {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    padding: 1rem;
+    min-width: 0;
+    margin-inline: auto;
+}
+
+.layout-extra {
+    background: var(--alt-bg-2);
+    border-left: 1px solid var(--secondary-color);
+    width: 200px;
+    min-width: 150px;
+    box-sizing: border-box;
+    /* Removed: transition, padding (already in .layout-sidebar), font-family (inherited), min-width (already set) */
+    padding: 1rem;
+}
+
+.layout-footer {
+    background: var(--secondary-color);
+    color: #fff;
+    padding: 1rem;
+    transition: background var(--transition);
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    .layout-content {
+        flex-direction: column;
+    }
+    .layout-sidebar,
+    .layout-extra {
+        width: 100%;
+        min-width: 0;
+        border-right: none;
+        border-left: none;
+        border-top: 1px solid var(--primary-color);
+        border-bottom: 1px solid var(--secondary-color);
+    }
+}
+@media (max-width: 600px) {
+    .layout-header,
+    .layout-footer {
+        text-align: center;
+    }
+    .layout-sidebar,
+    .layout-extra {
+        padding: 0.5rem;
+    }
+}
