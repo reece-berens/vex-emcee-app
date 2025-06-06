@@ -1,8 +1,10 @@
+import styles from "./Home.module.css";
+
 export default function Home() {
     return (
         <main className="layout-main">
             <div className="layout-content">
-                <div id="search-filters-id" className="layout-content__filters">
+                <div id="search-filters-id" className={styles.filters}>
                     <select>
                         <option value="">Select Program (V5, IQ, U, etc.)</option>
                         <option value="program1">Program 1</option>
@@ -21,6 +23,9 @@ export default function Home() {
                         <option value="event2">Event 2</option>
                         <option value="event3">Event 3</option>
                     </select>
+                </div>
+                <div className={styles.buttonWrapper}>
+                    <button className="btn-primary">Search</button>
                 </div>
             </div>
         </main>

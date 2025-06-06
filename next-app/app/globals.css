@@ -12,6 +12,14 @@
     --alt-color-2: #0070f3; /* Blue */
     --alt-bg-1: #fff5f5; /* Light red background */
     --alt-bg-2: #f0f6ff; /* Light blue background */
+
+    /* Common spacing variables */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 12px;
+    --space-lg: 16px;
+    --space-xl: 24px;
+    --space-xxl: 32px;
 }
 
 /* Classic 3-Column Layout using Flexbox */
@@ -27,33 +35,30 @@
 .layout-header {
     background: var(--primary-color);
     color: #fff;
-    padding: 1rem;
+    padding: var(--space-lg);
     transition: background var(--transition);
+}
+
+.layout-main {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    padding: var(--space-lg);
+    min-width: 0;
+    margin-inline: auto;
 }
 
 .layout-content {
     display: flex;
+    flex-direction: column;
     flex: 1 1 0;
     min-height: 0;
 }
 
-.layout-content__filters {
-    display: flex;
-    flex-direction: column;
-    background: var(--background-color2);
-    color: #fff;
-    padding: 1rem;
-    transition: background var(--transition);
-    flex: 0 0 auto; /* Fixed width */
-    max-width: 500px; /* Fixed width for filters */
-    min-width: 200px; /* Minimum width */
-    border-radius: var(--border-radius);
-}
-
 select {
     width: 100%;
-    padding: 0.5rem;
-    margin-bottom: 1rem;
+    padding: var(--space-sm);
+    margin-bottom: var(--space-lg);
     border: 1px solid var(--secondary-color);
     border-radius: var(--border-radius);
     background: var(--background-color1);
@@ -66,17 +71,7 @@ select {
     width: 200px;
     min-width: 150px;
     box-sizing: border-box;
-    /* Removed: transition, padding (already in .layout-extra), font-family (inherited), min-width (already set) */
-    padding: 1rem;
-}
-
-.layout-main {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 0;
-    padding: 1rem;
-    min-width: 0;
-    margin-inline: auto;
+    padding: var(--space-lg);
 }
 
 .layout-extra {
@@ -85,22 +80,18 @@ select {
     width: 200px;
     min-width: 150px;
     box-sizing: border-box;
-    /* Removed: transition, padding (already in .layout-sidebar), font-family (inherited), min-width (already set) */
-    padding: 1rem;
+    padding: var(--space-lg);
 }
 
 .layout-footer {
     background: var(--secondary-color);
     color: #fff;
-    padding: 1rem;
+    padding: var(--space-lg);
     transition: background var(--transition);
 }
 
 /* Responsive adjustments */
 @media (max-width: 900px) {
-    .layout-content {
-        flex-direction: column;
-    }
     .layout-sidebar,
     .layout-extra {
         width: 100%;
@@ -118,6 +109,61 @@ select {
     }
     .layout-sidebar,
     .layout-extra {
-        padding: 0.5rem;
+        padding: var(--space-sm);
     }
+}
+
+/* Button Styles */
+button {
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--border-radius);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 14px;
+    cursor: pointer;
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    background: none;
+    color: inherit;
+    transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+button > span {
+    padding-top: 2px;
+}
+
+button:is(:hover, :focus-visible) {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-primary {
+    background: var(--alt-color-2);
+    color: var(--background-color1);
+}
+
+.btn-secondary {
+    background: var(--alt-color-1);
+    color: var(--background-color1);
+}
+
+select {
+    background: var(--background-color1);
+    color: var(--primary-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: var(--border-radius);
+    padding: var(--space-sm);
+    font-size: 14px;
+    cursor: pointer;
+    transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+select:is(:hover, :focus-visible) {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
 }
