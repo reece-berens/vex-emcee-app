@@ -23,6 +23,11 @@ namespace VEXEmcee.API.Local
 				app.UseSwaggerUI();
 
 				RE.API.Accessor.SetAccessToken(builder.Configuration.GetValue<string>("RE.API.AccessToken") ?? string.Empty);
+
+				DB.Dynamo.Dynamo.Initialize(
+					builder.Configuration.GetValue<string>("AWS.AccessToken") ?? string.Empty,
+					builder.Configuration.GetValue<string>("AWS.SecretToken") ?? string.Empty
+				);
 			}
 
 			app.UseAuthorization();

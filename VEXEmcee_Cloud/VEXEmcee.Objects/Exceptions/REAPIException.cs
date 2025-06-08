@@ -2,12 +2,14 @@
 {
 	public class REAPIException : VEXEmceeBaseException
 	{
-		public REAPIException(int location, string message) : base(location, message)
+		private static string _exceptionType = "REAPIException";
+
+		public REAPIException(int location, string message) : base(location, message, _exceptionType)
 		{
 
 		}
 
-		public REAPIException(int location, string message, Exception inner) : base(location, message, inner)
+		public REAPIException(int location, string message, Exception inner) : base(location, message, _exceptionType, inner)
 		{
 
 		}

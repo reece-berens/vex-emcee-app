@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RE.Objects;
+using VEXEmcee.DB.Dynamo;
+using VEXEmcee.DB.Dynamo.Definitions;
 
 namespace VEXEmcee.API.Local.Controllers
 {
@@ -14,8 +16,8 @@ namespace VEXEmcee.API.Local.Controllers
 			_logger = logger;
 		}
 
-		[HttpGet]
-		public async Task<List<Event>> GetEventList()
+		[HttpGet("geteventlist")]
+		public async Task<List<RE.Objects.Event>> GetEventList()
 		{
 			PaginatedEvent paginatedResponse = await RE.API.Events.List(new()
 			{
@@ -33,6 +35,12 @@ namespace VEXEmcee.API.Local.Controllers
 			}
 
 			return paginatedResponse.Data;
+		}
+
+		[HttpGet("dynamogetselectableprograms")]
+		public async Task<List<DB.Dynamo.Definitions.Program>> DynamoGetSelectablePrograms()
+		{
+			return await DB.Dynamo.Accessors.Program.GetSelectableProgramList();
 		}
 	}
 }
