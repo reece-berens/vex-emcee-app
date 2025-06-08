@@ -2,6 +2,7 @@
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
 using System.Reflection;
+using VEXEmcee.Objects.Exceptions;
 
 namespace VEXEmcee.DB.Dynamo.Accessors
 {
@@ -9,6 +10,18 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 	{
 		private static List<string> _existingTables = [];
 
+		/// <summary>
+		/// Ensures that the DynamoDB table associated with the specified type <typeparamref name="T"/> exists.
+		/// If the table does not exist, attempts to create it using the hash and range key attributes defined on <typeparamref name="T"/>.
+		/// Waits for the table to become active before proceeding. Caches validated table names to avoid redundant checks.
+		/// Throws a <see cref="DynamoDBException"/> if table creation fails or times out.
+		/// </summary>
+		/// <typeparam name="T">
+		/// The type decorated with <see cref="DynamoDBTableAttribute"/> representing the DynamoDB table schema.
+		/// </typeparam>
+		/// <exception cref="DynamoDBException">
+		/// Thrown if table creation fails, times out, or encounters an error.
+		/// </exception>
 		internal static async Task ValidateTable<T>()
 		{
 			Type tType = typeof(T);
@@ -97,13 +110,13 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 							else
 							{
 								Console.WriteLine($"Table {tableAttribute.TableName} creation failed or timed out.");
-								throw new Exception($"Table {tableAttribute.TableName} creation failed or timed out. Try again later");
+								throw new DynamoDBException(1, $"Table {tableAttribute.TableName} creation failed or timed out. Try again later");
 							}
 						}
 					}
 					catch (Exception ex)
 					{
-						Console.WriteLine($"Exception while creating table {tableAttribute.TableName}: {ex.Message}");
+						throw new DynamoDBException(2, $"Error creating table {tableAttribute.TableName}: {ex.Message}");
 					}
 				}
 				else
@@ -113,6 +126,16 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 			}
 		}
 
+		/// <summary>
+		/// Maps a .NET type to the corresponding DynamoDB <see cref="ScalarAttributeType"/>.
+		/// Supports string, numeric (int, long, float, double), and byte array types.
+		/// Throws an <see cref="ArgumentException"/> for unsupported types.
+		/// </summary>
+		/// <param name="t">The .NET <see cref="Type"/> to map.</param>
+		/// <returns>The corresponding <see cref="ScalarAttributeType"/> for DynamoDB.</returns>
+		/// <exception cref="ArgumentException">
+		/// Thrown if the provided type is not supported for DynamoDB attribute definitions.
+		/// </exception>
 		private static ScalarAttributeType GetAttributeType(Type t)
 		{
 			if (t == typeof(string))
