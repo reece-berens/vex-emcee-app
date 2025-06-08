@@ -1,17 +1,15 @@
 :root {
-    --primary-color: #333333; /* Dark gray */
-    --secondary-color: #686868; /* Medium gray */
-    --background-color1: #fff2dd;
-    --background-color2: #d4cab8;
+    --primary-color: #465362; /* Dark gray */
+    --secondary-color: #9ba7b5; /* Alt gray */
+    --background-color1: #ecebeb; /* Light gray */
+    --background-color2: #cccccc; /* Medium gray */
     --font-family: "Inter", Arial, sans-serif;
     --border-radius: 6px;
     --transition: 0.2s ease;
 
-    /* Alternating red and blue for lists, tables, etc. */
-    --alt-color-1: #ff0000; /* Red */
-    --alt-color-2: #0070f3; /* Blue */
-    --alt-bg-1: #fff5f5; /* Light red background */
-    --alt-bg-2: #f0f6ff; /* Light blue background */
+    /* Red vs Blue accent colorings */
+    --accent-color1: #ff0035; /* Red */
+    --accent-color2: #3595da; /* Blue */
 
     /* Common spacing variables */
     --space-xs: 4px;
@@ -53,6 +51,7 @@
     flex-direction: column;
     flex: 1 1 0;
     min-height: 0;
+    align-items: center;
 }
 
 select {
@@ -66,7 +65,7 @@ select {
 }
 
 .layout-sidebar {
-    background: var(--alt-bg-1);
+    background: var(--secondary-color);
     border-right: 1px solid var(--primary-color);
     width: 200px;
     min-width: 150px;
@@ -75,7 +74,7 @@ select {
 }
 
 .layout-extra {
-    background: var(--alt-bg-2);
+    background: var(--secondary-color);
     border-left: 1px solid var(--secondary-color);
     width: 200px;
     min-width: 150px;
@@ -143,12 +142,12 @@ button:is(:hover, :focus-visible) {
 }
 
 .btn-primary {
-    background: var(--alt-color-2);
+    background: var(--accent-color2);
     color: var(--background-color1);
 }
 
 .btn-secondary {
-    background: var(--alt-color-1);
+    background: var(--accent-color1);
     color: var(--background-color1);
 }
 
@@ -167,3 +166,46 @@ select:is(:hover, :focus-visible) {
     border-color: var(--primary-color);
     color: var(--primary-color);
 }
+
+/* TEST TODO REMOVE */
+/* Custom dropdown menu styling for <select> */
+select {
+    /* Already set above, but reinforce for specificity */
+    background: var(--background-color2);
+    color: var(--primary-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: var(--border-radius);
+    padding: var(--space-md) var(--space-lg);
+    font-size: 15px;
+    min-height: 40px;
+    cursor: pointer;
+    transition: background var(--transition), color var(--transition), border-color var(--transition);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.04);
+    outline: none;
+}
+
+/* Add a custom arrow indicator */
+select {
+    background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' fill='none' stroke='%23686868' stroke-width='2' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--space-md) center;
+    background-size: 1em;
+    padding-right: 2.5em;
+}
+
+/* Style the dropdown options (limited browser support) */
+select option {
+    padding: var(--space-md);
+    background: var(--background-color1);
+    color: var(--primary-color);
+}
+
+/* Focus state for accessibility */
+select:focus {
+    border-color: var(--accent-color2);
+    box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.15);
+}
+/* TEST TODO REMOVE */

@@ -1,12 +1,11 @@
 .filters {
     display: flex;
     flex-direction: column;
-    background: var(--background-color2);
+    background: var(--secondary-color);
     color: #fff;
     padding: 1rem;
     transition: background var(--transition);
     flex: 0 0 auto; /* Fixed width */
-    max-width: 500px; /* Fixed width for filters */
     min-width: 200px; /* Minimum width */
     border-radius: var(--border-radius);
 }
