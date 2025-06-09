@@ -7,6 +7,16 @@ namespace VEXEmcee.Logic
 {
 	public static class PublicMethods
 	{
+		/// <summary>
+		/// Registers a new session based on the provided <see cref="RegisterSessionRequest"/>.
+		/// Calls the internal session registration logic, handles any exceptions, and returns a response
+		/// indicating success or failure, along with the generated session ID if successful.
+		/// </summary>
+		/// <param name="request">The request object containing any data needed to register a session.</param>
+		/// <returns>
+		/// A <see cref="RegisterSessionResponse"/> object containing the session ID if successful,
+		/// or error information if the registration fails.
+		/// </returns>
 		public static async Task<RegisterSessionResponse> RegisterSession(RegisterSessionRequest request)
 		{
 			RegisterSessionResponse response = new()

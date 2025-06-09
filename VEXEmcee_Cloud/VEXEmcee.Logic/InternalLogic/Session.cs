@@ -8,6 +8,14 @@ namespace VEXEmcee.Logic.InternalLogic
 {
 	internal static class Session
 	{
+		/// <summary>
+		/// Registers a new session by generating a unique session ID and storing it in the database.
+		/// Checks for existing sessions with the same ID to avoid collisions, and handles exceptions related to DynamoDB and general errors.
+		/// </summary>
+		/// <param name="request">The <see cref="RegisterSessionRequest"/> containing any data needed to register a session.</param>
+		/// <returns>
+		/// The unique session ID as a <see cref="string"/> if registration is successful; otherwise, <c>null</c> if an error occurs or a collision is detected.
+		/// </returns>
 		internal static async Task<string> RegisterSession(RegisterSessionRequest request)
 		{
 			/*
