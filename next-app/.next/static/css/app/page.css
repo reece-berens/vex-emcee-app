@@ -1,0 +1,16 @@
+/*!***********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ../../../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!../../../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[3]!./app/Home.module.css ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************/
+.Home_filters__37sud {
+    display: flex;
+    flex-direction: column;
+    transition: background var(--transition);
+    gap: var(--space-lg);
+}
+
+.Home_buttonWrapper__CZcOg {
+    display: flex;
+    justify-content: center;
+    margin-block: 32px;
+}
+
