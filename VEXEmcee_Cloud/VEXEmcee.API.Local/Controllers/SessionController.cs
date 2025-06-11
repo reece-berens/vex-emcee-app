@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using VEXEmcee.Logic;
 using VEXEmcee.Objects.API.Response;
 
@@ -52,5 +52,5 @@ namespace VEXEmcee.API.Local.Controllers
 				}
 			}
 		}
-	}
+  }
 }

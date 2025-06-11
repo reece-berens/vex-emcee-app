@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using VEXEmcee.DB.Dynamo.Definitions;
 using VEXEmcee.Objects.API.Request;
 using VEXEmcee.Objects.API.Response;
@@ -57,7 +57,7 @@ namespace VEXEmcee.Logic
 			}
 			return response;
 		}
-
+    
 		/// <summary>
 		/// Validates whether the specified session exists and is active.
 		/// </summary>

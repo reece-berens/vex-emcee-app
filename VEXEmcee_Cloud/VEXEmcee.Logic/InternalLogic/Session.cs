@@ -8,7 +8,6 @@ namespace VEXEmcee.Logic.InternalLogic
 {
 	internal static class Session
 	{
-
 		/// <summary>
 		/// Retrieves a session from the database using the provided session ID.
 		/// Handles DynamoDB-specific exceptions by logging them and returns null if an error occurs.
