@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using VEXEmcee.DB.Dynamo.Definitions;
 using VEXEmcee.Objects.API.Request;
 using VEXEmcee.Objects.API.Response;
 using VEXEmcee.Objects.Exceptions;
@@ -55,6 +56,35 @@ namespace VEXEmcee.Logic
 				response.Success = false;
 			}
 			return response;
+		}
+
+		/// <summary>
+		/// Validates whether the specified session exists and is active.
+		/// </summary>
+		/// <param name="request">The request containing the session identifier to validate.</param>
+		/// <returns>A <see cref="ValidateSessionResponse"/> indicating the result of the validation. The <see
+		/// cref="ValidateSessionResponse.Success"/> property will be <see langword="true"/> if the session is valid; 
+		/// otherwise, <see langword="false"/>.</returns>
+		public static async Task<ValidateSessionResponse> ValidateSession(ValidateSessionRequest request)
+		{
+			/*
+				TBD - determine if session expiration should happen somewhere in here or if it will happen by some separate AWS process
+			*/
+			Session session = await InternalLogic.Session.GetSession(request.Session);
+			if (session == null)
+			{
+				return new()
+				{
+					Success = false
+				};
+			}
+			else
+			{
+				return new()
+				{
+					Success = true
+				};
+			}
 		}
 	}
 }
