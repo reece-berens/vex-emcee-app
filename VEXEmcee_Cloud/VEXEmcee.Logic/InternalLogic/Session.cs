@@ -9,6 +9,28 @@ namespace VEXEmcee.Logic.InternalLogic
 	internal static class Session
 	{
 		/// <summary>
+		/// Retrieves a session from the database using the provided session ID.
+		/// Handles DynamoDB-specific exceptions by logging them and returns null if an error occurs.
+		/// </summary>
+		/// <param name="sessionID">The unique identifier of the session to retrieve.</param>
+		/// <returns>
+		/// The <see cref="Definitions.Session"/> object if found; otherwise, <c>null</c> if an error occurs or the session does not exist.
+		/// </returns>
+		internal static async Task<Definitions.Session> GetSession(string sessionID)
+		{
+			try
+			{
+				Definitions.Session session = await Accessors.Session.GetSessionByID(sessionID);
+				return session;
+			}
+			catch (DynamoDBException ex)
+			{
+				ex.LogException();
+				return null;
+			}
+		}
+
+		/// <summary>
 		/// Registers a new session by generating a unique session ID and storing it in the database.
 		/// Checks for existing sessions with the same ID to avoid collisions, and handles exceptions related to DynamoDB and general errors.
 		/// </summary>

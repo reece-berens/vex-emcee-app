@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using VEXEmcee.Logic;
 using VEXEmcee.Objects.API.Response;
 
@@ -32,5 +32,25 @@ namespace VEXEmcee.API.Local.Controllers
 			}
 			return response;
 		}
-	}
+
+		[HttpPost("validatesession")]
+		public async Task<IActionResult> ValidateSession([FromBody] Objects.API.Request.ValidateSessionRequest request)
+		{
+			ValidateSessionResponse response = await PublicMethods.ValidateSession(request);
+			if (response.Success)
+			{
+				return Ok(response);
+			}
+			else
+			{
+				switch (response.StatusCode)
+				{
+					case System.Net.HttpStatusCode.InternalServerError:
+						return StatusCode((int)System.Net.HttpStatusCode.InternalServerError, response);
+					default:
+						return BadRequest(response);
+				}
+			}
+		}
+  }
 }
