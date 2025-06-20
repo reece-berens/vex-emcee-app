@@ -5,7 +5,9 @@
     display: flex;
     flex-direction: column;
     transition: background var(--transition);
-    gap: var(--space-lg);
+    gap: var(--space-xl);
+    max-width: -webkit-fill-available;
+    flex-shrink: 0;
 }
 
 .Home_buttonWrapper__CZcOg {

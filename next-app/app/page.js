@@ -4,8 +4,8 @@ export default function Home() {
     return (
         <main className="layout-main">
             <div className="layout-content">
+                <h2>Select an event using the filters below:</h2>
                 <div id="search-filters-id" className={`${styles.filters} cardback`}>
-                    <h2>Select an event using the filters below:</h2>
                     <select id="program-select">
                         <option value="">Select Program (V5, IQ, U, etc.)</option>
                         <option value="program1">Program 1</option>
@@ -24,9 +24,9 @@ export default function Home() {
                         <option value="event2">Event 2</option>
                         <option value="event3">Event 3</option>
                     </select>
-                </div>
-                <div className={styles.buttonWrapper}>
-                    <button className="btn-primary">Search</button>
+                    <div className={styles.buttonWrapper}>
+                        <button className="btn-primary">Search</button>
+                    </div>
                 </div>
             </div>
         </main>
