@@ -34,11 +34,11 @@ namespace VEXEmcee.Logic.InternalLogic
 		/// Registers a new session by generating a unique session ID and storing it in the database.
 		/// Checks for existing sessions with the same ID to avoid collisions, and handles exceptions related to DynamoDB and general errors.
 		/// </summary>
-		/// <param name="request">The <see cref="RegisterSessionRequest"/> containing any data needed to register a session.</param>
+		/// <param name="request">The <see cref="RegisterNewSessionRequest"/> containing any data needed to register a session.</param>
 		/// <returns>
 		/// The unique session ID as a <see cref="string"/> if registration is successful; otherwise, <c>null</c> if an error occurs or a collision is detected.
 		/// </returns>
-		internal static async Task<string> RegisterSession(RegisterSessionRequest request)
+		internal static async Task<string> RegisterNewSession(RegisterNewSessionRequest request)
 		{
 			/*
 				At some point, I may add some logic in here to ensure there aren't too many sessions registered from the same IP address/location
@@ -52,7 +52,7 @@ namespace VEXEmcee.Logic.InternalLogic
 				if (existingSession == null)
 				{
 					//session does not exist, which is good
-					existingSession = await Accessors.Session.RegisterSession(sessionID);
+					existingSession = await Accessors.Session.RegisterNewSession(sessionID);
 					//if we get here, the session was successfully registered, so return the session ID
 					return existingSession.ID;
 				}

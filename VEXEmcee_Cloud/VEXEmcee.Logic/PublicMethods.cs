@@ -95,25 +95,25 @@ namespace VEXEmcee.Logic
 		}
 
 		/// <summary>
-		/// Registers a new session based on the provided <see cref="RegisterSessionRequest"/>.
+		/// Registers a new session based on the provided <see cref="RegisterNewSessionRequest"/>.
 		/// Calls the internal session registration logic, handles any exceptions, and returns a response
 		/// indicating success or failure, along with the generated session ID if successful.
 		/// </summary>
 		/// <param name="request">The request object containing any data needed to register a session.</param>
 		/// <returns>
-		/// A <see cref="RegisterSessionResponse"/> object containing the session ID if successful,
+		/// A <see cref="RegisterNewSessionResponse"/> object containing the session ID if successful,
 		/// or error information if the registration fails.
 		/// </returns>
-		public static async Task<RegisterSessionResponse> RegisterSession(RegisterSessionRequest request)
+		public static async Task<RegisterNewSessionResponse> RegisterNewSession(RegisterNewSessionRequest request)
 		{
-			RegisterSessionResponse response = new()
+			RegisterNewSessionResponse response = new()
 			{
 				Success = false,
 				StatusCode = System.Net.HttpStatusCode.OK,
 			};
 			try
 			{
-				string newSessionID = await InternalLogic.Session.RegisterSession(request);
+				string newSessionID = await InternalLogic.Session.RegisterNewSession(request);
 				if (string.IsNullOrWhiteSpace(newSessionID))
 				{
 					//an error occurred generating session ID, return error response

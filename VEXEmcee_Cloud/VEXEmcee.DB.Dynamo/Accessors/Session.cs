@@ -48,7 +48,7 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 		/// <exception cref="DynamoDBException">
 		/// Thrown when a DynamoDB-specific error occurs or a generic exception is caught during the registration process.
 		/// </exception>
-		public static async Task<Definitions.Session> RegisterSession(string sessionID)
+		public static async Task<Definitions.Session> RegisterNewSession(string sessionID)
 		{
 			try
 			{

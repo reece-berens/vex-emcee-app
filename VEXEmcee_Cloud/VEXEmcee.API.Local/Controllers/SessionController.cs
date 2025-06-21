@@ -8,10 +8,10 @@ namespace VEXEmcee.API.Local.Controllers
 	[Route("[controller]")]
 	public class SessionController : ControllerBase
 	{
-		[HttpPost("registersession")]
-		public async Task<IActionResult> RegisterSession([FromBody] Objects.API.Request.RegisterSessionRequest request)
+		[HttpPost("registernewsession")]
+		public async Task<IActionResult> RegisterNewSession([FromBody] Objects.API.Request.RegisterNewSessionRequest request)
 		{
-			RegisterSessionResponse sessionResponse = await PublicMethods.RegisterSession(request);
+			RegisterNewSessionResponse sessionResponse = await PublicMethods.RegisterNewSession(request);
 
 			IActionResult response;
 			if (sessionResponse.Success)
