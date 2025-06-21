@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\RE.API\RE.API.csproj" />
     <ProjectReference Include="..\VEXEmcee.DB.Dynamo\VEXEmcee.DB.Dynamo.csproj" />
     <ProjectReference Include="..\VEXEmcee.Objects\VEXEmcee.Objects.csproj" />
   </ItemGroup>
