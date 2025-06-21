@@ -91,8 +91,8 @@ namespace VEXEmcee.Logic.InternalLogic
 					response.NextPage = reAPIResponse.Meta.Current_Page; //no next page, set to current page
 				}
 
-				//build event information to return
-				foreach (RE.Objects.Event reEvent in reAPIResponse.Data)
+				List<RE.Objects.Event> sortedEventList = [.. reAPIResponse.Data.OrderBy(x => x.Start)]; //sort events by start date
+				foreach (RE.Objects.Event reEvent in sortedEventList)
 				{
 					Objects.API.Helpers.REEvent responseEvent = new()
 					{
