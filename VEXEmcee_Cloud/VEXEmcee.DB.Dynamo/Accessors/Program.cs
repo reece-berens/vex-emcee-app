@@ -32,7 +32,7 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 						ExpressionStatement = "Selectable = :selectable",
 						ExpressionAttributeValues = new Dictionary<string, Amazon.DynamoDBv2.DocumentModel.DynamoDBEntry>()
 						{
-							{":selectable", new Amazon.DynamoDBv2.DocumentModel.DynamoDBBool(true) }
+							{":selectable", new Amazon.DynamoDBv2.DocumentModel.Primitive("1", true) }
 						}
 					}
 				});

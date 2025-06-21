@@ -55,8 +55,57 @@ namespace VEXEmcee.Logic
 					PageSize = request.PageSize ?? 25,
 					TotalCount = 0
 				};
+			}	
+		}
+
+		public static async Task<GetSelectableProgramsResponse> GetSelectablePrograms(GetSelectableProgramsRequest request)
+		{
+			try
+			{
+				if (request == null)
+				{
+					throw new ArgumentNullException(nameof(request), "Request cannot be null.");
+				}
+				List<Program> programList = await InternalLogic.Program.GetSelectablePrograms();
+				GetSelectableProgramsResponse response = new()
+				{
+					Programs = [],
+					StatusCode = System.Net.HttpStatusCode.OK,
+					Success = true,
+				};
+				foreach (Program program in programList)
+				{
+					Objects.API.Helpers.Program programResponse = new()
+					{
+						ID = program.ID,
+						Name = $"{program.Abbreviation} - {program.Name}",
+					};
+					response.Programs.Add(programResponse);
+				}
+				return response;
 			}
-			
+			catch (VEXEmceeBaseException ex)
+			{
+				ex.LogException();
+				return new()
+				{
+					ErrorMessage = "An error occurred while processing your request. Please try again later.",
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Success = false,
+					Programs = []
+				};
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Exception - {MethodBase.GetCurrentMethod()?.Name} - {ex.Message}");
+				return new()
+				{
+					ErrorMessage = "An error occurred while processing your request. Please try again later.",
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Success = false,
+					Programs = []
+				};
+			}
 		}
 
 		/// <summary>
