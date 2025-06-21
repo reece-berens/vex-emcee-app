@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEXEmcee.DB.Dynamo", "VEXEm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEXEmcee.Logic", "VEXEmcee.Logic\VEXEmcee.Logic.csproj", "{EF3B0480-3D6B-4686-8A3C-9BA07F7B8D32}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEXEmcee.ConsoleHelper", "VEXEmcee.ConsoleHelper\VEXEmcee.ConsoleHelper.csproj", "{A5902686-459E-4FBD-8D91-F1A0F7FB1B7E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{EF3B0480-3D6B-4686-8A3C-9BA07F7B8D32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF3B0480-3D6B-4686-8A3C-9BA07F7B8D32}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF3B0480-3D6B-4686-8A3C-9BA07F7B8D32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5902686-459E-4FBD-8D91-F1A0F7FB1B7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5902686-459E-4FBD-8D91-F1A0F7FB1B7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5902686-459E-4FBD-8D91-F1A0F7FB1B7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5902686-459E-4FBD-8D91-F1A0F7FB1B7E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

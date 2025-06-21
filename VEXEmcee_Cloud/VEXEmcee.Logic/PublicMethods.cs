@@ -9,6 +9,92 @@ namespace VEXEmcee.Logic
 	public static class PublicMethods
 	{
 		/// <summary>
+		/// Retrieves a list of events from the RE API based on the specified request parameters.
+		/// </summary>
+		/// <remarks>This method handles exceptions internally and returns a standardized error response in case of
+		/// failure. The response includes details such as the error message, HTTP status code, and pagination
+		/// defaults.</remarks>
+		/// <param name="request">The request object containing parameters for filtering and pagination. Must not be <see langword="null"/>.</param>
+		/// <returns>A <see cref="GetREEventListResponse"/> object containing the list of events, pagination details,  and status
+		/// information. If an error occurs, the response will include an error message,  a status code of <see
+		/// cref="System.Net.HttpStatusCode.InternalServerError"/>, and an empty event list.</returns>
+		public static async Task<GetREEventListResponse> GetREEventList(GetREEventListRequest request)
+		{
+			try
+			{
+				if (request == null)
+				{
+					throw new ArgumentNullException(nameof(request), "Request cannot be null.");
+				}
+				GetREEventListResponse response = await InternalLogic.REEvent.GetREEventList(request);
+				return response;
+			}
+			catch (VEXEmceeBaseException ex)
+			{
+				ex.LogException();
+				return new()
+				{
+					ErrorMessage = "An error occurred while processing your request. Please try again later.",
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Success = false,
+					Events = [],
+					NextPage = 1,
+					PageSize = request.PageSize ?? 25,
+					TotalCount = 0
+				};
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Exception - {MethodBase.GetCurrentMethod()?.Name} - {ex.Message}");
+				return new()
+				{
+					ErrorMessage = "An error occurred while processing your request. Please try again later.",
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Success = false,
+					Events = [],
+					NextPage = 1,
+					PageSize = request.PageSize ?? 25,
+					TotalCount = 0
+				};
+			}	
+		}
+
+		public static async Task<GetSelectableProgramsResponse> GetSelectablePrograms(GetSelectableProgramsRequest request)
+		{
+			try
+			{
+				if (request == null)
+				{
+					throw new ArgumentNullException(nameof(request), "Request cannot be null.");
+				}
+				GetSelectableProgramsResponse response = await InternalLogic.Program.GetSelectablePrograms(request);
+				return response;
+			}
+			catch (VEXEmceeBaseException ex)
+			{
+				ex.LogException();
+				return new()
+				{
+					ErrorMessage = "An error occurred while processing your request. Please try again later.",
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Success = false,
+					Programs = []
+				};
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Exception - {MethodBase.GetCurrentMethod()?.Name} - {ex.Message}");
+				return new()
+				{
+					ErrorMessage = "An error occurred while processing your request. Please try again later.",
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Success = false,
+					Programs = []
+				};
+			}
+		}
+
+		/// <summary>
 		/// Registers a new session based on the provided <see cref="RegisterSessionRequest"/>.
 		/// Calls the internal session registration logic, handles any exceptions, and returns a response
 		/// indicating success or failure, along with the generated session ID if successful.
