@@ -177,7 +177,7 @@ namespace RE.API
 			if (response.WasSuccessful)
 			{
 				//correct type returned
-				return JsonSerializer.Deserialize<RE.Objects.Event>(response.Response);
+				return JsonSerializer.Deserialize<RE.Objects.Event>(response.Response, Accessor.SerializerReadOptions);
 			}
 			else
 			{

@@ -12,7 +12,7 @@ namespace VEXEmcee.API.Local.Controllers
 		[HttpGet("geteventlist")]
 		public async Task<IActionResult> GetEventList([FromQuery] int programID, [FromQuery] string region, [FromQuery] string sku, [FromQuery] int? pageSize, [FromQuery] int? page)
 		{
-			GetREEventListRequest getREEventListRequest = new GetREEventListRequest
+			GetREEventListRequest getREEventListRequest = new()
 			{
 				Page = page,
 				PageSize = pageSize,

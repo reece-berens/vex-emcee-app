@@ -1,6 +1,6 @@
 ﻿namespace VEXEmcee.Objects.API.Response
 {
-	public class RegisterSessionResponse : BaseResponse
+	public class RegisterNewSessionResponse : BaseResponse
 	{
 		public string Session { get; set; }
 	}

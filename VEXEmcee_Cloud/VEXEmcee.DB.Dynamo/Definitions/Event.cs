@@ -26,5 +26,6 @@ namespace VEXEmcee.DB.Dynamo.Definitions
 		public Dictionary<int, List<int>> DivisionTeams { get; set; }
 		public List<int> Teams_denorm { get; set; }
 		public bool StatsReady { get; set; }
+		public bool StatsRequested { get; set; } //this flag is used to ensure we only request stats once per event
 	}
 }

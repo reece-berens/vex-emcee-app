@@ -59,6 +59,16 @@ namespace VEXEmcee.Logic
 			}	
 		}
 
+		/// <summary>
+		/// Retrieves a list of selectable programs.
+		/// </summary>
+		/// <remarks>This method processes the request asynchronously and returns a response object that includes the
+		/// list of programs that a user can select. If an error occurs during processing, the
+		/// response will include an appropriate error message and status code.</remarks>
+		/// <param name="request">The request object containing the criteria for retrieving selectable programs. This parameter cannot be <see
+		/// langword="null"/>.</param>
+		/// <returns>A <see cref="GetSelectableProgramsResponse"/> object containing the list of selectable programs, along with status
+		/// information and any error messages if applicable.</returns>
 		public static async Task<GetSelectableProgramsResponse> GetSelectablePrograms(GetSelectableProgramsRequest request)
 		{
 			try
@@ -95,25 +105,25 @@ namespace VEXEmcee.Logic
 		}
 
 		/// <summary>
-		/// Registers a new session based on the provided <see cref="RegisterSessionRequest"/>.
+		/// Registers a new session based on the provided <see cref="RegisterNewSessionRequest"/>.
 		/// Calls the internal session registration logic, handles any exceptions, and returns a response
 		/// indicating success or failure, along with the generated session ID if successful.
 		/// </summary>
 		/// <param name="request">The request object containing any data needed to register a session.</param>
 		/// <returns>
-		/// A <see cref="RegisterSessionResponse"/> object containing the session ID if successful,
+		/// A <see cref="RegisterNewSessionResponse"/> object containing the session ID if successful,
 		/// or error information if the registration fails.
 		/// </returns>
-		public static async Task<RegisterSessionResponse> RegisterSession(RegisterSessionRequest request)
+		public static async Task<RegisterNewSessionResponse> RegisterNewSession(RegisterNewSessionRequest request)
 		{
-			RegisterSessionResponse response = new()
+			RegisterNewSessionResponse response = new()
 			{
 				Success = false,
 				StatusCode = System.Net.HttpStatusCode.OK,
 			};
 			try
 			{
-				string newSessionID = await InternalLogic.Session.RegisterSession(request);
+				string newSessionID = await InternalLogic.Session.RegisterNewSession(request);
 				if (string.IsNullOrWhiteSpace(newSessionID))
 				{
 					//an error occurred generating session ID, return error response
@@ -143,7 +153,59 @@ namespace VEXEmcee.Logic
 			}
 			return response;
 		}
-    
+
+		/// <summary>
+		/// Registers a session event division based on the provided request parameters.
+		/// </summary>
+		/// <remarks>This method validates the input parameters and processes the request asynchronously. If the
+		/// request parameters are invalid, a response with a <see cref="System.Net.HttpStatusCode.BadRequest"/> status code
+		/// is returned. If an error occurs during processing, a response with a <see
+		/// cref="System.Net.HttpStatusCode.InternalServerError"/> status code is returned.</remarks>
+		/// <param name="request">The request object containing the session identifier, event ID, and division ID. All fields must be valid and
+		/// non-null.</param>
+		/// <returns>A <see cref="RegisterSessionEventDivisionResponse"/> object containing the result of the operation. The response
+		/// includes a success flag, status code, and an error message if applicable.</returns>
+		public static async Task<RegisterSessionEventDivisionResponse> RegisterSessionEventDivision(RegisterSessionEventDivisionRequest request)
+		{
+			try
+			{
+				if (request == null || string.IsNullOrWhiteSpace(request.Session) || request.EventID <= 0 || request.DivisionID <= 0)
+				{
+					return new()
+					{
+						ErrorMessage = "Invalid request parameters. Please ensure all required fields are provided.",
+						StatusCode = System.Net.HttpStatusCode.BadRequest,
+						Success = false
+					};
+				}
+				else
+				{
+					RegisterSessionEventDivisionResponse response = await InternalLogic.Session.RegisterSessionEventDivision(request);
+					return response;
+				}
+			}
+			catch (VEXEmceeBaseException ex)
+			{
+				ex.LogException();
+				return new()
+				{
+					ErrorMessage = "An error occurred while processing your request. Please try again later.",
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Success = false,
+				};
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Exception - {MethodBase.GetCurrentMethod()?.Name} - {ex.Message}");
+				return new()
+				{
+					ErrorMessage = "An error occurred while processing your request. Please try again later.",
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Success = false,
+				};
+			}
+		}
+
 		/// <summary>
 		/// Validates whether the specified session exists and is active.
 		/// </summary>
