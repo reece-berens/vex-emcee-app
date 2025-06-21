@@ -74,7 +74,7 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 			catch (Exception ex)
 			{
 				Console.WriteLine($"Exception - {MethodBase.GetCurrentMethod()?.Name} - {ex.Message}");
-				throw new DynamoDBException(7, $"Generic exception received: {ex.Message}");
+				throw new DynamoDBException(8, $"Generic exception received: {ex.Message}");
 			}
 		}
 	}
