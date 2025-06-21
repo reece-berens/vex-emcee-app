@@ -16,9 +16,13 @@ namespace RE.API
 					queryString.Append($"program={program}&");
 				}
 			}
+			if (request.IsActive.HasValue)
+			{
+				queryString.Append($"active={request.IsActive.Value}&");
+			}
 			queryString.Length--; // Remove the last '&' character (or '?' if there is no query string)
 
-			BaseDataResponse response = await Accessor.BaseRequestData($"seasons");
+			BaseDataResponse response = await Accessor.BaseRequestData($"seasons{queryString}");
 			if (response.WasSuccessful)
 			{
 				//correct type returned

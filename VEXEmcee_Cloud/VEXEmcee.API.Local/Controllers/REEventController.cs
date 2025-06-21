@@ -10,7 +10,7 @@ namespace VEXEmcee.API.Local.Controllers
 	public class REEventController : ControllerBase
 	{
 		[HttpGet("geteventlist")]
-		public async Task<IActionResult> RegisterSession([FromQuery] int programID, [FromQuery] string region, [FromQuery] string sku, [FromQuery] int? pageSize, [FromQuery] int? page)
+		public async Task<IActionResult> GetEventList([FromQuery] int programID, [FromQuery] string region, [FromQuery] string sku, [FromQuery] int? pageSize, [FromQuery] int? page)
 		{
 			GetREEventListRequest getREEventListRequest = new GetREEventListRequest
 			{

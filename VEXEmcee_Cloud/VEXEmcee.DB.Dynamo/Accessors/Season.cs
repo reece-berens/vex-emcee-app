@@ -26,7 +26,7 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 						ExpressionStatement = "Active = :active AND ProgramID = :programID",
 						ExpressionAttributeValues = new Dictionary<string, Amazon.DynamoDBv2.DocumentModel.DynamoDBEntry>()
 						{
-							{":active", new Amazon.DynamoDBv2.DocumentModel.DynamoDBBool(true) },
+							{":active", new Amazon.DynamoDBv2.DocumentModel.Primitive("1", true) }, //C# object model converts booleans to 0 or 1 numbers
 							{":programID", new Amazon.DynamoDBv2.DocumentModel.Primitive(programID.ToString(), true) }
 						}
 					}
@@ -49,6 +49,32 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 			{
 				Console.WriteLine($"Exception - {MethodBase.GetCurrentMethod()?.Name} - {ex.Message}");
 				throw new DynamoDBException(6, $"Generic exception received: {ex.Message}");
+			}
+		}
+
+		/// <summary>
+		/// Saves the specified season object to the DynamoDB table.
+		/// </summary>
+		/// <remarks>This method validates the DynamoDB table before attempting to save the season object. If an
+		/// exception occurs during the save operation, it is logged and rethrown.</remarks>
+		/// <param name="season">The season object to be saved. Cannot be null.</param>
+		/// <exception cref="DynamoDBException">Thrown if an error occurs while interacting with DynamoDB.</exception>
+		public static async Task SaveSeason(Definitions.Season season)
+		{
+			try
+			{
+				await Common.ValidateTable<Definitions.Season>();
+				await Dynamo.Context.SaveAsync(season);
+			}
+			catch (DynamoDBException ex)
+			{
+				ex.LogException();
+				throw;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Exception - {MethodBase.GetCurrentMethod()?.Name} - {ex.Message}");
+				throw new DynamoDBException(7, $"Generic exception received: {ex.Message}");
 			}
 		}
 	}
