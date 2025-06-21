@@ -29,6 +29,11 @@
     /* Common shadow variables */
     --shadow-inset: inset 0 1px 3px 0 rgba(0, 0, 0, 0.08), inset 0 1.5px 6px 0 rgba(0, 0, 0, 0.04);
     --shadow-default: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1.5px 6px 0 rgba(0, 0, 0, 0.04);
+    --shadow-darker: 0 4px 12px 0 rgba(0, 0, 0, 0.18), 0 8px 24px 0 rgba(0, 0, 0, 0.12);
+}
+
+.hidden {
+    display: none;
 }
 
 /* Classic 3-Column Layout using Flexbox */
@@ -48,32 +53,33 @@
     padding: var(--space-lg);
     transition: background var(--transition);
     text-align: center;
+    box-shadow: var(--shadow-darker);
+    position: -webkit-sticky;
+    position: sticky;
 }
 
+/* Entire mid-section "body" including the three columns */
 .layout-main {
     display: flex;
-    flex-direction: column;
-    flex: 1 1;
-    min-width: 0;
-    margin-inline: auto;
+    flex-grow: 1;
     width: 100%;
     height: 100%;
     overflow-y: hidden;
 }
 
+/* Just the middle column (the main content) */
 .layout-content {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1;
+    flex-grow: 1;
     min-height: 0;
     align-items: center;
     padding: var(--space-lg);
     overflow-y: auto;
-    flex-shrink: 0;
+    margin-inline: auto;
+    max-width: 50vw; /* Limit width to 50% of viewport */
 }
 
 .layout-sidebar {
-    background: var(--secondary-color);
+    background: var(--background-color2);
     border-right: 1px solid var(--primary-color);
     width: 200px;
     min-width: 150px;
@@ -82,8 +88,8 @@
 }
 
 .layout-extra {
-    background: var(--secondary-color);
-    border-left: 1px solid var(--secondary-color);
+    background: var(--background-color2);
+    border-left: 1px solid var(--primary-color);
     width: 200px;
     min-width: 150px;
     box-sizing: border-box;
@@ -91,7 +97,7 @@
 }
 
 .layout-footer {
-    background: var(--secondary-color);
+    background: var(--primary-color);
     color: #fff;
     padding: var(--space-lg);
     transition: background var(--transition);
@@ -102,12 +108,10 @@
 @media (max-width: 900px) {
     .layout-sidebar,
     .layout-extra {
-        width: 100%;
-        min-width: 0;
-        border-right: none;
-        border-left: none;
-        border-top: 1px solid var(--primary-color);
-        border-bottom: 1px solid var(--secondary-color);
+        display: none; /* Hide sidebars on smaller screens */
+    }
+    .layout-content {
+        max-width: 75vw; /* Allow content to take full width */
     }
 }
 @media (max-width: 600px) {
@@ -118,6 +122,9 @@
     .layout-sidebar,
     .layout-extra {
         padding: var(--space-sm);
+    }
+    .layout-content {
+        max-width: 100vw; /* Allow content to take full width */
     }
 }
 

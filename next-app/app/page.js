@@ -3,6 +3,10 @@ import styles from "./Home.module.css";
 export default function Home() {
     return (
         <main className="layout-main">
+            <div className="layout-sidebar">
+                <h3>Welcome to VEX Emcee!</h3>
+                <p>This is a sidebar for larger screens.</p>
+            </div>
             <div className="layout-content">
                 <h2>Select an event using the filters below:</h2>
                 <div id="search-filters-id" className={`${styles.filters} cardback`}>
@@ -28,6 +32,10 @@ export default function Home() {
                         <button className="btn-primary">Search</button>
                     </div>
                 </div>
+            </div>
+            <div className="layout-extra">
+                <h3>Welcome to VEX Emcee!</h3>
+                <p>This is a sidebar for larger screens.</p>
             </div>
         </main>
     );
