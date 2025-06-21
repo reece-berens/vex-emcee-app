@@ -26,7 +26,8 @@ namespace VEXEmcee.Logic
 				{
 					throw new ArgumentNullException(nameof(request), "Request cannot be null.");
 				}
-				return await InternalLogic.REEvent.GetREEventList(request);
+				GetREEventListResponse response = await InternalLogic.REEvent.GetREEventList(request);
+				return response;
 			}
 			catch (VEXEmceeBaseException ex)
 			{
@@ -66,22 +67,7 @@ namespace VEXEmcee.Logic
 				{
 					throw new ArgumentNullException(nameof(request), "Request cannot be null.");
 				}
-				List<Program> programList = await InternalLogic.Program.GetSelectablePrograms();
-				GetSelectableProgramsResponse response = new()
-				{
-					Programs = [],
-					StatusCode = System.Net.HttpStatusCode.OK,
-					Success = true,
-				};
-				foreach (Program program in programList)
-				{
-					Objects.API.Helpers.Program programResponse = new()
-					{
-						ID = program.ID,
-						Name = $"{program.Abbreviation} - {program.Name}",
-					};
-					response.Programs.Add(programResponse);
-				}
+				GetSelectableProgramsResponse response = await InternalLogic.Program.GetSelectablePrograms(request);
 				return response;
 			}
 			catch (VEXEmceeBaseException ex)
