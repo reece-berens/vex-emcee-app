@@ -33,6 +33,26 @@ namespace VEXEmcee.API.Local.Controllers
 			return response;
 		}
 
+		[HttpPost("registersessioneventdivision")]
+		public async Task<IActionResult> RegisterSessionEventDivision([FromBody] Objects.API.Request.RegisterSessionEventDivisionRequest request)
+		{
+			RegisterSessionEventDivisionResponse response = await PublicMethods.RegisterSessionEventDivision(request);
+			if (response.Success)
+			{
+				return Ok(response);
+			}
+			else
+			{
+				switch (response.StatusCode)
+				{
+					case System.Net.HttpStatusCode.InternalServerError:
+						return StatusCode((int)System.Net.HttpStatusCode.InternalServerError, response);
+					default:
+						return BadRequest(response);
+				}
+			}
+		}
+
 		[HttpPost("validatesession")]
 		public async Task<IActionResult> ValidateSession([FromBody] Objects.API.Request.ValidateSessionRequest request)
 		{
