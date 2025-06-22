@@ -51,7 +51,7 @@
     transition: background var(--transition);
     text-align: center;
     box-shadow: var(--shadow-darker);
-    position: sticky;
+    z-index: 1000;
 }
 
 /* Entire mid-section "body" including the three columns */
@@ -98,6 +98,7 @@
     padding: var(--space-lg);
     transition: background var(--transition);
     text-align: center;
+    z-index: 1000;
 }
 
 /* Responsive adjustments */
