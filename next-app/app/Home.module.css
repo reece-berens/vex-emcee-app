@@ -1,13 +1,8 @@
 .filters {
     display: flex;
     flex-direction: column;
-    background: var(--secondary-color);
-    color: #fff;
-    padding: 1rem;
     transition: background var(--transition);
-    flex: 0 0 auto; /* Fixed width */
-    min-width: 200px; /* Minimum width */
-    border-radius: var(--border-radius);
+    gap: var(--space-xl);
 }
 
 .buttonWrapper {
