@@ -25,7 +25,7 @@ namespace VEXEmcee.Logic.InternalLogic
 			};
 			foreach (DB.Dynamo.Definitions.Program program in programList)
 			{
-				Objects.API.Helpers.Program programResponse = new()
+				Objects.Data.ClientApp.Program programResponse = new()
 				{
 					ID = program.ID,
 					Name = $"{program.Abbreviation} - {program.Name}",
