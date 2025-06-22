@@ -1,7 +1,9 @@
-﻿namespace VEXEmcee.Objects.API.Response
+﻿using VEXEmcee.Objects.Data.ClientApp;
+
+namespace VEXEmcee.Objects.API.Response
 {
 	public class GetSelectableProgramsResponse : BaseResponse
 	{
-		public List<Helpers.Program> Programs { get; set; }
+		public List<Program> Programs { get; set; }
 	}
 }

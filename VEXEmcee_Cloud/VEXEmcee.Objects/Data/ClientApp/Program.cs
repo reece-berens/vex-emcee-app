@@ -1,6 +1,6 @@
-﻿namespace VEXEmcee.Objects.API.Helpers
+﻿namespace VEXEmcee.Objects.Data.ClientApp
 {
-	public class REEventDivision
+	public class Program
 	{
 		public int ID { get; set; }
 		public string Name { get; set; }

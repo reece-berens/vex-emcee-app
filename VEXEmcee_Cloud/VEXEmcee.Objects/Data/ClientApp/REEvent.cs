@@ -1,4 +1,4 @@
-﻿namespace VEXEmcee.Objects.API.Helpers
+﻿namespace VEXEmcee.Objects.Data.ClientApp
 {
 	public class REEvent
 	{

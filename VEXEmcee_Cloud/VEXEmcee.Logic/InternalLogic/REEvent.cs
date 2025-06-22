@@ -1,5 +1,6 @@
 ﻿using VEXEmcee.Objects.API.Request;
 using VEXEmcee.Objects.API.Response;
+using VEXEmcee.Objects.Data.ClientApp;
 using Accessors = VEXEmcee.DB.Dynamo.Accessors;
 using Definitions = VEXEmcee.DB.Dynamo.Definitions;
 
@@ -94,7 +95,7 @@ namespace VEXEmcee.Logic.InternalLogic
 				List<RE.Objects.Event> sortedEventList = [.. reAPIResponse.Data.OrderBy(x => x.Start)]; //sort events by start date
 				foreach (RE.Objects.Event reEvent in sortedEventList)
 				{
-					Objects.API.Helpers.REEvent responseEvent = new()
+					Objects.Data.ClientApp.REEvent responseEvent = new()
 					{
 						Divisions = [],
 						ID = reEvent.Id,
@@ -106,7 +107,7 @@ namespace VEXEmcee.Logic.InternalLogic
 					{
 						foreach (RE.Objects.Division division in reEvent.Divisions)
 						{
-							Objects.API.Helpers.REEventDivision responseDivision = new()
+							REEventDivision responseDivision = new()
 							{
 								ID = division.Id,
 								Name = division.Name
