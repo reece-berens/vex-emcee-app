@@ -4,25 +4,25 @@ using VEXEmcee.Objects.API.Request;
 using VEXEmcee.Objects.API.Response;
 using VEXEmcee.Objects.Exceptions;
 
-namespace VEXEmcee.Logic.InternalLogic.MatchInfo
+namespace VEXEmcee.Logic.InternalLogic.TeamInfo
 {
 	internal class Base
 	{
 		/// <summary>
-		/// Retrieves info for a single match.
+		/// Retrieves info for a single team.
 		/// </summary>
 		/// <remarks>This method determines the validity of the session and its associated event and division. If the
 		/// session is invalid or lacks a linked event or division, an error message is returned in the response. If the
 		/// linked event's statistics are not ready, the response indicates that the event stats are still loading. If the
-		/// event's statistics are ready, the method retrieves the match info using the appropriate program logic.</remarks>
-		/// <param name="request">The request containing the session ID and other parameters required to retrieve the match info.</param>
-		/// <returns>A <see cref="GetMatchInfoResponse"/> object containing the match info, success status, and additional information
+		/// event's statistics are ready, the method retrieves the team info using the appropriate program logic.</remarks>
+		/// <param name="request">The request containing the session ID and other parameters required to retrieve the team info.</param>
+		/// <returns>A <see cref="GetTeamInfoResponse"/> object containing the team info, success status, and additional information
 		/// about the operation. If the session is invalid or the event's program is unsupported, the response includes an
 		/// error message.</returns>
 		/// <exception cref="LogicException">Thrown if the event linked to the session does not exist.</exception>
-		internal static async Task<GetMatchInfoResponse> GetMatchInfo(GetMatchInfoRequest request)
+		internal static async Task<GetTeamInfoResponse> GetTeamInfo(GetTeamInfoRequest request)
 		{
-			GetMatchInfoResponse response = new()
+			GetTeamInfoResponse response = new()
 			{
 				Success = true,
 				StatusCode = System.Net.HttpStatusCode.OK,
@@ -41,7 +41,7 @@ namespace VEXEmcee.Logic.InternalLogic.MatchInfo
 			else
 			{
 				Definitions.Event thisEvent = await Accessors.Event.GetEventByID(thisSession.SelectedEventID) ??
-					throw new LogicException(3, $"The event linked to the session does not exist. - {request.Session} {thisSession.SelectedEventID}");
+					throw new LogicException(4, $"The event linked to the session does not exist. - {request.Session} {thisSession.SelectedEventID}");
 				if (thisEvent.StatsReady)
 				{
 					//TODO validate the match ID in the request exists in the event
@@ -49,11 +49,11 @@ namespace VEXEmcee.Logic.InternalLogic.MatchInfo
 					{
 						case 1:
 							//V5RC
-							await V5RC.GetMatchInfo(request, response, thisEvent);
+							await V5RC.GetTeamInfo(request, response, thisEvent);
 							response.ProgramAbbreviation = "V5RC";
 							break;
 						default:
-							response.ErrorMessage = "The selected event's program is not supprted for match info retrieval.";
+							response.ErrorMessage = "The selected event's program is not supprted for team info retrieval.";
 							response.Success = false;
 							response.StatusCode = System.Net.HttpStatusCode.BadRequest;
 							break;

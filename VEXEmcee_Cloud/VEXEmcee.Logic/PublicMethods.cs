@@ -17,7 +17,7 @@ namespace VEXEmcee.Logic
 		/// langword="null"/>.</param>
 		/// <returns>A <see cref="GetMatchInfoResponse"/> object containing the match info and additional response details. If an
 		/// error occurs, the response will include an error message, a status code of  <see
-		/// cref="System.Net.HttpStatusCode.InternalServerError"/>, and an empty match list.</returns>
+		/// cref="System.Net.HttpStatusCode.InternalServerError"/>, and an empty match object.</returns>
 		public static async Task<GetMatchInfoResponse> GetMatchInfo(GetMatchInfoRequest request)
 		{
 			try
@@ -35,7 +35,6 @@ namespace VEXEmcee.Logic
 				return new()
 				{
 					ErrorMessage = "An error occurred while processing your request. Please try again later.",
-					Matches = [],
 					StatusCode = System.Net.HttpStatusCode.InternalServerError,
 					Success = false,
 				};
@@ -46,7 +45,49 @@ namespace VEXEmcee.Logic
 				return new()
 				{
 					ErrorMessage = "An error occurred while processing your request. Please try again later.",
-					Matches = [],
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Success = false,
+				};
+			}
+		}
+
+		/// <summary>
+		/// Retrieves info for a single team.
+		/// </summary>
+		/// <remarks>This method handles exceptions internally and returns a response object with error details if an
+		/// error occurs during processing. The caller does not need to catch exceptions explicitly.</remarks>
+		/// <param name="request">The request object containing the criteria for retrieving the team info. This parameter cannot be <see
+		/// langword="null"/>.</param>
+		/// <returns>A <see cref="GetTeamInfoResponse"/> object containing the list of teams and additional response details. If an
+		/// error occurs, the response will include an error message, a status code of  <see
+		/// cref="System.Net.HttpStatusCode.InternalServerError"/>, and an empty info object.</returns>
+		public static async Task<GetTeamInfoResponse> GetTeamInfo(GetTeamInfoRequest request)
+		{
+			try
+			{
+				if (request == null)
+				{
+					throw new ArgumentNullException(nameof(request), "Request cannot be null.");
+				}
+				GetTeamInfoResponse response = await InternalLogic.TeamInfo.Base.GetTeamInfo(request);
+				return response;
+			}
+			catch (VEXEmceeBaseException ex)
+			{
+				ex.LogException();
+				return new()
+				{
+					ErrorMessage = "An error occurred while processing your request. Please try again later.",
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Success = false,
+				};
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Exception - {MethodBase.GetCurrentMethod()?.Name} - {ex.Message}");
+				return new()
+				{
+					ErrorMessage = "An error occurred while processing your request. Please try again later.",
 					StatusCode = System.Net.HttpStatusCode.InternalServerError,
 					Success = false,
 				};
