@@ -48,7 +48,7 @@ namespace VEXEmcee.Logic.InternalLogic
 
 			try
 			{
-				string sessionID = Guid.NewGuid().ToString();
+				string sessionID = request.Session; //Guid.NewGuid().ToString();
 				Definitions.Session existingSession = await Accessors.Session.GetSessionByID(sessionID);
 				if (existingSession == null)
 				{

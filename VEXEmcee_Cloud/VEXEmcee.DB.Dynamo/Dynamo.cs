@@ -10,7 +10,7 @@ namespace VEXEmcee.DB.Dynamo
 
 		internal static DynamoDBContext Context { get; private set; }
 
-		public static void Initialize(string accessKey, string secretKey, RegionEndpoint region = null)
+		public static void Initialize(string accessKey = null, string secretKey = null, RegionEndpoint region = null)
 		{
 			if (Client != null)
 			{

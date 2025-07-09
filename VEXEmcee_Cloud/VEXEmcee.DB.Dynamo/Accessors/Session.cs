@@ -20,9 +20,9 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 			try
 			{
 				await Common.ValidateTable<Definitions.Session>();
-
+				
 				Definitions.Session session = await Dynamo.Context.LoadAsync<Definitions.Session>(sessionID);
-
+				
 				return session;
 			}
 			catch (DynamoDBException ex)
@@ -30,9 +30,14 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 				ex.LogException();
 				throw;
 			}
+			catch (System.InvalidOperationException ex)
+			{
+				Console.WriteLine($"InvalidOperationException - the key doesn't exist - return null for better error message");
+				return null;
+			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"Exception - {MethodBase.GetCurrentMethod()?.Name} - {ex.Message}");
+				Console.WriteLine($"Exception - {MethodBase.GetCurrentMethod()?.Name} - {ex.Message} {ex.GetType().FullName}");
 				throw new DynamoDBException(5, $"Generic exception received: {ex.Message}");
 			}
 		}
