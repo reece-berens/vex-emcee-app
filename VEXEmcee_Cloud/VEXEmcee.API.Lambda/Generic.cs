@@ -6,6 +6,7 @@ namespace VEXEmcee.API.Lambda
 {
 	public static class Generic
 	{
+		internal static readonly string REAPIParamStoreKey = "/VEXEmcee/RE/APIKey";
 		public static string GetSessionCookie(string[] cookieList)
 		{
 			if (cookieList == null || cookieList.Length == 0)
