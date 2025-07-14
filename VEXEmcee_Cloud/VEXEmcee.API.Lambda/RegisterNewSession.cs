@@ -37,13 +37,6 @@ namespace VEXEmcee.API.Lambda
 			{
 				{ "Content-Type", "application/json" }
 			};
-
-			//APIGatewayHttpApiV2ProxyResponse apiResponse = new()
-			//{
-			//	StatusCode = 200,
-			//	Body = "hello yes this is correct and good",
-			//	Cookies = ["VEXEmceeSession=12345"]
-			//};
 			return apiResponse;
 		}
 	}
