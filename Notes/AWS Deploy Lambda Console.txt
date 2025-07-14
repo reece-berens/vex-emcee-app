@@ -1,0 +1,5 @@
+AWS command for deploying the lambdas locally
+
+dotnet lambda deploy-function --region us-east-1 -frun dotnet8 NAME_OF_LAMBDA
+
+

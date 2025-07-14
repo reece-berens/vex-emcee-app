@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEXEmcee.Logic", "VEXEmcee.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEXEmcee.ConsoleHelper", "VEXEmcee.ConsoleHelper\VEXEmcee.ConsoleHelper.csproj", "{A5902686-459E-4FBD-8D91-F1A0F7FB1B7E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEXEmcee.API.Lambda", "VEXEmcee.API.Lambda\VEXEmcee.API.Lambda.csproj", "{0577E0EA-FEA7-4B61-80C8-3CDF4EE0F31D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{A5902686-459E-4FBD-8D91-F1A0F7FB1B7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5902686-459E-4FBD-8D91-F1A0F7FB1B7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5902686-459E-4FBD-8D91-F1A0F7FB1B7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0577E0EA-FEA7-4B61-80C8-3CDF4EE0F31D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0577E0EA-FEA7-4B61-80C8-3CDF4EE0F31D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0577E0EA-FEA7-4B61-80C8-3CDF4EE0F31D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0577E0EA-FEA7-4B61-80C8-3CDF4EE0F31D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
