@@ -1,9 +1,11 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
 using RE.Objects;
+using System.Diagnostics;
 
 namespace VEXEmcee.DB.Dynamo.Definitions
 {
 	[DynamoDBTable("Event")]
+	[DebuggerDisplay("{ID} {Name}")]
 	public class Event
 	{
 		[DynamoDBHashKey]
@@ -23,7 +25,11 @@ namespace VEXEmcee.DB.Dynamo.Definitions
 		public EventType Type { get; set; }
 		[DynamoDBProperty("Type")]
 		public string TypeString { get; set; }
+		[DynamoDBProperty(typeof(JsonPropertyConverter<Dictionary<int, string>>))]
+		public Dictionary<int, string> DivisionNames { get; set; }
+		[DynamoDBProperty(typeof(JsonPropertyConverter<Dictionary<int, List<int>>>))]
 		public Dictionary<int, List<int>> DivisionTeams { get; set; }
+		[DynamoDBProperty(typeof(JsonPropertyConverter<List<int>>))]
 		public List<int> Teams_denorm { get; set; }
 		public bool StatsReady { get; set; }
 		public bool StatsRequested { get; set; } //this flag is used to ensure we only request stats once per event

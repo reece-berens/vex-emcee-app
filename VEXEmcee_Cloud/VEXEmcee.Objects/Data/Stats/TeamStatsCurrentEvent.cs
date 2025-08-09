@@ -4,6 +4,12 @@ namespace VEXEmcee.Objects.Data.Stats
 {
 	public class TeamStatsCurrentEvent
 	{
+		public TeamStatsCurrentEvent()
+		{
+			DenormData = new();
+			ElimPartners = [];
+			Skills = [];
+		}
 		[JsonPropertyName("D")]
 		public DenormData DenormData { get; set; }
 

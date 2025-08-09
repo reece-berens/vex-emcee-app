@@ -3,11 +3,18 @@ using VEXEmcee.DB.Dynamo.Definitions;
 using VEXEmcee.Objects.API.Request;
 using VEXEmcee.Objects.API.Response;
 using VEXEmcee.Objects.Exceptions;
+using VEXEmcee.Objects.Lambda;
 
 namespace VEXEmcee.Logic
 {
 	public static class PublicMethods
 	{
+		public static async Task<bool> BuildEventStats(BuildEventStatsRequest request)
+		{
+			bool returnValue = await InternalLogic.BuildEventStats.Base.BuildEventStats(request);
+			return returnValue;
+		}
+
 		/// <summary>
 		/// Retrieves info for a single match.
 		/// </summary>

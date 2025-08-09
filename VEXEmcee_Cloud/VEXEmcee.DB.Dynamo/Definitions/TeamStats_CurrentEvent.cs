@@ -1,6 +1,4 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2.DocumentModel;
-using System.Text.Json;
 using VEXEmcee.Objects.Data.Stats;
 
 namespace VEXEmcee.DB.Dynamo.Definitions
@@ -9,86 +7,46 @@ namespace VEXEmcee.DB.Dynamo.Definitions
 	public class TeamStats_CurrentEvent
 	{
 		[DynamoDBHashKey]
-		public int EventID { get; set; }
+		public string CompositeKey
+		{
+			get
+			{
+				return GetCompositeKey(EventID, TeamID);
+			}
+			set
+			{
+				string compositeKey = value;
+				if (string.IsNullOrWhiteSpace(compositeKey))
+				{
+					EventID = 0;
+					TeamID = 0;
+				}
+				else
+				{
+					string[] parts = compositeKey.Split('~');
+					if (parts.Length == 2 && int.TryParse(parts[0], out int eventID) && int.TryParse(parts[1], out int teamID))
+					{
+						EventID = eventID;
+						TeamID = teamID;
+					}
+					else
+					{
+						throw new FormatException("Composite key format is invalid. Expected format: 'eventID~teamID'");
+					}
+				}
+			}
+		}
 		[DynamoDBRangeKey]
+		public int EventID { get; set; }
 		public int TeamID { get; set; }
-		[DynamoDBProperty(typeof(CompiledStatsTypeConverter))]
+		[DynamoDBProperty(typeof(JsonPropertyConverter<TeamStatsCurrentCompiled>))]
 		public TeamStatsCurrentCompiled CompiledStats { get; set; }
-		[DynamoDBProperty(typeof(CurrentEventStatsTypeConverter))]
+		[DynamoDBProperty(typeof(JsonPropertyConverter<TeamStatsCurrentEvent>))]
 		public TeamStatsCurrentEvent EventStats { get; set; }
-	}
 
-	public class CompiledStatsTypeConverter : IPropertyConverter
-	{
-		public object FromEntry(DynamoDBEntry entry)
+		public static string GetCompositeKey(int eventID, int teamID)
 		{
-			string entryString = entry.AsString();
-			if (string.IsNullOrWhiteSpace(entryString))
-			{
-				return null;
-			}
-			else
-			{
-				return JsonSerializer.Deserialize<TeamStatsCurrentCompiled>(entryString);
-			}
-		}
-
-		public DynamoDBEntry ToEntry(object value)
-		{
-			if (value is TeamStatsCurrentCompiled)
-			{
-				string json = JsonSerializer.Serialize(value as TeamStatsCurrentCompiled);
-				return new Primitive
-				{
-					Value = json,
-					Type = DynamoDBEntryType.String
-				};
-			}
-			else
-			{
-				return new Primitive
-				{
-					Value = null,
-					Type = DynamoDBEntryType.String
-				};
-			}
-		}
-	}
-
-	public class CurrentEventStatsTypeConverter : IPropertyConverter
-	{
-		public object FromEntry(DynamoDBEntry entry)
-		{
-			string entryString = entry.AsString();
-			if (string.IsNullOrWhiteSpace(entryString))
-			{
-				return null;
-			}
-			else
-			{
-				return JsonSerializer.Deserialize<TeamStatsCurrentEvent>(entryString);
-			}
-		}
-
-		public DynamoDBEntry ToEntry(object value)
-		{
-			if (value is TeamStatsCurrentEvent)
-			{
-				string json = JsonSerializer.Serialize(value as TeamStatsCurrentEvent);
-				return new Primitive
-				{
-					Value = json,
-					Type = DynamoDBEntryType.String
-				};
-			}
-			else
-			{
-				return new Primitive
-				{
-					Value = null,
-					Type = DynamoDBEntryType.String
-				};
-			}
+			return $"{eventID}~{teamID}";
 		}
 	}
 }

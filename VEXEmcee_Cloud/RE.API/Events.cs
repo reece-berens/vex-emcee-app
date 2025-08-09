@@ -12,7 +12,7 @@ namespace RE.API
 			StringBuilder queryString = request.InitializeQueryString();
 			queryString.Length--; // Remove the last '&' character (or '?' if there is no query string)
 
-			BaseDataResponse response = await Accessor.BaseRequestData($"events/{request.ID}{queryString}");
+			BaseDataResponse response = await Accessor.BaseRequestData($"events/{request.ID}/awards{queryString}");
 			if (response.WasSuccessful)
 			{
 				//correct type returned

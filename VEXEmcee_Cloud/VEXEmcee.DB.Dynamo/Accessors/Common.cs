@@ -57,7 +57,7 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 							BillingMode = BillingMode.PAY_PER_REQUEST
 						};
 						PropertyInfo[] propInfoArr = tType.GetProperties();
-						for (int i = 0; i < propInfoArr.Length || request.KeySchema.Count == 2; i++)
+						for (int i = 0; i < propInfoArr.Length && request.KeySchema.Count != 2; i++)
 						{
 							PropertyInfo prop = propInfoArr[i];
 							DynamoDBHashKeyAttribute hashKeyAttr = prop.GetCustomAttribute<DynamoDBHashKeyAttribute>();
