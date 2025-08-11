@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Amazon.DynamoDBv2.DataModel;
+using System.Reflection;
 using VEXEmcee.Objects.Exceptions;
 
 namespace VEXEmcee.DB.Dynamo.Accessors
@@ -33,6 +34,45 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 			{
 				Console.WriteLine($"Exception - {MethodBase.GetCurrentMethod()?.Name} - {ex.Message}");
 				throw new DynamoDBException(12, $"Generic exception received: {ex.Message}");
+			}
+		}
+
+		public static async Task<List<Definitions.TeamStats_CurrentEvent>> GetByEventID(int eventID)
+		{
+			try
+			{
+				List<Definitions.TeamStats_CurrentEvent> returnValue = [];
+				await Common.ValidateTable<Definitions.TeamStats_CurrentEvent>();
+
+				IAsyncSearch<Definitions.TeamStats_CurrentEvent> scanResult = Dynamo.Context.FromScanAsync<Definitions.TeamStats_CurrentEvent>(new Amazon.DynamoDBv2.DocumentModel.ScanOperationConfig()
+				{
+					FilterExpression = new Amazon.DynamoDBv2.DocumentModel.Expression
+					{
+						ExpressionStatement = "EventID = :eventID",
+						ExpressionAttributeValues = new Dictionary<string, Amazon.DynamoDBv2.DocumentModel.DynamoDBEntry>()
+						{
+							{":eventID", new Amazon.DynamoDBv2.DocumentModel.Primitive(eventID.ToString(), true) }
+						}
+					}
+				});
+
+				do
+				{
+					List<Definitions.TeamStats_CurrentEvent> tempItems = await scanResult.GetNextSetAsync();
+					returnValue.AddRange(tempItems);
+				} while (!scanResult.IsDone);
+
+				return returnValue;
+			}
+			catch (DynamoDBException ex)
+			{
+				ex.LogException();
+				throw;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Exception - {MethodBase.GetCurrentMethod()?.Name} - {ex.Message}");
+				throw new DynamoDBException(15, $"Generic exception received: {ex.Message}");
 			}
 		}
 

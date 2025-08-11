@@ -43,7 +43,6 @@ namespace VEXEmcee.Logic.InternalLogic.Helpers
 		internal static async Task<DB.Dynamo.Definitions.Event> GetByEventID(int eventID, bool requestStatsIfCreated, bool checkIfFinalized = false)
 		{
 			DB.Dynamo.Definitions.Event thisEvent = await DB.Dynamo.Accessors.Event.GetEventByID(eventID);
-			
 			if (thisEvent == null)
 			{
 				RE.Objects.Event reEvent = await RE.API.Events.Single(new() { ID = eventID });

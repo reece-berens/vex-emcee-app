@@ -33,5 +33,6 @@ namespace VEXEmcee.DB.Dynamo.Definitions
 		public List<int> Teams_denorm { get; set; }
 		public bool StatsReady { get; set; }
 		public bool StatsRequested { get; set; } //this flag is used to ensure we only request stats once per event
+		public DateTime? LastCurrentStatsCheck { get; set; } //this is used to determine when the last check for current match/ranking stats was done for a user-requested event
 	}
 }

@@ -389,6 +389,11 @@ namespace VEXEmcee.Logic
 			}
 		}
 
+		public static async Task ValidateCurrentEventStats(int eventID)
+		{
+			await InternalLogic.BuildEventStats.Base.ValidateCurrentEventStats(eventID);
+		}
+
 		/// <summary>
 		/// Validates whether the specified session exists and is active.
 		/// </summary>

@@ -76,5 +76,30 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats
 			Console.WriteLine($"VEmcee.Logic.Internal.BuildEventStats.Base.BuildEventStats: END - {request.EventID}");
 			return returnValue;
 		}
+
+		internal static async Task ValidateCurrentEventStats(int eventID)
+		{
+			DB.Dynamo.Definitions.Event thisEvent = await Helpers.Event.GetByEventID(eventID, false, false);
+			//only run current event stats validation if the event is not finalized
+			if (!thisEvent.Finalized)
+			{
+				DateTime now = DateTime.UtcNow;
+				if (thisEvent.LastCurrentStatsCheck == null || now > thisEvent.LastCurrentStatsCheck.Value.AddSeconds(90))
+				{
+					//we need to update the matches, rankings, and skills results for every division in this event
+					switch (thisEvent.ProgramID_denorm)
+					{
+						case 1:
+							//V5RC
+							await V5RC.Base.ValidateCurrentEventStats(thisEvent);
+							break;
+						default:
+							break;
+					}
+					thisEvent.LastCurrentStatsCheck = DateTime.UtcNow;
+					await DB.Dynamo.Accessors.Event.SaveEvent(thisEvent);
+				}
+			}
+		}
 	}
 }

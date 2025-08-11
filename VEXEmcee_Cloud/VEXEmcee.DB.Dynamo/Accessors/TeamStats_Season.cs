@@ -36,6 +36,35 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 			}
 		}
 
+		public static async Task<List<Definitions.TeamStats_Season>> GetByCompositeKeys(Dictionary<string, int> keys)
+		{
+			try
+			{
+				List<Definitions.TeamStats_Season> returnValue = [];
+				await Common.ValidateTable<Definitions.TeamStats_Season>();
+
+				var batchGetOperation = Dynamo.Context.CreateBatchGet<Definitions.TeamStats_Season>();
+				foreach (KeyValuePair<string, int> key in keys)
+				{
+					batchGetOperation.AddKey(key.Key, key.Value);
+				}
+
+				await batchGetOperation.ExecuteAsync();
+
+				return batchGetOperation.Results;
+			}
+			catch (DynamoDBException ex)
+			{
+				ex.LogException();
+				throw;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Exception - {MethodBase.GetCurrentMethod()?.Name} - {ex.Message}");
+				throw new DynamoDBException(16, $"Generic exception received: {ex.Message}");
+			}
+		}
+
 		public static async Task Save(Definitions.TeamStats_Season stats)
 		{
 			try

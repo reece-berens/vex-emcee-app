@@ -14,7 +14,7 @@ namespace VEXEmcee.Objects.Data.Stats
 		public DenormData DenormData { get; set; }
 
 		[JsonPropertyName("S")]
-		public Dictionary<string, SkillType> Skills { get; set; }
+		public Dictionary<string, SkillAttempt> Skills { get; set; }
 
 		[JsonPropertyName("E")]
 		public List<TeamRef> ElimPartners { get; set; }

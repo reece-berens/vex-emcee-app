@@ -98,20 +98,94 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 					};
 					teamStats_CurrentEvent.CompiledStats.Skills.Add(RE.Objects.SkillType.driver.ToString(), new());
 					teamStats_CurrentEvent.CompiledStats.Skills.Add(RE.Objects.SkillType.programming.ToString(), new());
-					if (teamStats_Season.Stats.Skills.TryGetValue(RE.Objects.SkillType.driver.ToString(), out SkillType driverSkills))
+					if (teamStats_Season.Stats.Skills.TryGetValue(RE.Objects.SkillType.driver.ToString(), out Objects.Data.Stats.SkillType driverSkills))
 					{
 						teamStats_CurrentEvent.CompiledStats.Skills[RE.Objects.SkillType.driver.ToString()].SeasonHighScore = driverSkills.SeasonHighScore;
 						teamStats_CurrentEvent.CompiledStats.Skills[RE.Objects.SkillType.driver.ToString()].SeasonAttempts = driverSkills.SeasonAttempts;
-						teamStats_CurrentEvent.CompiledStats.Skills[RE.Objects.SkillType.driver.ToString()].SeasonHighScoreToday = false;
+						teamStats_CurrentEvent.CompiledStats.Skills[RE.Objects.SkillType.driver.ToString()].SeasonHighScoreThisEvent = false;
 					}
-					if (teamStats_Season.Stats.Skills.TryGetValue(RE.Objects.SkillType.programming.ToString(), out SkillType progSkills))
+					if (teamStats_Season.Stats.Skills.TryGetValue(RE.Objects.SkillType.programming.ToString(), out Objects.Data.Stats.SkillType progSkills))
 					{
 						teamStats_CurrentEvent.CompiledStats.Skills[RE.Objects.SkillType.programming.ToString()].SeasonHighScore = progSkills.SeasonHighScore;
 						teamStats_CurrentEvent.CompiledStats.Skills[RE.Objects.SkillType.programming.ToString()].SeasonAttempts = progSkills.SeasonAttempts;
-						teamStats_CurrentEvent.CompiledStats.Skills[RE.Objects.SkillType.programming.ToString()].SeasonHighScoreToday = false;
+						teamStats_CurrentEvent.CompiledStats.Skills[RE.Objects.SkillType.programming.ToString()].SeasonHighScoreThisEvent = false;
 					}
 				}
 				await DB.Dynamo.Accessors.TeamStats_CurrentEvent.Save(teamStats_CurrentEvent);
+			}
+		}
+
+		internal static async Task ValidateCurrentEventStats(DB.Dynamo.Definitions.Event thisEvent)
+		{
+			//only validate current event stats if the stats for the event are ready
+			if (thisEvent.StatsReady)
+			{
+				//Load in all TeamStats_CurrentEvent and TeamStats_Season objects for this event
+				List<DB.Dynamo.Definitions.TeamStats_CurrentEvent> teamStats_CurrentEvents = await DB.Dynamo.Accessors.TeamStats_CurrentEvent.GetByEventID(thisEvent.ID);
+				Dictionary<string, int> teamStatsSeasonKeys = [];
+				foreach (int teamID in thisEvent.Teams_denorm)
+				{
+					teamStatsSeasonKeys.Add(DB.Dynamo.Definitions.TeamStats_Season.GetCompositeKey(thisEvent.SeasonID, teamID), teamID);
+				}
+				List<DB.Dynamo.Definitions.TeamStats_Season> teamStats_Season = await DB.Dynamo.Accessors.TeamStats_Season.GetByCompositeKeys(teamStatsSeasonKeys);
+
+				//potentially check RE API for any new divisions that may have been added since the last time the event was processed??
+				RE.Objects.Event reEvent = await RE.API.Events.Single(new() { ID = thisEvent.ID });
+				if (reEvent != null)
+				{
+					foreach (RE.Objects.Division division in reEvent.Divisions ?? [])
+					{
+						if (!thisEvent.DivisionNames.ContainsKey(division.Id))
+						{
+							thisEvent.DivisionNames.Add(division.Id, division.Name);
+							thisEvent.DivisionTeams.Add(division.Id, []);
+						}
+					}
+
+					//if the event has been finalized, update the flag but still run the stats validation so that the stats are accurate before not running this process again
+					thisEvent.Finalized = reEvent.AwardsFinalized;
+				}
+
+				await Event.UpdateLiveEventSkills(thisEvent, teamStats_Season, teamStats_CurrentEvents);
+
+				//reset all stats so that they can be rebuilt from scratch (do this before processing divisions in case one team is in multiple divisions (div quali/elim, then tournament finals)
+				foreach (VEXEmcee.DB.Dynamo.Definitions.TeamStats_CurrentEvent teamStats_CurrentEvent in teamStats_CurrentEvents)
+				{
+					Helpers.TeamStats_CurrentEvent.ResetEventMatchStats(teamStats_CurrentEvent, teamStats_Season.FirstOrDefault(x => x.TeamID == teamStats_CurrentEvent.TeamID));
+				}
+
+				foreach (int divisionID in thisEvent.DivisionNames.Keys)
+				{
+					await EventDivision.UpdateRankings(thisEvent, divisionID, teamStats_Season, teamStats_CurrentEvents);
+
+					await EventDivision.UpdateMatches(thisEvent, divisionID, teamStats_Season, teamStats_CurrentEvents);
+				}
+
+				//count up win %, PF/PA averages at this point once all matches are processed
+				foreach (DB.Dynamo.Definitions.TeamStats_CurrentEvent teamEventStats in teamStats_CurrentEvents)
+				{
+					List<DenormData> dataToUpdate = [teamEventStats.EventStats.DenormData, teamEventStats.CompiledStats.DenormData];
+					foreach (DenormData data in dataToUpdate)
+					{
+						data.AllMatches.WinPercentage = (data.AllMatches.Win + (0.5 * data.AllMatches.Tie)) / ((double)Math.Max(1, data.AllMatches.MatchCount));
+						data.AllMatches.PointsForAvg = data.AllMatches.PointsForTotal / (double)Math.Max(1, data.AllMatches.MatchCount);
+						data.AllMatches.PointsAgainstAvg = data.AllMatches.PointsAgainstTotal / (double)Math.Max(1, data.AllMatches.MatchCount);
+
+						data.QualiMatches.WinPercentage = (data.QualiMatches.Win + (0.5 * data.QualiMatches.Tie)) / ((double)Math.Max(1, data.QualiMatches.MatchCount));
+						data.QualiMatches.PointsForAvg = data.QualiMatches.PointsForTotal / (double)Math.Max(1, data.QualiMatches.MatchCount);
+						data.QualiMatches.PointsAgainstAvg = data.QualiMatches.PointsAgainstTotal / (double)Math.Max(1, data.QualiMatches.MatchCount);
+						data.QualiMatches.WPAvg = data.QualiMatches.WPTotal / (double)Math.Max(1, data.QualiMatches.MatchCount);
+						data.QualiMatches.APAvg = data.QualiMatches.APTotal / (double)Math.Max(1, data.QualiMatches.MatchCount);
+						data.QualiMatches.SPAvg = data.QualiMatches.SPTotal / (double)Math.Max(1, data.QualiMatches.MatchCount);
+
+						data.ElimMatches.WinPercentage = (data.ElimMatches.Win + (0.5 * data.ElimMatches.Tie)) / ((double)Math.Max(1, data.ElimMatches.MatchCount));
+						data.ElimMatches.PointsForAvg = data.ElimMatches.PointsForTotal / (double)Math.Max(1, data.ElimMatches.MatchCount);
+						data.ElimMatches.PointsAgainstAvg = data.ElimMatches.PointsAgainstTotal / (double)Math.Max(1, data.ElimMatches.MatchCount);
+					}
+
+					//now that all stats are updated, save the current event stats
+					await DB.Dynamo.Accessors.TeamStats_CurrentEvent.Save(teamEventStats);
+				}
 			}
 		}
 	}

@@ -108,5 +108,77 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 
 			Console.WriteLine($"VEmcee.Logic.Internal.BuildEventStats.V5RC.Event.Process: END");
 		}
+
+		internal static async Task UpdateLiveEventSkills(DB.Dynamo.Definitions.Event thisEvent, List<TeamStats_Season> seasonStats, List<TeamStats_CurrentEvent> currentEventStats)
+		{
+			List<RE.Objects.Skill> skillsAtEvent = await Helpers.REAPI.Event.GetSkillsAtEvent(thisEvent.ID);
+			//for each skill, find the appropriate team in the currentEventStats list and update their skills
+			//the seasonStats list will be the baseline for skills run before today, so we need to compare against that to avoid double counting
+			foreach (RE.Objects.Skill skill in skillsAtEvent)
+			{
+				TeamStats_Season teamStats_Season = seasonStats.FirstOrDefault(x => x.TeamID == skill.Team.Id);
+				TeamStats_CurrentEvent teamStats_CurrentEvent = currentEventStats.FirstOrDefault(x => x.TeamID == skill.Team.Id);
+				if (teamStats_CurrentEvent == null)
+				{
+					teamStats_CurrentEvent = Helpers.TeamStats_CurrentEvent.CreateNew(thisEvent.ID, skill.Team.Id);
+					currentEventStats.Add(teamStats_CurrentEvent);
+				}
+				if (teamStats_Season == null)
+				{
+					teamStats_Season = Helpers.TeamStats_Season.CreateNew(thisEvent.ID, skill.Team.Id);
+					seasonStats.Add(teamStats_Season);
+				}
+				//ensure the season stats have the skill type initialized
+				if (!teamStats_Season.Stats.Skills.TryGetValue(skill.Type.ToString(), out VEXEmcee.Objects.Data.Stats.SkillType seasonSkill))
+				{
+					//initialize the season stats for this skill type
+					seasonSkill = new()
+					{
+						AttemptList = [],
+						SeasonAttempts = 0,
+						SeasonHighScore = 0,
+					};
+					teamStats_Season.Stats.Skills.Add(skill.Type.ToString(), seasonSkill);
+				}
+
+				//start with current event stat only
+				if (teamStats_CurrentEvent.EventStats.Skills.TryGetValue(skill.Type.ToString(), out SkillAttempt thisEventSkillAttempt))
+				{
+					thisEventSkillAttempt.Attempts = skill.Attempts;
+					thisEventSkillAttempt.HighScore = skill.Score;
+				}
+				else
+				{
+					teamStats_CurrentEvent.EventStats.Skills.Add(skill.Type.ToString(), new SkillAttempt()
+					{
+						Attempts = skill.Attempts,
+						HighScore = skill.Score,
+					});
+				}
+
+				//update the compiled season/current event stats for this event
+				if (!teamStats_CurrentEvent.CompiledStats.Skills.TryGetValue(skill.Type.ToString(), out CurrentCompiledSkillType compiledSkill))
+				{
+					compiledSkill = new()
+					{
+						SeasonAttempts = 0,
+						SeasonHighScore = 0,
+						SeasonHighScoreThisEvent = false,
+					};
+					teamStats_CurrentEvent.CompiledStats.Skills.Add(skill.Type.ToString(), compiledSkill);
+				}
+				compiledSkill.SeasonAttempts = seasonSkill.SeasonAttempts + skill.Attempts;
+				if (skill.Score > seasonSkill.SeasonHighScore)
+				{
+					compiledSkill.SeasonHighScore = skill.Score;
+					compiledSkill.SeasonHighScoreThisEvent = true; //this event had the highest score
+				}
+				else
+				{
+					compiledSkill.SeasonHighScore = seasonSkill.SeasonHighScore;
+					compiledSkill.SeasonHighScoreThisEvent = false; //this event did not have the highest score
+				}
+			}
+		}
 	}
 }

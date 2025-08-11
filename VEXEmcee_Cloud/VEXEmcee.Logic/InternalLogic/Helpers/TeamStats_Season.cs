@@ -66,7 +66,7 @@ namespace VEXEmcee.Logic.InternalLogic.Helpers
 					bool loadedElimPartners = false;
 					foreach (MatchObj curMatch in matches)
 					{
-						if (curMatch.Round == MatchRoundType.Qualification)
+						if (Helpers.Match.IsQualiMatch(curMatch))
 						{
 							QualiMatchDetail qualiDetail = new()
 							{
@@ -96,10 +96,7 @@ namespace VEXEmcee.Logic.InternalLogic.Helpers
 							}
 							thisEventStats.QualiMatches.Add(qualiDetail);
 						}
-						else if (curMatch.Round == MatchRoundType.Round128 || curMatch.Round == MatchRoundType.Round64 || curMatch.Round == MatchRoundType.Round32 ||
-							curMatch.Round == MatchRoundType.Round16 || curMatch.Round == MatchRoundType.QuarterFinal || curMatch.Round == MatchRoundType.SemiFinal ||
-							curMatch.Round == MatchRoundType.Final
-						)
+						else if (Helpers.Match.IsElimMatch(curMatch))
 						{
 							ElimMatchDetail elimDetail = new()
 							{
