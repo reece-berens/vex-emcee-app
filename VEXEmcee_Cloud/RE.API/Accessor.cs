@@ -28,11 +28,13 @@ namespace RE.API
 
 			try
 			{
+				await Task.Delay(Random.Shared.Next(1250, 2000)); //being a good steward of the API and not hitting it too fast
 				HttpRequestMessage request = new()
 				{
 					Method = HttpMethod.Get,
 					RequestUri = new(_baseUri, relativePath),
 				};
+				Console.WriteLine(relativePath);
 				request.Headers.Authorization = new("Bearer", _accessToken);
 				request.Headers.Accept.Add(new("application/json"));
 
@@ -50,6 +52,8 @@ namespace RE.API
 				else
 				{
 					string errorResponse = await response.Content.ReadAsStringAsync();
+					Console.WriteLine(response.StatusCode);
+					Console.WriteLine(errorResponse);
 					BaseDataResponse dataResponse = new()
 					{
 						WasSuccessful = false,

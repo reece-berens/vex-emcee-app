@@ -149,25 +149,7 @@ namespace VEXEmcee.Logic.InternalLogic
 					if (ev == null)
 					{
 						//the event doesn't exist in the table, create an object and save it with the information from RE API retrieved above
-						Definitions.Event eventToSave = new()
-						{
-							DivisionTeams = [], //populating this will be done as part of the data gathering lambda function
-							EndDate = reEvent.End,
-							Finalized = reEvent.AwardsFinalized,
-							ID = reEvent.Id,
-							Level = reEvent.Level,
-							LevelString = reEvent.Level.ToString(),
-							Name = reEvent.Name,
-							ProgramID_denorm = reEvent.Program?.Id ?? 0,
-							SeasonID = reEvent.Season?.Id ?? 0,
-							SKU = reEvent.Sku,
-							StartDate = reEvent.Start,
-							StatsReady = false,
-							StatsRequested = true,
-							Teams_denorm = [], //populating this will be done as part of the data gathering lambda function
-							Type = reEvent.EventType,
-							TypeString = reEvent.EventType.ToString(),
-						};
+						Definitions.Event eventToSave = Helpers.Event.ConvertREEventToDBEvent(reEvent);
 						await Accessors.Event.SaveEvent(eventToSave);
 
 						//TODO run the lambda function to gather information about the event
