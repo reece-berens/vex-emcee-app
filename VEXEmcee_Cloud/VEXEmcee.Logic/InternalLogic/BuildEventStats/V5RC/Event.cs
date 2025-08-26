@@ -10,23 +10,91 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 			Console.WriteLine($"VEmcee.Logic.Internal.BuildEventStats.V5RC.Event.Process: BEGIN");
 			//Get list of teams, save to Teams_denorm, make sure they exist in TeamStats_Season and TeamStats_CurrentEvent tables
 			List<RE.Objects.Team> teamsAtEvent = await Helpers.REAPI.Event.GetTeamsAtEvent(refs.Event.ID);
+			List<Team> dbTeams = await DB.Dynamo.Accessors.Team.GetByTeamIDList([.. teamsAtEvent.Select(t => t.Id)]);
+
 			foreach (RE.Objects.Team team in teamsAtEvent)
 			{
-				if (!refs.Event.Teams_denorm.Contains(team.Id))
+				//ensure the team exists in the Team table
+				if (dbTeams.Any(t => t.ID == team.Id))
 				{
-					refs.Event.Teams_denorm.Add(team.Id);
+					//team exists, but check to see if any info has changed
+					Team existingTeam = dbTeams.First(t => t.ID == team.Id);
+					bool teamChanged = false;
+					if (existingTeam.Number != team.Number)
+					{
+						existingTeam.Number = team.Number;
+						teamChanged = true;
+					}
+					if (existingTeam.TeamName != team.Team_Name)
+					{
+						existingTeam.TeamName = team.Team_Name;
+						teamChanged = true;
+					}
+					if (existingTeam.RobotName != team.Robot_Name)
+					{
+						existingTeam.RobotName = team.Robot_Name;
+						teamChanged = true;
+					}
+					if (existingTeam.Organization != team.Organization)
+					{
+						existingTeam.Organization = team.Organization;
+						teamChanged = true;
+					}
+					if (existingTeam.Grade != team.Grade)
+					{
+						existingTeam.Grade = team.Grade;
+						teamChanged = true;
+					}
+					if (team.Location != null && existingTeam.CityState_denorm != $"{team.Location.City}, {team.Location.Region}")
+					{
+						existingTeam.CityState_denorm = $"{team.Location.City}, {team.Location.Region}";
+						teamChanged = true;
+					}
+					if (teamChanged)
+					{
+						await DB.Dynamo.Accessors.Team.SaveTeam(existingTeam);
+					}
 				}
-				if (!refs.Update_TeamStats_Season.TryGetValue(TeamStats_Season.GetCompositeKey(refs.Event.SeasonID, team.Id), out TeamStats_Season teamStats_Season))
+				else
 				{
-					teamStats_Season = await DB.Dynamo.Accessors.TeamStats_Season.GetByCompositeKey(refs.Event.SeasonID, team.Id);
-					teamStats_Season ??= Helpers.TeamStats_Season.CreateNew(refs.Event.SeasonID, team.Id);
-					refs.Update_TeamStats_Season.Add(teamStats_Season.CompositeKey, teamStats_Season);
+					//team doesn't exist, so create it
+					Team newTeam = new()
+					{
+						ID = team.Id,
+						Number = team.Number,
+						TeamName = team.Team_Name,
+						RobotName = team.Robot_Name,
+						Organization = team.Organization,
+						ProgramID = 1, //V5RC
+						Grade = team.Grade
+					};
+					if (team.Location != null && !string.IsNullOrWhiteSpace(team.Location.City) && !string.IsNullOrWhiteSpace(team.Location.Region))
+					{
+						newTeam.CityState_denorm = $"{team.Location.City}, {team.Location.Region}";
+					}
+					await DB.Dynamo.Accessors.Team.SaveTeam(newTeam);
+					dbTeams.Add(newTeam); //add to the list so we don't try to add it again
 				}
-				if (!refs.Update_TeamStats_CurrentEvent.TryGetValue(TeamStats_CurrentEvent.GetCompositeKey(refs.Event.ID, team.Id), out TeamStats_CurrentEvent teamStats_CurrentEvent))
+
+				//ignore VEXU teams that would have skills scores (still want to create them in the database just in case)
+				if (team.Grade == RE.Objects.Grade.High_School || team.Grade == RE.Objects.Grade.Middle_School)
 				{
-					teamStats_CurrentEvent = await DB.Dynamo.Accessors.TeamStats_CurrentEvent.GetByCompositeKey(refs.Event.ID, team.Id);
-					teamStats_CurrentEvent ??= Helpers.TeamStats_CurrentEvent.CreateNew(refs.Event.ID, team.Id);
-					refs.Update_TeamStats_CurrentEvent.Add(teamStats_CurrentEvent.CompositeKey, teamStats_CurrentEvent);
+					if (!refs.Event.Teams_denorm.Contains(team.Id))
+					{
+						refs.Event.Teams_denorm.Add(team.Id);
+					}
+					if (!refs.Update_TeamStats_Season.TryGetValue(TeamStats_Season.GetCompositeKey(refs.Event.SeasonID, team.Id), out TeamStats_Season teamStats_Season))
+					{
+						teamStats_Season = await DB.Dynamo.Accessors.TeamStats_Season.GetByCompositeKey(refs.Event.SeasonID, team.Id);
+						teamStats_Season ??= Helpers.TeamStats_Season.CreateNew(refs.Event.SeasonID, team.Id);
+						refs.Update_TeamStats_Season.Add(teamStats_Season.CompositeKey, teamStats_Season);
+					}
+					if (!refs.Update_TeamStats_CurrentEvent.TryGetValue(TeamStats_CurrentEvent.GetCompositeKey(refs.Event.ID, team.Id), out TeamStats_CurrentEvent teamStats_CurrentEvent))
+					{
+						teamStats_CurrentEvent = await DB.Dynamo.Accessors.TeamStats_CurrentEvent.GetByCompositeKey(refs.Event.ID, team.Id);
+						teamStats_CurrentEvent ??= Helpers.TeamStats_CurrentEvent.CreateNew(refs.Event.ID, team.Id);
+						refs.Update_TeamStats_CurrentEvent.Add(teamStats_CurrentEvent.CompositeKey, teamStats_CurrentEvent);
+					}
 				}
 			}
 
@@ -58,14 +126,14 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 							teamStats_Season.Stats.Skills.Add(skill.Type.ToString(), skills);
 						}
 						//now that we have the appropriate object, add the results from this event
-						skills.SeasonAttempts += skill.Attempts;
+						skills.SeasonAttempts += skill.Attempts.GetValueOrDefault();
 						if (skill.Score > skills.SeasonHighScore)
 						{
 							skills.SeasonHighScore = skill.Score;
 						}
 						SkillAttempt thisEventAttempt = new()
 						{
-							Attempts = skill.Attempts,
+							Attempts = skill.Attempts.GetValueOrDefault(),
 							HighScore = skill.Score,
 						};
 						skills.AttemptList.TryAdd(refs.Event.ID, thisEventAttempt);
@@ -144,14 +212,14 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 				//start with current event stat only
 				if (teamStats_CurrentEvent.EventStats.Skills.TryGetValue(skill.Type.ToString(), out SkillAttempt thisEventSkillAttempt))
 				{
-					thisEventSkillAttempt.Attempts = skill.Attempts;
+					thisEventSkillAttempt.Attempts = skill.Attempts.GetValueOrDefault();
 					thisEventSkillAttempt.HighScore = skill.Score;
 				}
 				else
 				{
 					teamStats_CurrentEvent.EventStats.Skills.Add(skill.Type.ToString(), new SkillAttempt()
 					{
-						Attempts = skill.Attempts,
+						Attempts = skill.Attempts.GetValueOrDefault(),
 						HighScore = skill.Score,
 					});
 				}
@@ -167,7 +235,7 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 					};
 					teamStats_CurrentEvent.CompiledStats.Skills.Add(skill.Type.ToString(), compiledSkill);
 				}
-				compiledSkill.SeasonAttempts = seasonSkill.SeasonAttempts + skill.Attempts;
+				compiledSkill.SeasonAttempts = seasonSkill.SeasonAttempts + skill.Attempts.GetValueOrDefault();
 				if (skill.Score > seasonSkill.SeasonHighScore)
 				{
 					compiledSkill.SeasonHighScore = skill.Score;

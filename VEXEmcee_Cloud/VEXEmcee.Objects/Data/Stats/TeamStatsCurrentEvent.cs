@@ -18,5 +18,7 @@ namespace VEXEmcee.Objects.Data.Stats
 
 		[JsonPropertyName("E")]
 		public List<TeamRef> ElimPartners { get; set; }
+		[JsonPropertyName("R")]
+		public int? CurrentQualiRank { get; set; }
 	}
 }

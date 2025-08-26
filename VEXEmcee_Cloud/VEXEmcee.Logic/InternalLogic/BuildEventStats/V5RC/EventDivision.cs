@@ -202,6 +202,7 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 				qualiStatsEvent.WPTotal = ranking.WP;
 				qualiStatsEvent.APTotal = ranking.AP;
 				qualiStatsEvent.SPTotal = ranking.SP;
+				teamStats_CurrentEvent.EventStats.CurrentQualiRank = ranking.Rank;
 
 				QualiMatchStats qualiStatsSeason = teamStats_Season.Stats.DenormData.QualiMatches;
 				QualiMatchStats qualiStatsCompiled = teamStats_CurrentEvent.CompiledStats.DenormData.QualiMatches;

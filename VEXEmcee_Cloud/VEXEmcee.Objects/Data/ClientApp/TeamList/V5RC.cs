@@ -3,5 +3,6 @@
 	public class V5RC : Base
 	{
 		public string EventWLT { get; set; }
+		public int? QualiRank { get; set; }
 	}
 }

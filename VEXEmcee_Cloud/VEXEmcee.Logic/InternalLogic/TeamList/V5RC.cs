@@ -2,6 +2,7 @@
 using Definitions = VEXEmcee.DB.Dynamo.Definitions;
 using VEXEmcee.Objects.API.Request;
 using VEXEmcee.Objects.API.Response;
+using VEXEmcee.Objects.Data.Stats;
 
 namespace VEXEmcee.Logic.InternalLogic.TeamList
 {
@@ -25,6 +26,35 @@ namespace VEXEmcee.Logic.InternalLogic.TeamList
 			//that will probably need to be stored based on the event ID so that it can be tracked per event that's happening...
 			//probably store in the database or some memory cache so that it persists between different lambda context sessions
 			response.Teams = [];
+
+			//have the list of all team IDs for the event in thisEvent.Teams_denorm, so use that to get name and qualification ranking data for each team
+			List<Definitions.Team> dbTeams = await Accessors.Team.GetByTeamIDList(thisEvent.Teams_denorm);
+			List<Definitions.TeamStats_CurrentEvent> dbTeamStats = await Accessors.TeamStats_CurrentEvent.GetByEventID(thisEvent.ID);
+			List<int> thisDivisionTeams = thisEvent.DivisionTeams != null && request.SessionDivisionID.HasValue && thisEvent.DivisionTeams.TryGetValue(request.SessionDivisionID.Value, out List<int> value) ? value : [];
+			Dictionary<int, int> teamSortOrder = Helpers.Team.SortTeamsByNumber(dbTeams);
+
+			foreach (Definitions.Team team in dbTeams)
+			{
+				Definitions.TeamStats_CurrentEvent teamStats = dbTeamStats.FirstOrDefault(ts => ts.TeamID == team.ID);
+				Objects.Data.ClientApp.TeamList.V5RC outputTeam = new()
+				{
+					ID = team.ID,
+					InDivision = thisDivisionTeams.Contains(team.ID),
+					Number = team.Number,
+					NumberSortOrder = teamSortOrder.TryGetValue(team.ID, out int sortOrder) ? sortOrder : int.MaxValue,
+					TeamName = team.TeamName
+				};
+				response.Teams.Add(outputTeam);
+				if (teamStats != null)
+				{
+					outputTeam.QualiRank = teamStats.EventStats?.CurrentQualiRank;
+					QualiMatchStats eventQualiStats = teamStats.EventStats?.DenormData?.QualiMatches;
+					if (eventQualiStats != null)
+					{
+						outputTeam.EventWLT = $"{eventQualiStats.Win}-{eventQualiStats.Loss}-{eventQualiStats.Tie}";
+					}
+				}
+			}
 		}
 	}
 }
