@@ -3,7 +3,7 @@ using VEXEmcee.Objects.Exceptions;
 
 namespace VEXEmcee.DB.Dynamo.Accessors
 {
-	public class Team
+	public static class Team
 	{
 		public static async Task<Definitions.Team> GetTeamByID(int teamID)
 		{
