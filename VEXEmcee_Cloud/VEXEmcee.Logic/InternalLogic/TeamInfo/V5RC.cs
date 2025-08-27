@@ -2,6 +2,7 @@
 using Definitions = VEXEmcee.DB.Dynamo.Definitions;
 using VEXEmcee.Objects.API.Request;
 using VEXEmcee.Objects.API.Response;
+using VEXEmcee.Objects.Data.ClientApp.Display;
 
 namespace VEXEmcee.Logic.InternalLogic.TeamInfo
 {
@@ -19,12 +20,83 @@ namespace VEXEmcee.Logic.InternalLogic.TeamInfo
 		/// <param name="thisEvent">The event for which team data is being retrieved.</param>
 		internal static async Task GetTeamInfo(GetTeamInfoRequest request, GetTeamInfoResponse response, Definitions.Event thisEvent)
 		{
-			//TODO - fill out the response information based on match data pulled from RE API and stored in LiveMatches table
-			//possibly have some sort of "previous API request" time that we can use to determine if we need to pull new data
-			//ex. don't pull new data from RE if the last request was made within the last minute or two
-			//that will probably need to be stored based on the event ID so that it can be tracked per event that's happening...
-			//probably store in the database or some memory cache so that it persists between different lambda context sessions
 			response.TeamInfo = new();
+
+			List<Definitions.Team> teamsAtEvent = await Accessors.Team.GetByTeamIDList(thisEvent.Teams_denorm);
+			Definitions.Team thisTeam = teamsAtEvent.FirstOrDefault(t => t.ID == request.TeamID);
+			Definitions.TeamStats_CurrentEvent teamStats_CurrentEvent = await Accessors.TeamStats_CurrentEvent.GetByCompositeKey(thisEvent.ID, request.TeamID);
+			Definitions.TeamStats_Season teamStats_Season = await Accessors.TeamStats_Season.GetByCompositeKey(thisEvent.SeasonID, request.TeamID);
+			if (thisTeam != null && teamStats_CurrentEvent != null && teamStats_Season != null)
+			{
+				response.TeamInfo.ID = thisTeam.ID;
+				response.TeamInfo.Location = thisTeam.CityState_denorm;
+				response.TeamInfo.Number = thisTeam.Number;
+				response.TeamInfo.TeamName = thisTeam.TeamName;
+				response.TeamInfo.Sections = [];
+
+				//populate the next and previous team IDs based on sort order of team number
+				Dictionary<int, int> teamSort = Helpers.Team.SortTeamsByNumber(teamsAtEvent);
+				int thisTeamSortOrder = teamSort.TryGetValue(thisTeam.ID, out int sortOrder) ? sortOrder : int.MaxValue;
+				if (thisTeamSortOrder == 0)
+				{
+					//this is the first team in the list, previous team will be largest sort value, next team will be order 1
+					response.TeamInfo.PreviousTeamID = teamSort.FirstOrDefault(kvp => kvp.Value == teamSort.Count - 1).Key;
+					response.TeamInfo.NextTeamID = teamSort.FirstOrDefault(kvp => kvp.Value == 1).Key;
+				}
+				else if (thisTeamSortOrder == teamSort.Count - 1)
+				{
+					//if this is the last team in the list, previous team will be order count - 1, next team will be order 0
+					response.TeamInfo.PreviousTeamID = teamSort.FirstOrDefault(kvp => kvp.Value == teamSort.Count - 2).Key;
+					response.TeamInfo.NextTeamID = teamSort.FirstOrDefault(kvp => kvp.Value == 0).Key;
+				}
+				else
+				{
+					//all others teams, previous team will be order - 1, next team will be order + 1
+					response.TeamInfo.PreviousTeamID = teamSort.FirstOrDefault(kvp => kvp.Value == thisTeamSortOrder - 1).Key;
+					response.TeamInfo.NextTeamID = teamSort.FirstOrDefault(kvp => kvp.Value == thisTeamSortOrder + 1).Key;
+				}
+
+				//for the moment, I just want to populate current event WLT and season WLT with percentages to ensure it works
+				//come back in and add other stats later on
+				SectionHeader currentEventSection = new()
+				{
+					Name = "This Event",
+					Order = 0,
+					Display = []
+				};
+				currentEventSection.Display.Add(new()
+				{
+					SectionLabel = "W-L-T",
+					SectionData = [
+						$"{teamStats_CurrentEvent.EventStats?.DenormData?.QualiMatches?.Win ?? 0}-{teamStats_CurrentEvent.EventStats?.DenormData?.QualiMatches?.Loss ?? 0}-{teamStats_CurrentEvent.EventStats?.DenormData?.QualiMatches?.Tie ?? 0}",
+						$"{teamStats_CurrentEvent.EventStats?.DenormData?.QualiMatches?.WinPercentage:P1} Win Rate"
+					]
+				});
+				currentEventSection.Display.Add(new()
+				{
+					SectionLabel = "Qualifications Ranking",
+					SectionData = [
+						teamStats_CurrentEvent.EventStats?.CurrentQualiRank != null ? $"#{teamStats_CurrentEvent.EventStats.CurrentQualiRank}" : "N/A"
+					]
+				});
+				response.TeamInfo.Sections.Add(currentEventSection);
+
+				SectionHeader seasonSection = new()
+				{
+					Name = "This Season",
+					Order = 1,
+					Display = []
+				};
+				seasonSection.Display.Add(new()
+				{
+					SectionLabel = "W-L-T",
+					SectionData = [
+						$"{teamStats_Season.Stats?.DenormData?.QualiMatches?.Win ?? 0}-{teamStats_Season.Stats?.DenormData?.QualiMatches?.Loss ?? 0}-{teamStats_Season.Stats?.DenormData?.QualiMatches?.Tie ?? 0}",
+						$"{teamStats_Season.Stats?.DenormData?.QualiMatches?.WinPercentage:P1} Win Rate"
+					]
+				});
+				response.TeamInfo.Sections.Add(seasonSection);
+			}
 		}
 	}
 }
