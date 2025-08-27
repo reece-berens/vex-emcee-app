@@ -22,7 +22,7 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 			try
 			{
 				await Common.ValidateTable<Definitions.TeamStats_CurrentEvent>();
-				Definitions.TeamStats_CurrentEvent stats = await Dynamo.Context.LoadAsync<Definitions.TeamStats_CurrentEvent>(Definitions.TeamStats_CurrentEvent.GetCompositeKey(eventID, teamID), teamID);
+				Definitions.TeamStats_CurrentEvent stats = await Dynamo.Context.LoadAsync<Definitions.TeamStats_CurrentEvent>(Definitions.TeamStats_CurrentEvent.GetCompositeKey(eventID, teamID), eventID);
 				return stats;
 			}
 			catch (DynamoDBException ex)
