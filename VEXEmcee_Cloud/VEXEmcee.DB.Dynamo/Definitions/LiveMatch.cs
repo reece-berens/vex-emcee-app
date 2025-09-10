@@ -1,10 +1,12 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
 using RE.Objects;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 
 namespace VEXEmcee.DB.Dynamo.Definitions
 {
 	[DynamoDBTable("LiveMatch")]
+	[DebuggerDisplay("{Name}")]
 	public class LiveMatch
 	{
 		[DynamoDBHashKey]

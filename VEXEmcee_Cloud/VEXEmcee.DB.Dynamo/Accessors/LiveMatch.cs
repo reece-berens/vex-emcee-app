@@ -31,6 +31,23 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 					returnValue.AddRange(tempItems);
 				} while (!scanResult.IsDone);
 
+				foreach (Definitions.LiveMatch match in returnValue)
+				{
+					match.Round = (match?.RoundString) switch
+					{
+						"Practice" => RE.Objects.MatchRoundType.Practice,
+						"Qualification" => RE.Objects.MatchRoundType.Qualification,
+						"QuarterFinal" => RE.Objects.MatchRoundType.QuarterFinal,
+						"SemiFinal" => RE.Objects.MatchRoundType.SemiFinal,
+						"Final" => RE.Objects.MatchRoundType.Final,
+						"Round16" => RE.Objects.MatchRoundType.Round16,
+						"Round32" => RE.Objects.MatchRoundType.Round32,
+						"Round64" => RE.Objects.MatchRoundType.Round64,
+						"Round128" => RE.Objects.MatchRoundType.Round128,
+						_ => RE.Objects.MatchRoundType.Unknown,
+					};
+				}
+
 				return returnValue;
 			}
 			catch (DynamoDBException ex)
@@ -53,7 +70,7 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 				Definitions.LiveMatch match = await Dynamo.Context.LoadAsync<Definitions.LiveMatch>(matchID);
 				if (match != null)
 				{
-					//manually populate the Grade
+					//manually populate the Round
 					match.Round = (match?.RoundString) switch
 					{
 						"Practice" => RE.Objects.MatchRoundType.Practice,
