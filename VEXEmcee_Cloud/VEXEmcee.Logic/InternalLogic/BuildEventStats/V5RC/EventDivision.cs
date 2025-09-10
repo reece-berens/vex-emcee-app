@@ -81,7 +81,9 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 			Console.WriteLine($"VEmcee.Logic.Internal.BuildEventStats.V5RC.EventDivision.ProcessDivision: END - Division {divisionID}");
 		}
 
-		internal static async Task UpdateMatches(DB.Dynamo.Definitions.Event thisEvent, int divisionID, List<TeamStats_Season> seasonStats, List<TeamStats_CurrentEvent> currentEventStats)
+		internal static async Task UpdateMatches(DB.Dynamo.Definitions.Event thisEvent, int divisionID, List<TeamStats_Season> seasonStats, List<TeamStats_CurrentEvent> currentEventStats,
+			List<LiveMatch> currentEventMatches, List<LiveMatch> matchesToUpdate
+		) 
 		{
 			List<RE.Objects.MatchObj> matchesAtDivision = await Helpers.REAPI.Event.GetMatchesAtEventDivision(thisEvent.ID, divisionID);
 			Dictionary<int, TeamStats_CurrentEvent> currentEventStatsDict = currentEventStats.ToDictionary(x => x.TeamID, x => x);
@@ -173,6 +175,99 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 							}
 						}
 					}
+
+					//update any LiveMatch objects as needed
+					LiveMatch liveMatch = currentEventMatches.FirstOrDefault(x => x.ID == match.Id);
+					if (liveMatch == null)
+					{
+						//the match has not been created yet, create it and add to current and update lists
+						liveMatch = new()
+						{
+							ID = match.Id,
+							EventID = thisEvent.ID,
+							DivisionID = divisionID,
+							Instance = match.Instance,
+							MatchNumber = match.MatchNumber,
+							Round = match.Round,
+							ScoreFinalized = match.Scored,
+							Name = match.Name,
+							Field = match.Field,
+							BlueScore = blueAlliance.Score,
+							RedScore = redAlliance.Score,
+							MatchWinner = blueAlliance.Score > redAlliance.Score ? "Blue" : (redAlliance.Score > blueAlliance.Score ? "Red" : "Tie"),
+							Alliances =
+							[
+								new LiveMatchAlliance()
+								{
+									Color = "Red",
+									Score = redAlliance.Score,
+									Teams = [..redAlliance.Teams.Select(t => new LiveMatchAllianceTeam() { ID = t.Team.Id, Number = t.Team.Name })]
+								},
+								new LiveMatchAlliance()
+								{
+									Color = "Blue",
+									Score = blueAlliance.Score,
+									Teams = [..blueAlliance.Teams.Select(t => new LiveMatchAllianceTeam() { ID = t.Team.Id, Number = t.Team.Name })]
+								}
+							],
+						};
+						currentEventMatches.Add(liveMatch);
+						matchesToUpdate.Add(liveMatch);
+					}
+					else
+					{
+						//see if any of the data in the match has changed, update if so
+						bool matchUpdated = false;
+						if (liveMatch.Instance != match.Instance)
+						{
+							liveMatch.Instance = match.Instance;
+							matchUpdated = true;
+						}
+						if (liveMatch.MatchNumber != match.MatchNumber)
+						{
+							liveMatch.MatchNumber = match.MatchNumber;
+							matchUpdated = true;
+						}
+						if (liveMatch.Round != match.Round)
+						{
+							liveMatch.Round = match.Round;
+							matchUpdated = true;
+						}
+						if (liveMatch.ScoreFinalized != match.Scored)
+						{
+							liveMatch.ScoreFinalized = match.Scored;
+							matchUpdated = true;
+						}
+						if (liveMatch.Name != match.Name)
+						{
+							liveMatch.Name = match.Name;
+							matchUpdated = true;
+						}
+						if (liveMatch.Field != match.Field)
+						{
+							liveMatch.Field = match.Field;
+							matchUpdated = true;
+						}
+						if (liveMatch.BlueScore != blueAlliance.Score)
+						{
+							liveMatch.BlueScore = blueAlliance.Score;
+							liveMatch.MatchWinner = blueAlliance.Score > redAlliance.Score ? "Blue" : (redAlliance.Score > blueAlliance.Score ? "Red" : "Tie");
+							matchUpdated = true;
+						}
+						if (liveMatch.RedScore != redAlliance.Score)
+						{
+							liveMatch.RedScore = redAlliance.Score;
+							liveMatch.MatchWinner = blueAlliance.Score > redAlliance.Score ? "Blue" : (redAlliance.Score > blueAlliance.Score ? "Red" : "Tie");
+							matchUpdated = true;
+						}
+						//check alliances for different teams
+						matchUpdated |= UpdateLiveMatchTeamsFromMatchObj(match, liveMatch);
+
+						if (matchUpdated)
+						{
+							matchesToUpdate.Add(liveMatch);
+						}
+					}
 				}
 			}
 		}
@@ -210,6 +305,73 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 				qualiStatsCompiled.APTotal = qualiStatsSeason.APTotal + qualiStatsEvent.APTotal;
 				qualiStatsCompiled.SPTotal = qualiStatsSeason.SPTotal + qualiStatsEvent.SPTotal;
 			}
+		}
+
+		private static bool UpdateLiveMatchTeamsFromMatchObj(RE.Objects.MatchObj reMatch, LiveMatch dbMatch)
+		{
+			bool updated = false;
+
+			// Build a dictionary for quick lookup by alliance color (case-insensitive)
+			var reMatchAlliances = reMatch.Alliances.ToDictionary(
+				a => a.Color?.ToLowerInvariant(),
+				a => a
+			);
+			var dbMatchAlliances = dbMatch.Alliances.ToDictionary(
+				a => a.Color?.ToLowerInvariant(),
+				a => a
+			);
+
+			foreach (var color in reMatchAlliances.Keys)
+			{
+				var reAlliance = reMatchAlliances[color];
+				if (dbMatchAlliances.TryGetValue(color, out var liveAlliance))
+				{
+					// Get team IDs from both sources
+					var matchTeamIds = reAlliance.Teams.Select(t => t.Team.Id).OrderBy(id => id).ToList();
+					var liveTeamIds = liveAlliance.Teams.Select(t => t.ID).OrderBy(id => id).ToList();
+
+					if (!matchTeamIds.SequenceEqual(liveTeamIds))
+					{
+						// Teams differ, update LiveMatchAlliance.Teams
+						liveAlliance.Teams = [.. reAlliance.Teams
+							.Select(t => new LiveMatchAllianceTeam
+							{
+								ID = t.Team.Id,
+								Number = t.Team.Name
+							})];
+						updated = true;
+					}
+				}
+				else
+				{
+					// Alliance color missing in LiveMatch, add it
+					var newAlliance = new LiveMatchAlliance
+					{
+						Color = reAlliance.Color,
+						Score = reAlliance.Score,
+						Teams = [.. reAlliance.Teams
+							.Select(t => new LiveMatchAllianceTeam
+							{
+								ID = t.Team.Id,
+								Number = t.Team.Name
+							})]
+					};
+					dbMatch.Alliances.Add(newAlliance);
+					updated = true;
+				}
+			}
+
+			// Remove alliances from LiveMatch that are not present in MatchObj
+			var matchColors = reMatchAlliances.Keys.ToHashSet();
+			var toRemove = dbMatch.Alliances.Where(a => !matchColors.Contains(a.Color?.ToLowerInvariant())).ToList();
+			if (toRemove.Count > 0)
+			{
+				foreach (var alliance in toRemove)
+					dbMatch.Alliances.Remove(alliance);
+				updated = true;
+			}
+
+			return updated;
 		}
 	}
 }

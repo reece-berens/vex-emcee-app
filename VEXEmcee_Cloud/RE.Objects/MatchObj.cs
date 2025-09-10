@@ -9,6 +9,7 @@ namespace RE.Objects
 		public IdInfo Division { get; set; }
 		public MatchRoundType Round { get; set; }
 		public int Instance { get; set; }
+		[JsonPropertyName("matchnum")]
 		public int MatchNumber { get; set; }
 		public DateTime? Scheduled { get; set; }
 		public DateTime? Started { get; set; }

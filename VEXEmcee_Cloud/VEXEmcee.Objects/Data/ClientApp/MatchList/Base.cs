@@ -1,5 +1,9 @@
-﻿namespace VEXEmcee.Objects.Data.ClientApp.MatchList
+﻿using System.Text.Json.Serialization;
+
+namespace VEXEmcee.Objects.Data.ClientApp.MatchList
 {
+	[JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
+	[JsonDerivedType(typeof(V5RC), "V5RC")]
 	public class Base
 	{
 		public int ID { get; set; }

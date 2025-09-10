@@ -13,6 +13,7 @@ namespace RE.Objects
 		Round16 = 6,
 		Round32 = 7,
 		Round64 = 8,
-		Round128 = 9
+		Round128 = 9,
+		Unknown = 99
 	}
 }

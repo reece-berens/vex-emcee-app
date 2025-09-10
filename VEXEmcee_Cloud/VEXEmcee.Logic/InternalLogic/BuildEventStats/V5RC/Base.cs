@@ -128,6 +128,8 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 					teamStatsSeasonKeys.Add(DB.Dynamo.Definitions.TeamStats_Season.GetCompositeKey(thisEvent.SeasonID, teamID), teamID);
 				}
 				List<DB.Dynamo.Definitions.TeamStats_Season> teamStats_Season = await DB.Dynamo.Accessors.TeamStats_Season.GetByCompositeKeys(teamStatsSeasonKeys);
+				List<DB.Dynamo.Definitions.LiveMatch> eventLiveMatches_current = await DB.Dynamo.Accessors.LiveMatch.GetByEventID(thisEvent.ID);
+				List<DB.Dynamo.Definitions.LiveMatch> eventLiveMatches_update = [];
 
 				//potentially check RE API for any new divisions that may have been added since the last time the event was processed??
 				RE.Objects.Event reEvent = await RE.API.Events.Single(new() { ID = thisEvent.ID });
@@ -158,7 +160,12 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 				{
 					await EventDivision.UpdateRankings(thisEvent, divisionID, teamStats_Season, teamStats_CurrentEvents);
 
-					await EventDivision.UpdateMatches(thisEvent, divisionID, teamStats_Season, teamStats_CurrentEvents);
+					await EventDivision.UpdateMatches(thisEvent, divisionID, teamStats_Season, teamStats_CurrentEvents, eventLiveMatches_current, eventLiveMatches_update);
+				}
+
+				foreach (DB.Dynamo.Definitions.LiveMatch match in eventLiveMatches_update)
+				{
+					await DB.Dynamo.Accessors.LiveMatch.SaveMatch(match);
 				}
 
 				//count up win %, PF/PA averages at this point once all matches are processed
