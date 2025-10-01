@@ -62,12 +62,12 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 			}
 		}
 
-		public static async Task<Definitions.LiveMatch> GetByMatchID(int matchID)
+		public static async Task<Definitions.LiveMatch> GetByMatchID(int matchID, int eventID)
 		{
 			try
 			{
 				await Common.ValidateTable<Definitions.Team>();
-				Definitions.LiveMatch match = await Dynamo.Context.LoadAsync<Definitions.LiveMatch>(matchID);
+				Definitions.LiveMatch match = await Dynamo.Context.LoadAsync<Definitions.LiveMatch>(matchID, eventID);
 				if (match != null)
 				{
 					//manually populate the Round
