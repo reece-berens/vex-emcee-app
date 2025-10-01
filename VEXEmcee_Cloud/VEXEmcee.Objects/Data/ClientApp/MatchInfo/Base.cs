@@ -1,5 +1,9 @@
-﻿namespace VEXEmcee.Objects.Data.ClientApp.MatchInfo
+﻿using System.Text.Json.Serialization;
+
+namespace VEXEmcee.Objects.Data.ClientApp.MatchInfo
 {
+	[JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
+	[JsonDerivedType(typeof(V5RC), "V5RC")]
 	public class Base
 	{
 		/// <summary>
@@ -16,8 +20,9 @@
 		/// Qualification, Round of 16, QF, SF, etc.
 		/// </summary>
 		public int MatchRound { get; set; }
-
-		public int NextMatchID { get; set; }
-		public int PreviousMatchID { get; set; }
+		
+		public bool Scored { get; set; }
+		public int? NextMatchID { get; set; }
+		public int? PreviousMatchID { get; set; }
 	}
 }
