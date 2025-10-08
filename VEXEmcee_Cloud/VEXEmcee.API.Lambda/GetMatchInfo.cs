@@ -21,6 +21,7 @@ namespace VEXEmcee.API.Lambda
 			GetMatchInfoRequest vexEmceeRequest = new();
 			GetMatchInfoResponse vexEmceeResponse;
 			vexEmceeRequest.Session = Generic.GetSessionCookie(apiRequest.Cookies);
+			Generic.BuildSessionInfo(vexEmceeRequest, apiRequest.RequestContext?.Authorizer);
 
 			if (apiRequest.QueryStringParameters == null)
 			{

@@ -20,6 +20,7 @@ namespace VEXEmcee.API.Lambda
 			GetMatchListRequest vexEmceeRequest = new();
 			GetMatchListResponse vexEmceeResponse;
 			vexEmceeRequest.Session = Generic.GetSessionCookie(apiRequest.Cookies);
+			Generic.BuildSessionInfo(vexEmceeRequest, apiRequest.RequestContext?.Authorizer);
 
 			vexEmceeResponse = await PublicMethods.GetMatchList(vexEmceeRequest);
 

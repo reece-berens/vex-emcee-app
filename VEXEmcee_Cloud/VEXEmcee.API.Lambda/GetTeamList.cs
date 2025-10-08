@@ -20,7 +20,8 @@ namespace VEXEmcee.API.Lambda
 			GetTeamListRequest vexEmceeRequest = new();
 			GetTeamListResponse vexEmceeResponse;
 			vexEmceeRequest.Session = Generic.GetSessionCookie(apiRequest.Cookies);
-			Console.WriteLine(JsonSerializer.Serialize(apiRequest));
+			Generic.BuildSessionInfo(vexEmceeRequest, apiRequest.RequestContext?.Authorizer);
+
 			vexEmceeResponse = await PublicMethods.GetTeamList(vexEmceeRequest);
 
 			APIGatewayHttpApiV2ProxyResponse apiResponse = new();

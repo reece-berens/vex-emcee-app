@@ -418,7 +418,9 @@ namespace VEXEmcee.Logic
 			{
 				return new()
 				{
-					Success = true
+					Success = true,
+					EventID = session.SelectedEventID,
+					DivisionID = session.SelectedDivisionID
 				};
 			}
 		}
