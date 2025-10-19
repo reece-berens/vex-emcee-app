@@ -21,6 +21,7 @@ namespace VEXEmcee.API.Lambda
 			GetTeamInfoRequest vexEmceeRequest = new();
 			GetTeamInfoResponse vexEmceeResponse;
 			vexEmceeRequest.Session = Generic.GetSessionCookie(apiRequest.Cookies);
+			Generic.BuildSessionInfo(vexEmceeRequest, apiRequest.RequestContext?.Authorizer);
 
 			if (apiRequest.QueryStringParameters == null)
 			{

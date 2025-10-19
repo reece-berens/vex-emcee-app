@@ -1,4 +1,5 @@
-﻿using Amazon.Lambda.Core;
+﻿using Amazon.Lambda.APIGatewayEvents;
+using Amazon.Lambda.Core;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 
@@ -7,6 +8,22 @@ namespace VEXEmcee.API.Lambda
 	public static class Generic
 	{
 		internal static readonly string REAPIParamStoreKey = "/VEXEmcee/RE/APIKey";
+
+		public static void BuildSessionInfo(Objects.API.Request.BaseRequest request, APIGatewayHttpApiV2ProxyRequest.AuthorizerDescription authorizer)
+		{
+			if (authorizer != null && authorizer.Lambda != null)
+			{
+				if (authorizer.Lambda.TryGetValue("DivisionID", out object divisionIDObj) && int.TryParse(divisionIDObj.ToString(), out int divisionID))
+				{
+					request.SessionDivisionID = divisionID;
+				}
+				if (authorizer.Lambda.TryGetValue("EventID", out object eventIDObj) && int.TryParse(eventIDObj.ToString(), out int eventID))
+				{
+					request.SessionEventID = eventID;
+				}
+			}
+		}
+
 		public static string GetSessionCookie(string[] cookieList)
 		{
 			if (cookieList == null || cookieList.Length == 0)

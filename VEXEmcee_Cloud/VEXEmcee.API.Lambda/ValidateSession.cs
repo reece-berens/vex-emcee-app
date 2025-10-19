@@ -16,15 +16,34 @@ namespace VEXEmcee.API.Lambda
 
 		public async Task<APIGatewayCustomAuthorizerV2SimpleResponse> FunctionHandler(APIGatewayCustomAuthorizerV2Request apiRequest, ILambdaContext context)
 		{
-			ValidateSessionRequest vexEmceeRequest = new();
-			ValidateSessionResponse vexEmceeResponse;
-			string[] cookieList = apiRequest.Cookies?.ToArray();
-			vexEmceeRequest.Session = Generic.GetSessionCookie(cookieList);
-
-			vexEmceeResponse = await PublicMethods.ValidateSession(vexEmceeRequest);
-
 			APIGatewayCustomAuthorizerV2SimpleResponse apiResponse = new();
-			apiResponse.IsAuthorized = vexEmceeResponse.Success;
+			try
+			{
+				ValidateSessionRequest vexEmceeRequest = new();
+				ValidateSessionResponse vexEmceeResponse;
+				string[] cookieList = apiRequest.Cookies?.ToArray();
+				vexEmceeRequest.Session = Generic.GetSessionCookie(cookieList);
+
+				vexEmceeResponse = await PublicMethods.ValidateSession(vexEmceeRequest);
+
+
+				apiResponse.IsAuthorized = vexEmceeResponse.Success;
+				if (apiResponse.IsAuthorized)
+				{
+					apiResponse.Context = new()
+					{
+						{ "EventID", vexEmceeResponse.EventID },
+						{ "DivisionID", vexEmceeResponse.DivisionID }
+					};
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Exception in ValidateSession: {ex}");
+				apiResponse.IsAuthorized = false;
+				return apiResponse;
+			}
+			
 			return apiResponse;
 		}
 	}

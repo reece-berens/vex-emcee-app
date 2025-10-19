@@ -19,6 +19,7 @@ namespace VEXEmcee.API.Lambda
 		{
 			GetSelectableProgramsRequest vexEmceeRequest = new();
 			vexEmceeRequest.Session = Generic.GetSessionCookie(apiRequest.Cookies);
+			Generic.BuildSessionInfo(vexEmceeRequest, apiRequest.RequestContext?.Authorizer);
 
 			GetSelectableProgramsResponse vexEmceeResponse = await PublicMethods.GetSelectablePrograms(vexEmceeRequest);
 
