@@ -59,7 +59,7 @@ VEXEmcee_Cloud/VEXEmcee.API.Local/appsettings.json
 
 # Nextjs App gitignore:
 # dependencies
-/node_modules
+next-app/node_modules
 /.pnp
 .pnp.*
 .yarn/*
