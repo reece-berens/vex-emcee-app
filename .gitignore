@@ -72,8 +72,8 @@ VEXEmcee_Cloud/VEXEmcee.API.Local/appsettings.json
 /coverage
 
 # next.js
-/.next/
-/out/
+next-app/.next/
+next-app/out/
 
 # production
 /build
