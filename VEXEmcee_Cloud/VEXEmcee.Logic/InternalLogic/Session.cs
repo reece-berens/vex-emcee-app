@@ -4,11 +4,23 @@ using Definitions = VEXEmcee.DB.Dynamo.Definitions;
 using VEXEmcee.Objects.API.Request;
 using VEXEmcee.Objects.API.Response;
 using VEXEmcee.Objects.Exceptions;
+using Amazon.EventBridge;
+using Amazon.Lambda;
+using VEXEmcee.Objects.Lambda;
+using Amazon.Lambda.Model;
+using Amazon.EventBridge.Model;
+using System.Text.Json;
+using Amazon.Scheduler;
+using Amazon.Scheduler.Model;
 
 namespace VEXEmcee.Logic.InternalLogic
 {
 	internal static class Session
 	{
+		internal static AmazonEventBridgeClient eventBridgeClient = new(Amazon.RegionEndpoint.USEast1);
+		internal static AmazonLambdaClient lambdaClient = new(Amazon.RegionEndpoint.USEast1);
+		internal static AmazonSchedulerClient schedulerClient = new(Amazon.RegionEndpoint.USEast1);
+
 		/// <summary>
 		/// Retrieves a session from the database using the provided session ID.
 		/// Handles DynamoDB-specific exceptions by logging them and returns null if an error occurs.
@@ -152,15 +164,15 @@ namespace VEXEmcee.Logic.InternalLogic
 						Definitions.Event eventToSave = Helpers.Event.ConvertREEventToDBEvent(reEvent);
 						await Accessors.Event.SaveEvent(eventToSave);
 
-						//TODO run the lambda function to gather information about the event
+						//run the lambda function to gather information about the event
+						await CreateStatsRecurringTask(eventToSave);
 					}
 					else if (!ev.StatsRequested && !ev.StatsReady)
 					{
 						//we have not yet requested stats for this event, and they are not ready, update the flag to request stats and save the event
 						ev.StatsRequested = true;
 						await Accessors.Event.SaveEvent(ev);
-
-						//TODO run the lambda function to gather information about the event
+						await CreateStatsRecurringTask(ev);
 					}
 
 					return new()
@@ -169,6 +181,60 @@ namespace VEXEmcee.Logic.InternalLogic
 						StatusCode = System.Net.HttpStatusCode.OK,
 					};
 				}
+			}
+		}
+
+		internal static async Task CreateStatsRecurringTask(Definitions.Event eventForTask)
+		{
+			//run the lambda function to gather information about the event
+			try
+			{
+				BuildEventStatsRequest buildStatsRequest = new()
+				{
+					EventID = eventForTask.ID,
+					UserRequestedEvent = true,
+				};
+				Amazon.Lambda.Model.InvokeRequest invokeRequest = new()
+				{
+					FunctionName = "BuildEventStats",
+					Payload = System.Text.Json.JsonSerializer.Serialize(buildStatsRequest),
+					InvocationType = InvocationType.Event
+				};
+				Amazon.Lambda.Model.InvokeResponse invokeResponse = await lambdaClient.InvokeAsync(invokeRequest);
+
+				GetFunctionResponse getFn = await lambdaClient.GetFunctionAsync(new GetFunctionRequest { FunctionName = "ValidateCurrentEventStats" });
+				string lambdaArn = getFn.Configuration.FunctionArn;
+
+				// Build schedule name (make unique)
+				DateTime startUtc = DateTime.UtcNow;
+				string scheduleName = $"ValidateCurrentEventStats_Event_{eventForTask.ID}";
+				DateTime endUtc = startUtc.AddHours(12);
+				CreateScheduleRequest scheduleRequest = new()
+				{
+					Name = scheduleName,
+					ScheduleExpression = "rate(2 minutes)",
+					ScheduleExpressionTimezone = "UTC",
+					StartDate = startUtc,
+					EndDate = endUtc,
+					FlexibleTimeWindow = new()
+					{
+						Mode = FlexibleTimeWindowMode.FLEXIBLE,
+						MaximumWindowInMinutes = 5
+					},
+					Target = new()
+					{
+						Arn = lambdaArn,
+						RoleArn = System.Environment.GetEnvironmentVariable("EventBridgeSchedulerRoleARN"),
+						Input = JsonSerializer.Serialize(new ValidateCurrentEventStatsRequest() { EventID = eventForTask.ID })
+					}
+				};
+				CreateScheduleResponse scheduledResponse = await schedulerClient.CreateScheduleAsync(scheduleRequest);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine($"Exception invoking BuildEventStats lambda: {e.Message}");
+				Console.WriteLine(e.StackTrace);
+				throw;
 			}
 		}
 	}

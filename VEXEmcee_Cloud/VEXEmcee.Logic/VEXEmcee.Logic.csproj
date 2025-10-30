@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AWSSDK.EventBridge" Version="4.0.5" />
+    <PackageReference Include="AWSSDK.Lambda" Version="4.0.3.1" />
+    <PackageReference Include="AWSSDK.Scheduler" Version="4.0.1.9" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\RE.API\RE.API.csproj" />
     <ProjectReference Include="..\VEXEmcee.DB.Dynamo\VEXEmcee.DB.Dynamo.csproj" />
     <ProjectReference Include="..\VEXEmcee.Objects\VEXEmcee.Objects.csproj" />

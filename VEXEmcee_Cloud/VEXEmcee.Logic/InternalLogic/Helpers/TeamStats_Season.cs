@@ -31,6 +31,13 @@ namespace VEXEmcee.Logic.InternalLogic.Helpers
 		{
 			if (teamStats_Season != null && !teamStats_Season.EventsIncluded.Contains(eventID))
 			{
+				teamStats_Season.Stats ??= new()
+				{
+					Events = [],
+					Awards = [],
+					DenormData = new(),
+					Skills = []
+				};
 				EventStats thisEventStats = teamStats_Season.Stats.Events.FirstOrDefault(x => x.EventID == ranking.Event.Id);
 				if (thisEventStats == null)
 				{
