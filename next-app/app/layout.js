@@ -12,7 +12,9 @@ export default function RootLayout({ children }) {
         <html lang="en">
             <body className="layout">
                 <Header />
-                {children}
+                <div style={{flexGrow: "1"}}>
+                    {children}
+                </div>
                 <Footer />
             </body>
         </html>

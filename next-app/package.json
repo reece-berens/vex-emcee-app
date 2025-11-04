@@ -9,6 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.11",
+    "@mui/material": "^5.14.11",
+    "js-cookie": "^3.0.5",
     "next": "15.3.3",
     "normalize.css": "^8.0.1",
     "react": "^19.0.0",
@@ -16,7 +21,9 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/node": "24.10.0",
     "eslint": "^9",
-    "eslint-config-next": "15.3.3"
+    "eslint-config-next": "15.3.3",
+    "typescript": "5.9.3"
   }
 }
