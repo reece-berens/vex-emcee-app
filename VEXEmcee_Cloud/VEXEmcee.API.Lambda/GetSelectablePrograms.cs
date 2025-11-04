@@ -18,7 +18,7 @@ namespace VEXEmcee.API.Lambda
 		public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest apiRequest, ILambdaContext context)
 		{
 			GetSelectableProgramsRequest vexEmceeRequest = new();
-			vexEmceeRequest.Session = Generic.GetSessionCookie(apiRequest.Cookies);
+			vexEmceeRequest.Session = Generic.GetSessionHeader(apiRequest.Headers);
 			Generic.BuildSessionInfo(vexEmceeRequest, apiRequest.RequestContext?.Authorizer);
 
 			GetSelectableProgramsResponse vexEmceeResponse = await PublicMethods.GetSelectablePrograms(vexEmceeRequest);

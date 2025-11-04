@@ -31,7 +31,14 @@ namespace VEXEmcee.Logic.InternalLogic.Helpers
 		{
 			if (teamStats_Season != null && !teamStats_Season.EventsIncluded.Contains(eventID))
 			{
-				EventStats thisEventStats = teamStats_Season.Stats.Events.FirstOrDefault(x => x.EventID == ranking.Event.Id);
+				teamStats_Season.Stats ??= new()
+				{
+					Events = [],
+					Awards = [],
+					DenormData = new(),
+					Skills = []
+				};
+				EventStats thisEventStats = teamStats_Season.Stats.Events.FirstOrDefault(x => x.EventID == eventID);
 				if (thisEventStats == null)
 				{
 					thisEventStats = new()
@@ -81,7 +88,7 @@ namespace VEXEmcee.Logic.InternalLogic.Helpers
 									Score = a.Score,
 									Teams = [.. a.Teams.Select(t => new TeamRef()
 									{
-										ID = t.Team.Id,
+										ID = t ?.Team ?.Id ?? 0,
 										Number = t.Team.Name
 									})],
 								})],
@@ -111,7 +118,7 @@ namespace VEXEmcee.Logic.InternalLogic.Helpers
 									Score = a.Score,
 									Teams = [.. a.Teams.Select(t => new TeamRef()
 									{
-										ID = t.Team.Id,
+										ID = t ?.Team ?.Id ?? 0,
 										Number = t.Team.Name
 									})],
 								})],
@@ -127,7 +134,7 @@ namespace VEXEmcee.Logic.InternalLogic.Helpers
 									{
 										thisEventStats.ElimPartners.Add(new()
 										{
-											ID = team.Team.Id,
+											ID = team?.Team?.Id ?? 0,
 											Number = team.Team.Name
 										});
 									}

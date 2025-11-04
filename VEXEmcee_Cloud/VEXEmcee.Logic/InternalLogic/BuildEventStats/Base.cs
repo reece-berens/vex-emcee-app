@@ -1,4 +1,6 @@
-﻿using VEXEmcee.Objects.Lambda;
+﻿using Amazon.Scheduler;
+using Amazon.Scheduler.Model;
+using VEXEmcee.Objects.Lambda;
 
 namespace VEXEmcee.Logic.InternalLogic.BuildEventStats
 {
@@ -81,7 +83,16 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats
 		{
 			DB.Dynamo.Definitions.Event thisEvent = await Helpers.Event.GetByEventID(eventID, false, false);
 			//only run current event stats validation if the event is not finalized
-			if (!thisEvent.Finalized)
+			if (thisEvent.Finalized)
+			{
+				DeleteScheduleRequest delScheduleReq = new()
+				{
+					Name = $"ValidateCurrentEventStats_Event_{eventID}"
+				};
+				using AmazonSchedulerClient schedulerClient = new(Amazon.RegionEndpoint.USEast1);
+				await schedulerClient.DeleteScheduleAsync(delScheduleReq);
+			}
+			else
 			{
 				DateTime now = DateTime.UtcNow;
 				if (thisEvent.LastCurrentStatsCheck == null || now > thisEvent.LastCurrentStatsCheck.Value.AddSeconds(90))

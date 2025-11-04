@@ -24,7 +24,7 @@
 				{
 					eventList.AddRange(response.Data);
 					request.Page++;
-					hasMore = response.Meta?.Last_Page > request.Page;
+					hasMore = response.Meta?.Last_Page >= request.Page;
 				}
 			} while (hasMore);
 			return eventList;
@@ -51,7 +51,7 @@
 				{
 					teamList.AddRange(response.Data);
 					request.Page++;
-					hasMore = response.Meta?.Last_Page > request.Page;
+					hasMore = response.Meta?.Last_Page >= request.Page;
 				}
 			} while (hasMore);
 			return teamList;

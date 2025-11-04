@@ -35,7 +35,7 @@ namespace VEXEmcee.API.Lambda
 		{
 			GetREEventListRequest vexEmceeRequest = new();
 			GetREEventListResponse vexEmceeResponse;
-			vexEmceeRequest.Session = Generic.GetSessionCookie(apiRequest.Cookies);
+			vexEmceeRequest.Session = Generic.GetSessionHeader(apiRequest.Headers);
 			Generic.BuildSessionInfo(vexEmceeRequest, apiRequest.RequestContext?.Authorizer);
 
 			if (apiRequest.QueryStringParameters == null)

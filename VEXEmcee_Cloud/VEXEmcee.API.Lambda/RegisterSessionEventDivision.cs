@@ -35,7 +35,7 @@ namespace VEXEmcee.API.Lambda
 		{
 			RegisterSessionEventDivisionRequest vexEmceeRequest = JsonSerializer.Deserialize<RegisterSessionEventDivisionRequest>(apiRequest.Body);
 			RegisterSessionEventDivisionResponse vexEmceeResponse;
-			vexEmceeRequest.Session = Generic.GetSessionCookie(apiRequest.Cookies);
+			vexEmceeRequest.Session = Generic.GetSessionHeader(apiRequest.Headers);
 
 			vexEmceeResponse = await PublicMethods.RegisterSessionEventDivision(vexEmceeRequest);
 

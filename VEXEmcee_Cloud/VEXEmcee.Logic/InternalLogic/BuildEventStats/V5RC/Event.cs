@@ -74,7 +74,7 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 					}
 					await DB.Dynamo.Accessors.Team.SaveTeam(newTeam);
 					dbTeams.Add(newTeam); //add to the list so we don't try to add it again
-				}
+                }
 
 				//ignore VEXU teams that would have skills scores (still want to create them in the database just in case)
 				if (team.Grade == RE.Objects.Grade.High_School || team.Grade == RE.Objects.Grade.Middle_School)
@@ -86,7 +86,11 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 					if (!refs.Update_TeamStats_Season.TryGetValue(TeamStats_Season.GetCompositeKey(refs.Event.SeasonID, team.Id), out TeamStats_Season teamStats_Season))
 					{
 						teamStats_Season = await DB.Dynamo.Accessors.TeamStats_Season.GetByCompositeKey(refs.Event.SeasonID, team.Id);
-						teamStats_Season ??= Helpers.TeamStats_Season.CreateNew(refs.Event.SeasonID, team.Id);
+						if (teamStats_Season == null) //we want to save the team's season stats object so they have something on the team info page
+						{
+                            teamStats_Season = Helpers.TeamStats_Season.CreateNew(refs.Event.SeasonID, team.Id);
+							await DB.Dynamo.Accessors.TeamStats_Season.Save(teamStats_Season);
+                        }
 						refs.Update_TeamStats_Season.Add(teamStats_Season.CompositeKey, teamStats_Season);
 					}
 					if (!refs.Update_TeamStats_CurrentEvent.TryGetValue(TeamStats_CurrentEvent.GetCompositeKey(refs.Event.ID, team.Id), out TeamStats_CurrentEvent teamStats_CurrentEvent))
@@ -105,11 +109,11 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 				List<RE.Objects.Skill> skillsAtEvent = await Helpers.REAPI.Event.GetSkillsAtEvent(refs.Event.ID);
 				foreach (RE.Objects.Skill skill in skillsAtEvent)
 				{
-					if (!refs.Update_TeamStats_Season.TryGetValue(TeamStats_Season.GetCompositeKey(refs.Event.SeasonID, skill.Team.Id), out TeamStats_Season teamStats_Season))
+					if (!refs.Update_TeamStats_Season.TryGetValue(TeamStats_Season.GetCompositeKey(refs.Event.SeasonID, skill?.Team?.Id ?? 0), out TeamStats_Season teamStats_Season))
 					{
 						//just in case for some weird reason the team has skills but doesn't exist in the list above
-						teamStats_Season = await DB.Dynamo.Accessors.TeamStats_Season.GetByCompositeKey(refs.Event.SeasonID, skill.Team.Id);
-						teamStats_Season ??= Helpers.TeamStats_Season.CreateNew(refs.Event.SeasonID, skill.Team.Id);
+						teamStats_Season = await DB.Dynamo.Accessors.TeamStats_Season.GetByCompositeKey(refs.Event.SeasonID, skill?.Team?.Id ?? 0);
+						teamStats_Season ??= Helpers.TeamStats_Season.CreateNew(refs.Event.SeasonID, skill?.Team?.Id ?? 0);
 						refs.Update_TeamStats_Season.Add(teamStats_Season.CompositeKey, teamStats_Season);
 					}
 					if (!teamStats_Season.EventsIncluded.Contains(refs.Event.ID))
@@ -149,11 +153,11 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 					{
 						foreach (RE.Objects.TeamAwardWinner team in award.TeamWinners)
 						{
-							if (!refs.Update_TeamStats_Season.TryGetValue(TeamStats_Season.GetCompositeKey(refs.Event.SeasonID, team.Team.Id), out TeamStats_Season teamStats_Season))
+							if (!refs.Update_TeamStats_Season.TryGetValue(TeamStats_Season.GetCompositeKey(refs.Event.SeasonID, team?.Team?.Id ?? 0), out TeamStats_Season teamStats_Season))
 							{
 								//just in case for some weird reason the team has awards but doesn't exist in the list above
-								teamStats_Season = await DB.Dynamo.Accessors.TeamStats_Season.GetByCompositeKey(refs.Event.SeasonID, team.Team.Id);
-								teamStats_Season ??= Helpers.TeamStats_Season.CreateNew(refs.Event.SeasonID, team.Team.Id);
+								teamStats_Season = await DB.Dynamo.Accessors.TeamStats_Season.GetByCompositeKey(refs.Event.SeasonID, team?.Team?.Id ?? 0);
+								teamStats_Season ??= Helpers.TeamStats_Season.CreateNew(refs.Event.SeasonID, team?.Team?.Id ?? 0);
 								refs.Update_TeamStats_Season.Add(teamStats_Season.CompositeKey, teamStats_Season);
 							}
 							if (!teamStats_Season.EventsIncluded.Contains(refs.Event.ID))
@@ -166,7 +170,7 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 									AwardName = award.Title,
 									Qualifications = [.. award.Qualifications],
 								};
-								dbAward.OtherTeamWinners = [.. award.TeamWinners.Where(t => t.Team.Id != team.Team.Id).Select(t => new TeamRef() { ID = t.Team.Id, Number = t.Team.Name })];
+								dbAward.OtherTeamWinners = [.. award.TeamWinners.Where(t => t.Team.Id != team.Team.Id).Select(t => new TeamRef() { ID = t?.Team?.Id ?? 0, Number = t.Team.Name })];
 								teamStats_Season.Stats.Awards.Add(dbAward);
 							}
 						}
@@ -188,12 +192,12 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 				TeamStats_CurrentEvent teamStats_CurrentEvent = currentEventStats.FirstOrDefault(x => x.TeamID == skill.Team.Id);
 				if (teamStats_CurrentEvent == null)
 				{
-					teamStats_CurrentEvent = Helpers.TeamStats_CurrentEvent.CreateNew(thisEvent.ID, skill.Team.Id);
+					teamStats_CurrentEvent = Helpers.TeamStats_CurrentEvent.CreateNew(thisEvent.ID, skill?.Team?.Id ?? 0);
 					currentEventStats.Add(teamStats_CurrentEvent);
 				}
 				if (teamStats_Season == null)
 				{
-					teamStats_Season = Helpers.TeamStats_Season.CreateNew(thisEvent.ID, skill.Team.Id);
+					teamStats_Season = Helpers.TeamStats_Season.CreateNew(thisEvent.ID, skill?.Team?.Id ?? 0);
 					seasonStats.Add(teamStats_Season);
 				}
 				//ensure the season stats have the skill type initialized

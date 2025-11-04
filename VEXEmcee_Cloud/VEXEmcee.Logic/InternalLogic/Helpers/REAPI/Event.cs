@@ -23,7 +23,7 @@
 				{
 					awardList.AddRange(response.Data);
 					request.Page++;
-					hasMore = response.Meta?.Last_Page > request.Page;
+					hasMore = response.Meta?.Last_Page >= request.Page;
 				}
 			} while (hasMore);
 			return awardList;
@@ -51,7 +51,7 @@
 				{
 					matchList.AddRange(response.Data);
 					request.Page++;
-					hasMore = response.Meta?.Last_Page > request.Page;
+					hasMore = response.Meta?.Last_Page >= request.Page;
 				}
 			} while (hasMore);
 			return matchList;
@@ -79,7 +79,7 @@
 				{
 					matchList.AddRange(response.Data);
 					request.Page++;
-					hasMore = response.Meta?.Last_Page > request.Page;
+					hasMore = response.Meta?.Last_Page >= request.Page;
 				}
 			} while (hasMore);
 			return matchList;
@@ -106,7 +106,7 @@
 				{
 					skillList.AddRange(response.Data);
 					request.Page++;
-					hasMore = response.Meta?.Last_Page > request.Page;
+					hasMore = response.Meta?.Last_Page >= request.Page;
 				}
 			} while (hasMore);
 			return skillList;
@@ -133,7 +133,7 @@
 				{
 					teamList.AddRange(response.Data);
 					request.Page++;
-					hasMore = response.Meta?.Last_Page > request.Page;
+					hasMore = response.Meta?.Last_Page >= request.Page;
 				}
 			} while (hasMore);
 			return teamList;
