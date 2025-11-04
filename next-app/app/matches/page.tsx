@@ -11,7 +11,7 @@ import Grid from '@mui/material/Grid';
 import { useRouter } from 'next/navigation';
 
 export default function MatchListPage(): JSX.Element {
-    const [matches, setMatches] = useState<any[]>([]);
+    const [matches, setMatches] = useState<VEXEmcee.API.Objects.MatchList.V5RC[]>([]);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 

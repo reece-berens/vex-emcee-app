@@ -41,7 +41,7 @@ export default function TeamInfoPage(): JSX.Element {
                 <>
                     <Typography variant="h5">{team.Number} - {team.TeamName}</Typography>
                     <Typography variant="subtitle1">{team.Location}</Typography>
-                    <Typography sx={{ mt: 1 }}>Navigate: <button onClick={() => goTeam(team.PreviousTeamID)}>&lt; Prev</button> <button onClick={() => goTeam(team.NextTeamID)}>Next &gt;</button></Typography>
+                    <Typography sx={{ mt: 1 }}>Navigate: <button style={{color: "black", backgroundColor: "cornsilk"}} onClick={() => goTeam(team.PreviousTeamID)}>&lt; Prev</button> <button style={{color: "black", backgroundColor: "cornsilk"}} onClick={() => goTeam(team.NextTeamID)}>Next &gt;</button></Typography>
 
                     {(team.Sections || []).map((section, sIdx: number) => (
                         <Accordion key={sIdx}>

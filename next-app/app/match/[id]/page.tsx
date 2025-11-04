@@ -19,7 +19,7 @@ import { useRouter, useParams } from 'next/navigation';
 export default function MatchInfoPage(): JSX.Element {
     const params = useParams();
     const matchId = params.id as string;
-    const [match, setMatch] = useState<any | null>(null);
+    const [match, setMatch] = useState<VEXEmcee.API.Objects.MatchInfo.V5RC>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
@@ -37,6 +37,40 @@ export default function MatchInfoPage(): JSX.Element {
 
     const goToMatch = (id?: number) => { if (!id) return; router.push(`/match/${id}`); }
 
+    const buildMatchIdentifier = (round: number, number: number, instance: number) => {
+        let outputString = "";
+        switch (round) {
+            case 1:
+                outputString = "Practice ";
+                break;
+            case 2:
+                outputString = "Q";
+                break;
+            case 3:
+                outputString = "QF";
+                break;
+            case 4:
+                outputString = "SF";
+                break;
+            case 5:
+                outputString = "F";
+                break;
+            case 6:
+                outputString = "R16 ";
+                break;
+            case 7:
+                outputString = "R32 ";
+                break;
+            case 8:
+                outputString = "R64 ";
+                break;
+            case 9:
+                outputString = "R128 ";
+        }
+        outputString += `${number}-${instance}`;
+        return outputString;
+    }
+
     return (
         <Container maxWidth="sm" sx={{ pt: 2 }}>
             {loading && <Typography>Loading...</Typography>}
@@ -47,8 +81,7 @@ export default function MatchInfoPage(): JSX.Element {
                             <IconButton onClick={() => goToMatch(match.PreviousMatchID)}><ArrowBackIcon /></IconButton>
                         </Grid>
                         <Grid item>
-                            <Typography variant="h6">{match.MatchName}</Typography>
-                            <Typography variant="body2">SortOrder: {match.SortOrder}</Typography>
+                            <Typography variant="h6">{buildMatchIdentifier(match.MatchRound, match.MatchNumber, match.MatchInstance)}</Typography>
                         </Grid>
                         <Grid item>
                             <IconButton onClick={() => goToMatch(match.NextMatchID)}><ArrowForwardIcon /></IconButton>
@@ -56,17 +89,17 @@ export default function MatchInfoPage(): JSX.Element {
                     </Grid>
 
                     <Grid container spacing={2} sx={{ mt: 2 }}>
-                        {([...(match.Blue?.Teams || []), ...(match.Red?.Teams || [])]).map((team: any, idx: number) => (
+                        {([...(match.Blue?.Teams || []), ...(match.Red?.Teams || [])]).map((team, idx: number) => (
                             <Grid item xs={12} key={team.ID || idx}>
-                                <Typography variant="subtitle1">{team.TeamNumber} - {team.TeamName} ({team.TeamLocator || team.Locator || ''})</Typography>
-                                {(team.Stats || []).map((section: any, sIdx: number) => (
+                                <Typography variant="subtitle1">{team.TeamNumber} - {team.TeamName} ({team.TeamLocator || ''})</Typography>
+                                {(team.Stats || []).map((section, sIdx: number) => (
                                     <Accordion key={sIdx}>
                                         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                            <Typography sx={{ fontWeight: 'bold' }}>{section.SectionLabel}</Typography>
+                                            <Typography sx={{ fontWeight: 'bold' }}>{section.Name}</Typography>
                                         </AccordionSummary>
                                         <AccordionDetails>
                                             <List>
-                                                {(section.SectionDisplay || []).map((sd: any, i: number) => (
+                                                {(section.Display || []).map((sd, i: number) => (
                                                     <ListItem key={i}>
                                                         <div>
                                                             <Typography sx={{ fontWeight: 'bold' }}>{sd.SectionLabel}</Typography>
