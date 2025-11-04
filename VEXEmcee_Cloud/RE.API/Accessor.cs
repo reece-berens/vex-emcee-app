@@ -54,7 +54,12 @@ namespace RE.API
 					string errorResponse = await response.Content.ReadAsStringAsync();
 					Console.WriteLine(response.StatusCode);
 					Console.WriteLine(errorResponse);
-					BaseDataResponse dataResponse = new()
+                    if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+                    {
+                        Console.WriteLine("RE.API.Accessor.BaseRequestData: Hit rate limit on RE API, immediately exiting and can continue later.");
+						Environment.Exit(1);
+                    }
+                    BaseDataResponse dataResponse = new()
 					{
 						WasSuccessful = false,
 						Error = JsonSerializer.Deserialize<RE.Objects.Error>(errorResponse),

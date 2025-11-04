@@ -43,5 +43,17 @@ namespace VEXEmcee.API.Lambda
 				}
 			}
 		}
+
+		public static string GetSessionHeader(IDictionary<string, string> headers)
+		{
+			if (headers == null || !headers.TryGetValue("vexemceesession", out string headerValue))
+			{
+				return null;
+			}
+			else
+			{
+				return headerValue;
+			}
+		}
 	}
 }

@@ -162,6 +162,7 @@ namespace VEXEmcee.Logic.InternalLogic
 					{
 						//the event doesn't exist in the table, create an object and save it with the information from RE API retrieved above
 						Definitions.Event eventToSave = Helpers.Event.ConvertREEventToDBEvent(reEvent);
+						eventToSave.StatsRequested = eventToSave.ID == request.EventID;
 						await Accessors.Event.SaveEvent(eventToSave);
 
 						//run the lambda function to gather information about the event

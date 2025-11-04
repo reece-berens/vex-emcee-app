@@ -19,12 +19,12 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 				HashSet<int> teamsInDivision = new();
 				foreach (RE.Objects.Ranking ranking in rankingsAtDivision)
 				{
-					if (!teamsInDivision.Contains(ranking.Team.Id))
+					if (!teamsInDivision.Contains(ranking?.Team?.Id ?? 0))
 					{
-						teamsInDivision.Add(ranking.Team.Id);
-						if (!internalRefs.Event.Teams_denorm.Contains(ranking.Team.Id))
+						teamsInDivision.Add(ranking?.Team?.Id ?? 0);
+						if (!internalRefs.Event.Teams_denorm.Contains(ranking?.Team?.Id ?? 0))
 						{
-							internalRefs.Event.Teams_denorm.Add(ranking.Team.Id);
+							internalRefs.Event.Teams_denorm.Add(ranking?.Team?.Id ?? 0);
 						}
 					}
 				}
@@ -34,12 +34,12 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 					{
 						foreach (RE.Objects.AllianceTeam teamObj in team.Teams)
 						{
-							if (!teamsInDivision.Contains(teamObj.Team.Id))
+							if (!teamsInDivision.Contains(teamObj?.Team?.Id ?? 0))
 							{
-								teamsInDivision.Add(teamObj.Team.Id);
-								if (!internalRefs.Event.Teams_denorm.Contains(teamObj.Team.Id))
+								teamsInDivision.Add(teamObj?.Team?.Id ?? 0);
+								if (!internalRefs.Event.Teams_denorm.Contains(teamObj?.Team?.Id ?? 0))
 								{
-									internalRefs.Event.Teams_denorm.Add(teamObj.Team.Id);
+									internalRefs.Event.Teams_denorm.Add(teamObj?.Team?.Id ?? 0);
 								}
 							}
 						}
@@ -103,12 +103,12 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 					{
 						foreach (RE.Objects.AllianceTeam team in alliance.Teams)
 						{
-							if (!thisEvent.DivisionTeams[divisionID].Contains(team.Team.Id))
+							if (!thisEvent.DivisionTeams[divisionID].Contains(team?.Team?.Id ?? 0))
 							{
 								//if the team is not in the division teams, add it (this would be if a division is added mid-way through an event)
-								thisEvent.DivisionTeams[divisionID].Add(team.Team.Id);
+								thisEvent.DivisionTeams[divisionID].Add(team?.Team?.Id ?? 0);
 							}
-							if (currentEventStatsDict.TryGetValue(team.Team.Id, out TeamStats_CurrentEvent teamStats_CurrentEvent))
+							if (currentEventStatsDict.TryGetValue(team?.Team?.Id ?? 0, out TeamStats_CurrentEvent teamStats_CurrentEvent))
 							{
 								//do the current event stats
 								teamStats_CurrentEvent.EventStats.DenormData.AllMatches.MatchCount++;
@@ -141,7 +141,7 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 										teamStats_CurrentEvent.EventStats.ElimPartners.AddRange(
 											alliance.Teams
 												.Where(x => x.Team.Id != team.Team.Id)
-												.Select(x => new TeamRef() { ID = x.Team.Id, Number = x.Team.Name })
+												.Select(x => new TeamRef() { ID = x?.Team?.Id ?? 0, Number = x.Team.Name })
 										);
 									}
 								}
@@ -201,13 +201,13 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 								{
 									Color = "Red",
 									Score = redAlliance.Score,
-									Teams = [..redAlliance.Teams.Select(t => new LiveMatchAllianceTeam() { ID = t.Team.Id, Number = t.Team.Name })]
+									Teams = [..redAlliance.Teams.Select(t => new LiveMatchAllianceTeam() { ID = t?.Team?.Id ?? 0, Number = t.Team.Name })]
 								},
 								new LiveMatchAlliance()
 								{
 									Color = "Blue",
 									Score = blueAlliance.Score,
-									Teams = [..blueAlliance.Teams.Select(t => new LiveMatchAllianceTeam() { ID = t.Team.Id, Number = t.Team.Name })]
+									Teams = [..blueAlliance.Teams.Select(t => new LiveMatchAllianceTeam() { ID = t?.Team?.Id ?? 0, Number = t.Team.Name })]
 								}
 							],
 						};
@@ -283,12 +283,12 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 				TeamStats_CurrentEvent teamStats_CurrentEvent = currentEventStats.FirstOrDefault(x => x.TeamID == ranking.Team.Id);
 				if (teamStats_CurrentEvent == null)
 				{
-					teamStats_CurrentEvent = Helpers.TeamStats_CurrentEvent.CreateNew(thisEvent.ID, ranking.Team.Id);
+					teamStats_CurrentEvent = Helpers.TeamStats_CurrentEvent.CreateNew(thisEvent.ID, ranking?.Team?.Id ?? 0);
 					currentEventStats.Add(teamStats_CurrentEvent);
 				}
 				if (teamStats_Season == null)
 				{
-					teamStats_Season = Helpers.TeamStats_Season.CreateNew(thisEvent.ID, ranking.Team.Id);
+					teamStats_Season = Helpers.TeamStats_Season.CreateNew(thisEvent.ID, ranking?.Team?.Id ?? 0);
 					seasonStats.Add(teamStats_Season);
 				}
 				//update the current event denorm data stats
@@ -327,7 +327,7 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 				if (dbMatchAlliances.TryGetValue(color, out var liveAlliance))
 				{
 					// Get team IDs from both sources
-					var matchTeamIds = reAlliance.Teams.Select(t => t.Team.Id).OrderBy(id => id).ToList();
+					var matchTeamIds = reAlliance.Teams.Select(t => t.Team.Id).OrderBy(id => id).Select(id => id.Value).ToList();
 					var liveTeamIds = liveAlliance.Teams.Select(t => t.ID).OrderBy(id => id).ToList();
 
 					if (!matchTeamIds.SequenceEqual(liveTeamIds))
@@ -336,7 +336,7 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 						liveAlliance.Teams = [.. reAlliance.Teams
 							.Select(t => new LiveMatchAllianceTeam
 							{
-								ID = t.Team.Id,
+								ID = t ?.Team ?.Id ?? 0,
 								Number = t.Team.Name
 							})];
 						updated = true;
@@ -352,7 +352,7 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 						Teams = [.. reAlliance.Teams
 							.Select(t => new LiveMatchAllianceTeam
 							{
-								ID = t.Team.Id,
+								ID = t ?.Team ?.Id ?? 0,
 								Number = t.Team.Name
 							})]
 					};

@@ -21,11 +21,14 @@ namespace VEXEmcee.API.Lambda
 			{
 				ValidateSessionRequest vexEmceeRequest = new();
 				ValidateSessionResponse vexEmceeResponse;
-				string[] cookieList = apiRequest.Cookies?.ToArray();
-				vexEmceeRequest.Session = Generic.GetSessionCookie(cookieList);
+				vexEmceeRequest.Session = Generic.GetSessionHeader(apiRequest.Headers);
+
+				foreach (string tempString in apiRequest.Headers.Keys)
+				{
+					Console.WriteLine($"Header: {tempString} : {apiRequest.Headers[tempString]}");
+                }
 
 				vexEmceeResponse = await PublicMethods.ValidateSession(vexEmceeRequest);
-
 
 				apiResponse.IsAuthorized = vexEmceeResponse.Success;
 				if (apiResponse.IsAuthorized)
