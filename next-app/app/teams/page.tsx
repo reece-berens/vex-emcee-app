@@ -19,7 +19,10 @@ export default function TeamListPage(): JSX.Element {
             setLoading(true);
             try {
                 const resp = await api.GetTeamList({});
-                if (resp && resp.Success && Array.isArray((resp as VEXEmcee.API.Responses.GetTeamListResponse).Teams)) setTeams((resp as any).Teams);
+                if (resp && resp.Success && Array.isArray((resp as VEXEmcee.API.Responses.GetTeamListResponse).Teams)) {
+                    (resp as VEXEmcee.API.Responses.GetTeamListResponse).Teams.sort((a, b) => a.NumberSortOrder - b.NumberSortOrder);
+                    setTeams((resp as any).Teams);
+                }
                 else setTeams([]);
             } catch (e) { console.error(e); setTeams([]); }
             setLoading(false);
