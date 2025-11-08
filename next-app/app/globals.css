@@ -1,10 +1,12 @@
 :root {
-	--text-color: #444; /* Default text color */
+	--text-color: #333; /* Default text color */
 	--text-muted: #7f8797; /* Muted text color */
 	--primary-color: #465362; /* Dark gray */
 	--secondary-color: #9ba7b5; /* Alt gray */
-	--background-color1: #ecebeb; /* Light gray */
+	--background-color1: #e8e6e3; /* Light gray */
 	--background-color2: #cccccc; /* Medium gray */
+	--background-color3: #f7f6f4; /* Lightest gray (for cards, stand-out items) */
+	--background-color1-transparent: rgba(232, 230, 227, 0.5); /* Transparent version of bg3 for header */
 	--font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 	--font-size-lg: 20px;
 	--font-size: 16px;
@@ -13,7 +15,7 @@
 	--transition: 0.15s ease;
 
 	/* Purple UI palette */
-	--ui-purple-light: #f3f0f8; /* Subtle backgrounds, hover states */
+	--ui-purple-light: #f8f6fb; /* Subtle backgrounds, hover states */
 	--ui-purple: #8b6bc2; /* Main accent - buttons, links */
 	--ui-purple-dark: #7356b3; /* Strong emphasis, active states */
 
@@ -93,24 +95,48 @@ p {
 	margin-bottom: var(--space-xs);
 }
 
+.text-white {
+	color: var(--background-color3);
+}
+
 /* Classic 3-Column Layout using Flexbox */
 .layout {
 	display: flex;
 	flex-direction: column;
 	height: 100vh;
-	background: var(--background-color1);
+	/* background: var(--background-color1); */
+	/* background: linear-gradient(180deg, #ebe8e5 0%, #e8e6e3 50%, #ddd9d4 100%); */
 	font-family: var(--font-family);
 	margin: 0 !important;
 	color: var(--text-color);
 	overflow: hidden; /* Prevent body scroll */
+
+	background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E"),
+		radial-gradient(circle at 25% 25%, rgba(139, 107, 194, 0.8) 0%, transparent 60%),
+		radial-gradient(circle at 75% 75%, rgba(255, 0, 53, 0.7) 0%, transparent 55%),
+		radial-gradient(circle at 50% 10%, rgba(53, 149, 218, 0.6) 0%, transparent 50%),
+		radial-gradient(circle at 10% 80%, rgba(139, 107, 194, 0.5) 0%, transparent 45%),
+		linear-gradient(135deg, #8b6bc2 0%, #3595da 50%, #ff0035 100%);
+
+	background-size: 100px 100px, 200vw 200vh, 180vw 180vh, 160vw 160vh, 140vw 140vh, 100% 100%;
+	/* Offset positioning to account for oversizing */
+	background-position: 0 0, calc(-50vw + var(--scroll-x, 0px) * 2) calc(-50vh + var(--scroll-y, 0px)),
+		calc(-40vw - var(--scroll-x, 0px)) calc(-40vh - var(--scroll-y, 0px) * 1.5),
+		calc(-30vw + var(--scroll-x, 0px) * 0.5) calc(-30vh + var(--scroll-y, 0px) * 2),
+		calc(-20vw - var(--scroll-x, 0px) * 1.5) calc(-20vh - var(--scroll-y, 0px)), center center;
+	background-attachment: fixed;
+	min-height: 100vh;
 }
 
 .layout-header {
-	background: var(--primary-color);
-	color: #fff;
+	color: var(--text-color);
 	padding: var(--space-lg);
 	transition: background var(--transition);
 	text-align: center;
+	background: var(--background-color1-transparent);
+	backdrop-filter: blur(20px) saturate(200%) brightness(1.1); /* Blur effect behind header */
+	-webkit-backdrop-filter: blur(20px) saturate(200%) brightness(1.1); /* Safari support */
+	border-bottom: 1px solid var(--secondary-color); /* Subtle border */
 }
 
 .layout-main {
@@ -130,6 +156,7 @@ p {
 	min-height: 0;
 	width: 100%;
 	margin: auto;
+	max-width: 600px;
 }
 
 .layout-sidebar {
@@ -184,64 +211,98 @@ button > span {
 }
 
 button:is(:hover, :focus-visible) {
-	background: white;
+	background: var(--ui-purple-light);
 	opacity: 0.9;
 	border-color: var(--primary-color);
-	color: var(--primary-color);
+	color: var(--text-color);
 }
 
 .btn-primary {
 	background: var(--ui-purple);
-	color: var(--background-color1);
+	color: var(--background-color3);
 }
 
 .btn-secondary {
 	background: var(--ui-purple-dark);
-	color: var(--background-color1);
+	color: var(--background-color3);
 }
 
 /* Custom dropdown menu styling for <select> */
 select {
-	background: var(--primary-color);
-	color: white;
-	border: 1px solid transparent;
+	background-color: var(--background-color3); /* Match inputs */
+	color: var(--text-color);
 	border-radius: var(--border-radius);
 	padding: var(--space-sm) var(--space-md);
 	font-size: var(--font-size);
 	cursor: pointer;
-	transition: background var(--transition), color var(--transition), border-color var(--transition);
 	appearance: none;
 	-webkit-appearance: none;
 	-moz-appearance: none;
+	border: 1px solid var(--secondary-color); /* Light border by default */
+	/* Add dropdown arrow indicator */
+	background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+	background-position: right 0.5rem center;
+	background-repeat: no-repeat;
+	background-size: 1.5em 1.5em;
+	padding-right: 2.5rem; /* Make room for arrow */
+	transition: background-color var(--transition), color var(--transition), border-color var(--transition);
 }
 
 select:is(:hover, :focus-visible) {
-	background: var(--ui-purple-light);
-	opacity: 0.9;
-	color: var(--primary-color);
+	background-color: var(--ui-purple-light);
 	border: 1px solid var(--primary-color);
 	box-shadow: var(--shadow-inset);
 }
 
-/* Style the dropdown options (limited browser support) */
+select.dropdown-open {
+	/* Flipped arrow */
+	background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M14 12l-4-4-4 4'/%3e%3c/svg%3e");
+}
+
+/* Style the dropdown options  */
 select option {
 	padding: var(--space-md);
-	background: var(--background-color1);
-	color: var(--primary-color);
+	background-color: var(--ui-purple-light);
+	color: var(--text-color);
+}
+
+/* Generic input styling for whole app */
+input {
+	background: var(--background-color3);
+	color: var(--text-color);
+	border-radius: var(--border-radius);
+	padding: var(--space-sm) var(--space-md);
+	font-size: var(--font-size);
+	transition: background var(--transition), color var(--transition), border-color var(--transition);
+
+	/* Add subtle inset shadow to look "recessed" */
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+	border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+input:is(:hover, :focus-visible) {
+	background: var(--ui-purple-light);
+	border: 1px solid var(--primary-color);
+	box-shadow: var(--shadow-inset);
+	opacity: 0.9;
 }
 
 /* Card Styles */
 .cardback {
-	background: var(--background-color2);
+	/* background: var(--background-color2); */
 	box-shadow: var(--shadow-inset);
 	border-radius: var(--border-radius);
 	padding: var(--space-lg);
 	position: relative;
 	overflow: hidden;
+	/* Testing teehee */
+	background: var(--background-color1-transparent);
+	backdrop-filter: blur(20px) saturate(200%) brightness(1.1); /* Blur effect behind header */
+	-webkit-backdrop-filter: blur(20px) saturate(200%) brightness(1.1); /* Safari support */
 }
 
 .card {
-	background: var(--background-color1);
+	background: var(--background-color3);
 	box-shadow: var(--shadow-default);
 	border-radius: var(--border-radius);
 	padding: var(--space-lg);
@@ -271,10 +332,6 @@ a.card:focus {
 
 /* Tablet mode */
 @media (min-width: 768px) {
-	.layout-content {
-		max-width: 600px;
-	}
-
 	.layout-sidebar,
 	.layout-extra {
 		padding: var(--space-lg);

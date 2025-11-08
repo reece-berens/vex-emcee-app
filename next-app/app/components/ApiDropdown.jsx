@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getPrograms } from "../serverConnector/programs";
 
 export default function ApiDropdown({ endpoint, placeholder, value, onChange, displayField, valueField, className }) {
 	const [options, setOptions] = useState([]);
@@ -10,16 +11,20 @@ export default function ApiDropdown({ endpoint, placeholder, value, onChange, di
 		const fetchOptions = async () => {
 			try {
 				setLoading(true);
-				const response = await fetch(endpoint);
-				if (!response.ok) {
-					throw new Error(`HTTP error! status: ${response.status}`);
+				const result = await getPrograms();
+
+				if (result.success) {
+					setOptions(result.programs);
+					setError(null);
+				} else {
+					setError(result.error);
+					setOptions([]);
 				}
-				const data = await response.json();
-				setOptions(data);
-			} catch (error) {
-				setError(error.message);
+			} catch (err) {
+				setError(err.message);
+				setOptions([]);
 			} finally {
-				setLoading(false);
+				setLoading(false); // Always clear loading
 			}
 		};
 
@@ -50,7 +55,7 @@ export default function ApiDropdown({ endpoint, placeholder, value, onChange, di
 		<select
 			className={className}
 			value={value}
-			onChange={onChange}
+			onChange={(e) => onChange(e.target.value)}
 		>
 			<option value="">{placeholder}</option>
 			{options.map((option) => (

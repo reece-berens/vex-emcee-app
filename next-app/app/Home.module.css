@@ -2,7 +2,7 @@
 	width: 100%;
 }
 
-.searchInput {
+/* .searchInput {
 	background: var(--background-color1);
 	border: 1px solid transparent;
 	border-radius: var(--border-radius);
@@ -20,6 +20,10 @@
 	color: var(--primary-color);
 	border: 1px solid var(--primary-color);
 	box-shadow: var(--shadow-inset);
+} */
+
+.searchField {
+	padding: var(--space-lg) var(--space-md); /* Increased vertical space */
 }
 
 .filters {

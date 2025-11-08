@@ -98,3 +98,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Node.js dependencies (for any location)
+node_modules/
