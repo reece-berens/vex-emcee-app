@@ -43,7 +43,7 @@ export default function MatchListPage(): JSX.Element {
                                     <Typography variant="subtitle1">{(m.Blue && Array.isArray(m.Blue.TeamNumbers)) ? m.Blue.TeamNumbers.join(' / ') : 'Blue'}</Typography>
                                 </Grid>
                                 <Grid item xs={2}>
-                                    <Typography align="center">{m.Blue?.Score ?? '-'} - {m.Red?.Score ?? '-'}</Typography>
+                                    <Typography align="center">{m.MatchName} {m.Blue?.Score ?? '-'} - {m.Red?.Score ?? '-'}</Typography>
                                 </Grid>
                                 <Grid item xs={5}>
                                     <Typography variant="subtitle1" align="right">{(m.Red && Array.isArray(m.Red.TeamNumbers)) ? m.Red.TeamNumbers.join(' / ') : 'Red'}</Typography>
