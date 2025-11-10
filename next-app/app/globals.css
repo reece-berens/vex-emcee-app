@@ -2,16 +2,18 @@
 	--text-color: #333; /* Default text color */
 	--text-muted: #7f8797; /* Muted text color */
 	--primary-color: #465362; /* Dark gray */
+	--primary-color-transparent: rgba(70, 83, 98, 0.5); /* Transparent version of primary for header border */
 	--secondary-color: #9ba7b5; /* Alt gray */
 	--background-color1: #e8e6e3; /* Light gray */
 	--background-color2: #cccccc; /* Medium gray */
 	--background-color3: #f7f6f4; /* Lightest gray (for cards, stand-out items) */
 	--background-color1-transparent: rgba(232, 230, 227, 0.5); /* Transparent version of bg3 for header */
+	--background-very-transparent: rgba(255, 255, 255, 0.2); /* Very transparent background for homepage cardbacks */
 	--font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 	--font-size-lg: 20px;
 	--font-size: 16px;
 	--font-size-sm: 14px;
-	--border-radius: 6px;
+	--border-radius: 8px;
 	--transition: 0.15s ease;
 
 	/* Purple UI palette */
@@ -136,7 +138,18 @@ p {
 	background: var(--background-color1-transparent);
 	backdrop-filter: blur(20px) saturate(200%) brightness(1.1); /* Blur effect behind header */
 	-webkit-backdrop-filter: blur(20px) saturate(200%) brightness(1.1); /* Safari support */
-	border-bottom: 1px solid var(--secondary-color); /* Subtle border */
+	border-bottom: 1px solid var(--primary-color-transparent); /* Subtle border */
+}
+
+.layout-footer {
+	color: var(--text-color);
+	padding: var(--space-lg);
+	transition: background var(--transition);
+	text-align: center;
+	background: var(--background-color1-transparent);
+	backdrop-filter: blur(20px) saturate(200%) brightness(1.1); /* Blur effect behind header */
+	-webkit-backdrop-filter: blur(20px) saturate(200%) brightness(1.1); /* Safari support */
+	border-top: 1px solid var(--primary-color-transparent); /* Subtle border */
 }
 
 .layout-main {
@@ -181,14 +194,6 @@ p {
 	padding: var(--space-sm);
 }
 
-.layout-footer {
-	background: var(--secondary-color);
-	color: #fff;
-	padding: var(--space-lg);
-	transition: background var(--transition);
-	text-align: center;
-}
-
 /* Button Styles */
 button {
 	padding: var(--space-sm) var(--space-md);
@@ -202,7 +207,7 @@ button {
 	border: 1px solid transparent;
 	box-shadow: var(--shadow-default);
 	background: none;
-	color: white;
+	color: var(--background-color3);
 	transition: background var(--transition), color var(--transition), border-color var(--transition);
 }
 
@@ -232,7 +237,6 @@ select {
 	background-color: var(--background-color3); /* Match inputs */
 	color: var(--text-color);
 	border-radius: var(--border-radius);
-	padding: var(--space-sm) var(--space-md);
 	font-size: var(--font-size);
 	cursor: pointer;
 	appearance: none;
@@ -271,7 +275,6 @@ input {
 	background: var(--background-color3);
 	color: var(--text-color);
 	border-radius: var(--border-radius);
-	padding: var(--space-sm) var(--space-md);
 	font-size: var(--font-size);
 	transition: background var(--transition), color var(--transition), border-color var(--transition);
 
@@ -287,18 +290,124 @@ input:is(:hover, :focus-visible) {
 	opacity: 0.9;
 }
 
+/* Generic dropdown styling */
+.custom-dropdown {
+	background-color: var(--background-color3); /* Match inputs */
+	color: var(--text-color);
+	border-radius: var(--border-radius);
+	font-size: var(--font-size);
+	cursor: pointer;
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	border: 1px solid var(--secondary-color); /* Light border by default */
+	transition: background-color var(--transition), color var(--transition), border-color var(--transition);
+	position: relative;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.custom-dropdown:is(:hover, :focus-visible) {
+	background-color: var(--ui-purple-light);
+	border: 1px solid var(--primary-color);
+	box-shadow: var(--shadow-inset);
+}
+
+.dropdown-arrow {
+	display: flex;
+	align-items: center;
+	transition: transform var(--transition);
+	pointer-events: none;
+}
+
+.custom-dropdown.open .dropdown-arrow {
+	transform: rotate(180deg);
+}
+
+.dropdown-list {
+	position: absolute; /* Changed from fixed */
+	top: calc(100% + 4px); /* Position below trigger */
+	left: -1px;
+	width: calc(100%);
+	background: var(--background-color3);
+	border: 1px solid var(--primary-color);
+	border-radius: var(--border-radius);
+	box-shadow: var(--shadow-hover);
+	z-index: 9999; /* Keep high z-index */
+	max-height: 60vh;
+	overflow-y: auto;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	transform: translateY(-10px) scale(0.95);
+	opacity: 0;
+	animation: dropdownOpen 0.2s ease-out forwards;
+}
+
+@keyframes dropdownOpen {
+	to {
+		transform: translateY(0) scale(1);
+		opacity: 1;
+	}
+}
+
+.dropdown-list li {
+	padding: var(--space-md);
+	cursor: pointer;
+	transition: background var(--transition);
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-list li:is(:hover, :focus-visible) {
+	background: var(--ui-purple);
+	color: var(--background-color3);
+}
+
+.dropdown-list li:last-child {
+	border-bottom: none;
+}
+
+.dropdown-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+/* Currently selected item */
+.dropdown-item.selected {
+	background: var(--background-color2);
+}
+
+/* Currently focused/hovered item */
+.dropdown-item.focused,
+.dropdown-item:hover {
+	background: var(--ui-purple);
+	color: var(--background-color3);
+}
+
+/* Selected AND focused */
+.dropdown-item.selected.focused,
+.dropdown-item.selected:hover {
+	background: var(--ui-purple-dark);
+	color: var(--background-color3);
+}
+
 /* Card Styles */
 .cardback {
-	/* background: var(--background-color2); */
+	background: var(--background-color2);
 	box-shadow: var(--shadow-inset);
 	border-radius: var(--border-radius);
 	padding: var(--space-lg);
 	position: relative;
-	overflow: hidden;
-	/* Testing teehee */
-	background: var(--background-color1-transparent);
-	backdrop-filter: blur(20px) saturate(200%) brightness(1.1); /* Blur effect behind header */
-	-webkit-backdrop-filter: blur(20px) saturate(200%) brightness(1.1); /* Safari support */
+}
+
+.cardback-transparent {
+	background: var(--background-very-transparent);
+	box-shadow: var(--shadow-inset);
+	border-radius: var(--border-radius);
+	padding: var(--space-lg);
+	position: relative;
 }
 
 .card {

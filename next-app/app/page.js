@@ -34,14 +34,11 @@ export default function Home() {
 			<div className="layout-content">
 				<h1 className="text-lg heading-primary text-white">Find Your VEX Tournament</h1>
 				<section className={styles.heroSection}>
-					<h2 className="text-base heading-tertiary text-white">
-						Search events by program, region, and name
-					</h2>
-
 					<div
 						id="search-filters-id"
-						className={`${styles.filters} cardback`}
+						className={`${styles.filters} cardback-transparent`}
 					>
+						<h2 className="text-base text-bold text-white">Search events by program, region, and name</h2>
 						<ApiDropdown
 							endpoint="http://localhost:5181/VEXEmcee/dynamogetselectableprograms" // Add the API endpoint
 							placeholder="Program (V5, IQ, U, etc.)"
@@ -78,8 +75,8 @@ export default function Home() {
 
 				{/* New Recent Events section */}
 				<section className={styles.recentEvents}>
-					<div className={`${styles.eventsList} cardback`}>
-						<h2 className="text-base text-bold">Recent Events</h2>
+					<div className={`${styles.eventsList} cardback-transparent`}>
+						<h2 className="text-base text-bold text-white">Recent Events</h2>
 						<a
 							href="#"
 							className="card"
