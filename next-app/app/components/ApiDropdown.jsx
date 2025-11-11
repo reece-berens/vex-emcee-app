@@ -123,7 +123,7 @@ export default function ApiDropdown({ endpoint, placeholder, value, onChange, di
 						<path
 							strokeLinecap="round"
 							strokeLinejoin="round"
-							strokeWidth="1.5"
+							strokeWidth="2"
 							d="m19.5 8.25-7.5 7.5-7.5-7.5"
 						></path>
 					</svg>
@@ -150,7 +150,7 @@ export default function ApiDropdown({ endpoint, placeholder, value, onChange, di
 										width="20"
 										height="20"
 										fill="none"
-										strokeWidth="1.5"
+										strokeWidth="2"
 										stroke="currentColor"
 										viewBox="0 0 24 24"
 									>

@@ -1,7 +1,3 @@
-.heroSection {
-	width: 100%;
-}
-
 .searchField {
 	padding: var(--space-lg) var(--space-md); /* Increased vertical space */
 }
@@ -13,19 +9,45 @@
 	gap: var(--space-md);
 }
 
-.buttonWrapper {
-	display: flex;
-	justify-content: center;
-	margin-block: var(--space-lg);
-}
-
-.recentEvents {
-	width: 100%;
-	padding-bottom: var(--space-lg);
-}
-
 .eventsList {
 	display: flex;
 	flex-direction: column;
 	gap: var(--space-md);
+}
+
+.buttonFooter {
+	display: flex;
+	justify-content: space-between;
+	margin-top: var(--space-md);
+}
+
+.searchButton {
+	background: var(--ui-purple-dark);
+	color: var(--background-color3);
+	gap: var(--space-sm);
+	padding: var(--space-md) var(--space-xl);
+	margin-right: var(--space-lg);
+}
+
+.clearButton {
+	background: none;
+	box-shadow: none;
+	border: none;
+	color: var(--background-color3);
+	gap: var(--space-sm);
+	padding: var(--space-md);
+	text-decoration: underline;
+}
+
+.clearButton:is(:hover, :focus-visible) {
+	background: none;
+	opacity: 1;
+	border: none;
+	color: var(--text-color);
+}
+
+@media (min-width: 768px) {
+	.searchButton {
+		margin-right: var(--space-xl);
+	}
 }

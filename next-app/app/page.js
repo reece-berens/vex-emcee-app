@@ -33,10 +33,10 @@ export default function Home() {
 		<main className="layout-main">
 			<div className="layout-content">
 				<h1 className="text-lg heading-primary text-white">Find Your VEX Tournament</h1>
-				<section className={styles.heroSection}>
+				<section className="cardback bg-transparent">
 					<div
 						id="search-filters-id"
-						className={`${styles.filters} cardback-transparent`}
+						className={styles.filters}
 					>
 						<h2 className="text-base text-bold text-white">Search events by program, region, and name</h2>
 						<ApiDropdown
@@ -67,15 +67,41 @@ export default function Home() {
 							aria-label="Event name search"
 							className={styles.searchField}
 						/>
-					</div>
-					<div className={styles.buttonWrapper}>
-						<button className="btn-primary">Search</button>
+						<div className={styles.buttonFooter}>
+							<button
+								className={`btn ${styles.clearButton}`}
+								onClick={() => {
+									setRegionSearch("");
+									setEventSearch("");
+									setSelectedProgram("");
+								}}
+							>
+								Clear all
+							</button>
+							<button className={`btn ${styles.searchButton}`}>
+								<svg
+									width="18"
+									height="18"
+									fill="none"
+									strokeWidth="2"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+									></path>
+								</svg>
+								Search
+							</button>
+						</div>
 					</div>
 				</section>
 
 				{/* New Recent Events section */}
-				<section className={styles.recentEvents}>
-					<div className={`${styles.eventsList} cardback-transparent`}>
+				<section className="cardback bg-transparent">
+					<div className={styles.eventsList}>
 						<h2 className="text-base text-bold text-white">Recent Events</h2>
 						<a
 							href="#"
@@ -100,6 +126,7 @@ export default function Home() {
 						</a>
 					</div>
 				</section>
+				<div className="content-spacer"></div>
 			</div>
 		</main>
 	);
