@@ -85,9 +85,15 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 			List<LiveMatch> currentEventMatches, List<LiveMatch> matchesToUpdate
 		) 
 		{
+			Console.WriteLine(divisionID);
 			List<RE.Objects.MatchObj> matchesAtDivision = await Helpers.REAPI.Event.GetMatchesAtEventDivision(thisEvent.ID, divisionID);
 			Dictionary<int, TeamStats_CurrentEvent> currentEventStatsDict = currentEventStats.ToDictionary(x => x.TeamID, x => x);
 			Dictionary<int, TeamStats_Season> seasonStatsDict = seasonStats.ToDictionary(x => x.TeamID, x => x);
+
+			if (!thisEvent.DivisionTeams.ContainsKey(divisionID))
+			{
+				thisEvent.DivisionTeams[divisionID] = [];
+			}
 
 			//add stats for each match into the current event stats for each team that participated in a match
 			foreach (RE.Objects.MatchObj match in matchesAtDivision)
@@ -96,7 +102,7 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 				RE.Objects.Alliance redAlliance = match.Alliances.FirstOrDefault(a => a.Color?.Equals("red", StringComparison.InvariantCultureIgnoreCase) ?? false);
 				RE.Objects.Alliance blueAlliance = match.Alliances.FirstOrDefault(a => a.Color?.Equals("blue", StringComparison.InvariantCultureIgnoreCase) ?? false);
 				//for each team in the match, update their current event stats
-				if (redAlliance != null && blueAlliance != null)
+				if (redAlliance != null && blueAlliance != null && (redAlliance.Score != 0 || blueAlliance.Score != 0 || match.Scored))
 				{
 					List<RE.Objects.Alliance> curAllianceList = [redAlliance, blueAlliance];
 					foreach (RE.Objects.Alliance alliance in curAllianceList)

@@ -43,7 +43,7 @@ namespace VEXEmcee.Logic.InternalLogic.MatchInfo
 					MatchInstance = thisMatch.Instance,
 					MatchNumber = thisMatch.MatchNumber,
 					MatchRound = (int)thisMatch.Round,
-					Scored = thisMatch.RedScore > 0 || thisMatch.BlueScore > 0,
+					Scored = thisMatch.RedScore > 0 || thisMatch.BlueScore > 0 || thisMatch.ScoreFinalized,
 					BlueWin = thisMatch.MatchWinner.Equals("blue", StringComparison.CurrentCultureIgnoreCase),
 					RedWin = thisMatch.MatchWinner.Equals("red", StringComparison.CurrentCultureIgnoreCase),
 					Tie = thisMatch.MatchWinner.Equals("tie", StringComparison.CurrentCultureIgnoreCase),
@@ -90,7 +90,7 @@ namespace VEXEmcee.Logic.InternalLogic.MatchInfo
 						Definitions.Team teamInfo = teamData.FirstOrDefault(t => t.ID == team.ID);
 						if (teamInfo != null)
 						{
-							team.TeamLocator = teamInfo.CityState_denorm;
+							team.TeamLocator = $"{teamInfo.Organization} - {teamInfo.CityState_denorm}";
 							team.TeamName = teamInfo.TeamName;
 						}
 					}
@@ -99,7 +99,7 @@ namespace VEXEmcee.Logic.InternalLogic.MatchInfo
 						Definitions.Team teamInfo = teamData.FirstOrDefault(t => t.ID == team.ID);
 						if (teamInfo != null)
 						{
-							team.TeamLocator = teamInfo.CityState_denorm;
+							team.TeamLocator = $"{teamInfo.Organization} - {teamInfo.CityState_denorm}";
 							team.TeamName = teamInfo.TeamName;
 						}
 					}
@@ -133,21 +133,41 @@ namespace VEXEmcee.Logic.InternalLogic.MatchInfo
 					}
 				}
 
-				PopulateStatsForTeams(
+                List<LiveMatch> matchesThisTournament = await Accessors.LiveMatch.GetByEventID(thisEvent.ID);
+
+                PopulateStatsForTeams(
 					matchInfo.Blue.Teams.ElementAtOrDefault(0),
 					matchInfo.Blue.Teams.ElementAtOrDefault(1),
 					matchInfo.Red.Teams.ElementAtOrDefault(0),
 					matchInfo.Red.Teams.ElementAtOrDefault(1),
 					currentEventStatsDict,
-					seasonStatsDict
+					seasonStatsDict,
+					matchesThisTournament
 				);
 
-				response.MatchInfo = matchInfo;
+				MatchList.V5RC.SortMatches(matchesThisTournament);
+				int indexOfCurrent = matchesThisTournament.FindIndex(m => m.ID == thisMatch.ID);
+				if (indexOfCurrent != -1)
+				{
+					if (indexOfCurrent > 0)
+					{
+						Definitions.LiveMatch previousMatch = matchesThisTournament[indexOfCurrent - 1];
+						matchInfo.PreviousMatchID = previousMatch.ID;
+					}
+					if (indexOfCurrent < matchesThisTournament.Count - 1)
+					{
+						Definitions.LiveMatch nextMatch = matchesThisTournament[indexOfCurrent + 1];
+						matchInfo.NextMatchID = nextMatch.ID;
+                    }
+                }
+
+                response.MatchInfo = matchInfo;
 			}
 		}
 
 		internal static void PopulateStatsForTeams(V5RC_Team blue1, V5RC_Team blue2, V5RC_Team red1, V5RC_Team red2, 
-			Dictionary<int, TeamStats_CurrentEvent> currentEventStats, Dictionary<int, TeamStats_Season> seasonStats
+			Dictionary<int, TeamStats_CurrentEvent> currentEventStats, Dictionary<int, TeamStats_Season> seasonStats,
+			List<LiveMatch> matchesThisTournament
 		)
 		{
 			TeamStats_CurrentEvent blue1Current = currentEventStats[blue1.ID];
@@ -159,9 +179,9 @@ namespace VEXEmcee.Logic.InternalLogic.MatchInfo
 			TeamStats_Season red1Season = seasonStats[red1.ID];
 			TeamStats_Season red2Season = seasonStats[red2.ID];
 
-			SectionHeader blue1SHSeason = new()
+            SectionHeader blue1SHSeason = new()
 			{
-				Name = "Season Stats",
+				Name = "Season Stats Entering This Tournament",
 				Order = 1,
 				Display = []
 			};
@@ -169,16 +189,16 @@ namespace VEXEmcee.Logic.InternalLogic.MatchInfo
 			{
 				SectionLabel = "WLT",
 				SectionData = [
-					$"All Matches: {blue1Season?.Stats.DenormData?.AllMatches?.Win ?? 0}-{blue1Season?.Stats.DenormData?.AllMatches?.Loss ?? 0}-{blue1Season?.Stats.DenormData?.AllMatches?.Tie ?? 0}",
-					$"Qualification Matches: {blue1Season?.Stats.DenormData?.QualiMatches?.Win ?? 0}-{blue1Season?.Stats.DenormData?.QualiMatches?.Loss ?? 0}-{blue1Season?.Stats.DenormData?.QualiMatches?.Tie ?? 0}",
-					$"Elimination Matches: {blue1Season?.Stats.DenormData?.ElimMatches?.Win ?? 0}-{blue1Season?.Stats.DenormData?.ElimMatches?.Loss ?? 0}-{blue1Season?.Stats.DenormData?.ElimMatches?.Tie ?? 0}"
+					$"All Matches: {blue1Season?.Stats.DenormData?.AllMatches?.Win ?? 0}-{blue1Season?.Stats.DenormData?.AllMatches?.Loss ?? 0}-{blue1Season?.Stats.DenormData?.AllMatches?.Tie ?? 0} - {blue1Season?.Stats.DenormData?.AllMatches?.WinPercentage:P1} Win Pct.",
+					$"Qualification Matches: {blue1Season?.Stats.DenormData?.QualiMatches?.Win ?? 0}-{blue1Season?.Stats.DenormData?.QualiMatches?.Loss ?? 0}-{blue1Season?.Stats.DenormData?.QualiMatches?.Tie ?? 0} - {blue1Season?.Stats.DenormData?.QualiMatches?.WinPercentage:P1} Win Pct.",
+					$"Elimination Matches: {blue1Season?.Stats.DenormData?.ElimMatches?.Win ?? 0}-{blue1Season?.Stats.DenormData?.ElimMatches?.Loss ?? 0}-{blue1Season?.Stats.DenormData?.ElimMatches?.Tie ?? 0} - {blue1Season?.Stats.DenormData?.ElimMatches?.WinPercentage:P1} Win Pct."
 				],
 			});
 			blue1.Stats.Add(blue1SHSeason);
 
 			SectionHeader blue2SHSeason = new()
 			{
-				Name = "Season Stats",
+				Name = "Season Stats Entering This Tournament",
 				Order = 1,
 				Display = []
 			};
@@ -186,16 +206,16 @@ namespace VEXEmcee.Logic.InternalLogic.MatchInfo
 			{
 				SectionLabel = "WLT",
 				SectionData = [
-					$"All Matches: {blue2Season?.Stats.DenormData?.AllMatches?.Win ?? 0}-{blue2Season?.Stats.DenormData?.AllMatches?.Loss ?? 0}-{blue2Season?.Stats.DenormData?.AllMatches?.Tie ?? 0}",
-					$"Qualification Matches: {blue2Season?.Stats.DenormData?.QualiMatches?.Win ?? 0}-{blue2Season?.Stats.DenormData?.QualiMatches?.Loss ?? 0}-{blue2Season?.Stats.DenormData?.QualiMatches?.Tie ?? 0}",
-					$"Elimination Matches: {blue2Season?.Stats.DenormData?.ElimMatches?.Win ?? 0}-{blue2Season?.Stats.DenormData?.ElimMatches?.Loss ?? 0}-{blue2Season?.Stats.DenormData?.ElimMatches?.Tie ?? 0}"
+					$"All Matches: {blue2Season?.Stats.DenormData?.AllMatches?.Win ?? 0}-{blue2Season?.Stats.DenormData?.AllMatches?.Loss ?? 0}-{blue2Season?.Stats.DenormData?.AllMatches?.Tie ?? 0} - {blue2Season?.Stats.DenormData?.AllMatches?.WinPercentage:P1} Win Pct.",
+					$"Qualification Matches: {blue2Season?.Stats.DenormData?.QualiMatches?.Win ?? 0}-{blue2Season?.Stats.DenormData?.QualiMatches?.Loss ?? 0}-{blue2Season?.Stats.DenormData?.QualiMatches?.Tie ?? 0} - {blue2Season?.Stats.DenormData?.QualiMatches?.WinPercentage:P1} Win Pct.",
+					$"Elimination Matches: {blue2Season?.Stats.DenormData?.ElimMatches?.Win ?? 0}-{blue2Season?.Stats.DenormData?.ElimMatches?.Loss ?? 0}-{blue2Season?.Stats.DenormData?.ElimMatches?.Tie ?? 0} - {blue2Season?.Stats.DenormData?.ElimMatches?.WinPercentage:P1} Win Pct."
 				],
 			});
 			blue2.Stats.Add(blue2SHSeason);
 
 			SectionHeader red1SHSeason = new()
 			{
-				Name = "Season Stats",
+				Name = "Season Stats Entering This Tournament",
 				Order = 1,
 				Display = []
 			};
@@ -203,16 +223,16 @@ namespace VEXEmcee.Logic.InternalLogic.MatchInfo
 			{
 				SectionLabel = "WLT",
 				SectionData = [
-					$"All Matches: {red1Season?.Stats.DenormData?.AllMatches?.Win ?? 0}-{red1Season?.Stats.DenormData?.AllMatches?.Loss ?? 0}-{red1Season?.Stats.DenormData?.AllMatches?.Tie ?? 0}",
-					$"Qualification Matches: {red1Season?.Stats.DenormData?.QualiMatches?.Win ?? 0}-{red1Season?.Stats.DenormData?.QualiMatches?.Loss ?? 0}-{red1Season?.Stats.DenormData?.QualiMatches?.Tie ?? 0}",
-					$"Elimination Matches: {red1Season?.Stats.DenormData?.ElimMatches?.Win ?? 0}-{red1Season?.Stats.DenormData?.ElimMatches?.Loss ?? 0}-{red1Season?.Stats.DenormData?.ElimMatches?.Tie ?? 0}"
+					$"All Matches: {red1Season?.Stats.DenormData?.AllMatches?.Win ?? 0}-{red1Season?.Stats.DenormData?.AllMatches?.Loss ?? 0}-{red1Season?.Stats.DenormData?.AllMatches?.Tie ?? 0} - {red1Season?.Stats.DenormData?.AllMatches?.WinPercentage:P1} Win Pct.",
+					$"Qualification Matches: {red1Season?.Stats.DenormData?.QualiMatches?.Win ?? 0}-{red1Season?.Stats.DenormData?.QualiMatches?.Loss ?? 0}-{red1Season?.Stats.DenormData?.QualiMatches?.Tie ?? 0} - {red1Season?.Stats.DenormData?.QualiMatches?.WinPercentage:P1} Win Pct.",
+					$"Elimination Matches: {red1Season?.Stats.DenormData?.ElimMatches?.Win ?? 0}-{red1Season?.Stats.DenormData?.ElimMatches?.Loss ?? 0}-{red1Season?.Stats.DenormData?.ElimMatches?.Tie ?? 0} - {red1Season?.Stats.DenormData?.ElimMatches?.WinPercentage:P1} Win Pct."
 				],
 			});
 			red1.Stats.Add(red1SHSeason);
 
 			SectionHeader red2SHSeason = new()
 			{
-				Name = "Season Stats",
+				Name = "Season Stats Entering This Tournament",
 				Order = 1,
 				Display = []
 			};
@@ -220,12 +240,173 @@ namespace VEXEmcee.Logic.InternalLogic.MatchInfo
 			{
 				SectionLabel = "WLT",
 				SectionData = [
-					$"All Matches: {red2Season?.Stats.DenormData?.AllMatches?.Win ?? 0}-{red2Season?.Stats.DenormData?.AllMatches?.Loss ?? 0}-{red2Season?.Stats.DenormData?.AllMatches?.Tie ?? 0}",
-					$"Qualification Matches: {red2Season?.Stats.DenormData?.QualiMatches?.Win ?? 0}-{red2Season?.Stats.DenormData?.QualiMatches?.Loss ?? 0}-{red2Season?.Stats.DenormData?.QualiMatches?.Tie ?? 0}",
-					$"Elimination Matches: {red2Season?.Stats.DenormData?.ElimMatches?.Win ?? 0}-{red2Season?.Stats.DenormData?.ElimMatches?.Loss ?? 0}-{red2Season?.Stats.DenormData?.ElimMatches?.Tie ?? 0}"
+					$"All Matches: {red2Season?.Stats.DenormData?.AllMatches?.Win ?? 0}-{red2Season?.Stats.DenormData?.AllMatches?.Loss ?? 0}-{red2Season?.Stats.DenormData?.AllMatches?.Tie ?? 0} - {red2Season?.Stats.DenormData?.AllMatches?.WinPercentage:P1} Win Pct.",
+					$"Qualification Matches: {red2Season?.Stats.DenormData?.QualiMatches?.Win ?? 0}-{red2Season?.Stats.DenormData?.QualiMatches?.Loss ?? 0}-{red2Season?.Stats.DenormData?.QualiMatches?.Tie ?? 0} - {red2Season?.Stats.DenormData?.QualiMatches?.WinPercentage:P1} Win Pct.",
+					$"Elimination Matches: {red2Season?.Stats.DenormData?.ElimMatches?.Win ?? 0}-{red2Season?.Stats.DenormData?.ElimMatches?.Loss ?? 0}-{red2Season?.Stats.DenormData?.ElimMatches?.Tie ?? 0} - {red2Season?.Stats.DenormData?.ElimMatches?.WinPercentage:P1} Win Pct."
 				],
 			});
 			red2.Stats.Add(red2SHSeason);
+
+            SectionHeader blue1SHThisEvent = new()
+            {
+                Name = "This Event",
+                Order = 2,
+                Display = []
+            };
+            blue1SHThisEvent.Display.Add(new()
+            {
+                SectionLabel = "Overall WLT (Qualification + Elim.)",
+                SectionData = [
+                    $"{blue1Current?.EventStats.DenormData?.AllMatches?.Win ?? 0}-{blue1Current?.EventStats.DenormData?.AllMatches?.Loss ?? 0}-{blue1Current?.EventStats.DenormData?.AllMatches?.Tie ?? 0}",
+                    $"{blue1Current?.EventStats.DenormData?.AllMatches?.WinPercentage:P1} Win Pct."
+                ],
+            });
+            blue1SHThisEvent.Display.Add(new()
+            {
+                SectionLabel = "Qualification WLT",
+                SectionData = [
+                    $"{blue1Current?.EventStats.DenormData?.QualiMatches?.Win ?? 0}-{blue1Current?.EventStats.DenormData?.QualiMatches?.Loss ?? 0}-{blue1Current?.EventStats.DenormData?.QualiMatches?.Tie ?? 0}",
+                    $"{blue1Current?.EventStats.DenormData?.QualiMatches?.WinPercentage:P1} Win Pct."
+                ],
+            });
+            blue1SHThisEvent.Display.Add(new()
+            {
+                SectionLabel = "Points Scored",
+                SectionData = [
+                    $"Total: {blue1Current?.EventStats.DenormData.AllMatches.PointsForTotal} points",
+                    $"Average per match: {blue1Current.EventStats.DenormData.AllMatches.PointsForAvg:F1} points"
+                ]
+            });
+            blue1.Stats.Add(blue1SHThisEvent);
+
+            SectionHeader blue2SHThisEvent = new()
+            {
+                Name = "This Event",
+                Order = 2,
+                Display = []
+            };
+            blue2SHThisEvent.Display.Add(new()
+            {
+                SectionLabel = "Overall WLT (Qualification + Elim.)",
+                SectionData = [
+                    $"{blue2Current?.EventStats.DenormData?.AllMatches?.Win ?? 0}-{blue2Current?.EventStats.DenormData?.AllMatches?.Loss ?? 0}-{blue2Current?.EventStats.DenormData?.AllMatches?.Tie ?? 0}",
+                    $"{blue2Current?.EventStats.DenormData?.AllMatches?.WinPercentage:P1} Win Pct."
+                ],
+            });
+            blue2SHThisEvent.Display.Add(new()
+            {
+                SectionLabel = "Qualification WLT",
+                SectionData = [
+                    $"{blue2Current?.EventStats.DenormData?.QualiMatches?.Win ?? 0}-{blue2Current?.EventStats.DenormData?.QualiMatches?.Loss ?? 0}-{blue2Current?.EventStats.DenormData?.QualiMatches?.Tie ?? 0}",
+                    $"{blue2Current?.EventStats.DenormData?.QualiMatches?.WinPercentage:P1} Win Pct."
+                ],
+            });
+            blue2SHThisEvent.Display.Add(new()
+            {
+                SectionLabel = "Points Scored",
+                SectionData = [
+                    $"Total: {blue2Current?.EventStats.DenormData.AllMatches.PointsForTotal} points",
+                    $"Average per match: {blue2Current.EventStats.DenormData.AllMatches.PointsForAvg:F1} points"
+                ]
+            });
+            blue2.Stats.Add(blue2SHThisEvent);
+
+            SectionHeader red1SHThisEvent = new()
+            {
+                Name = "This Event",
+                Order = 2,
+                Display = []
+            };
+            red1SHThisEvent.Display.Add(new()
+            {
+                SectionLabel = "Overall WLT (Qualification + Elim.)",
+                SectionData = [
+                    $"All Matches: {red1Current?.EventStats.DenormData?.AllMatches?.Win ?? 0}-{red1Current?.EventStats.DenormData?.AllMatches?.Loss ?? 0}-{red1Current?.EventStats.DenormData?.AllMatches?.Tie ?? 0}",
+                    $"{red1Current?.EventStats.DenormData?.AllMatches?.WinPercentage:P1} Win Pct."
+                ],
+            });
+            red1SHThisEvent.Display.Add(new()
+            {
+                SectionLabel = "Qualification WLT",
+                SectionData = [
+                    $"{red1Current?.EventStats.DenormData?.QualiMatches?.Win ?? 0}-{red1Current?.EventStats.DenormData?.QualiMatches?.Loss ?? 0}-{red1Current?.EventStats.DenormData?.QualiMatches?.Tie ?? 0}",
+                    $"{red1Current?.EventStats.DenormData?.QualiMatches?.WinPercentage:P1} Win Pct."
+                ],
+            });
+            red1SHThisEvent.Display.Add(new()
+            {
+                SectionLabel = "Points Scored",
+                SectionData = [
+                    $"Total: {red1Current?.EventStats.DenormData.AllMatches.PointsForTotal} points",
+                    $"Average per match: {red1Current.EventStats.DenormData.AllMatches.PointsForAvg:F1} points"
+                ]
+            });
+            red1.Stats.Add(red1SHThisEvent);
+
+            SectionHeader red2SHThisEvent = new()
+            {
+                Name = "This Event",
+                Order = 2,
+                Display = []
+            };
+            red2SHThisEvent.Display.Add(new()
+            {
+                SectionLabel = "Overall WLT (Qualification + Elim.)",
+                SectionData = [
+                    $"{red2Current?.EventStats.DenormData?.AllMatches?.Win ?? 0}-{red2Current?.EventStats.DenormData?.AllMatches?.Loss ?? 0}-{red2Current?.EventStats.DenormData?.AllMatches?.Tie ?? 0}",
+                    $"{red2Current?.EventStats.DenormData?.AllMatches?.WinPercentage:P1} Win Pct."
+                ],
+            });
+            red2SHThisEvent.Display.Add(new()
+            {
+                SectionLabel = "Qualification WLT",
+                SectionData = [
+                    $"{red2Current?.EventStats.DenormData?.QualiMatches?.Win ?? 0}-{red2Current?.EventStats.DenormData?.QualiMatches?.Loss ?? 0}-{red2Current?.EventStats.DenormData?.QualiMatches?.Tie ?? 0}",
+                    $"{red2Current?.EventStats.DenormData?.QualiMatches?.WinPercentage:P1} Win Pct."
+                ],
+            });
+			red2SHThisEvent.Display.Add(new()
+            {
+                SectionLabel = "Points Scored",
+                SectionData = [
+                    $"Total: {red2Current?.EventStats.DenormData.AllMatches.PointsForTotal} points",
+                    $"Average per match: {red2Current.EventStats.DenormData.AllMatches.PointsForAvg:F1} points"
+                ]
+            });
+            red2.Stats.Add(red2SHThisEvent);
+
+            if (matchesThisTournament != null && matchesThisTournament.Count > 0)
+			{
+				PopulateThisEventColorStats(blue1SHThisEvent, blue1, "Blue", matchesThisTournament);
+                PopulateThisEventColorStats(blue2SHThisEvent, blue2, "Blue", matchesThisTournament);
+                PopulateThisEventColorStats(red1SHThisEvent, red1, "Red", matchesThisTournament);
+                PopulateThisEventColorStats(red2SHThisEvent, red2, "Red", matchesThisTournament);
+            }
 		}
+
+		private static void PopulateThisEventColorStats(SectionHeader sectionHeader, V5RC_Team team, string teamAllianceColor, List<LiveMatch> matchesThisTournament)
+		{
+			List<LiveMatch> colorMatches = [..matchesThisTournament
+				.Where(m => 
+					m.Alliances.Any(
+						a => a.Color.Equals(teamAllianceColor, StringComparison.CurrentCultureIgnoreCase)
+						&& a.Teams.Any(t => t.ID == team.ID)
+					)
+					&& (m.ScoreFinalized || m.BlueScore > 0 || m.RedScore > 0)
+				)
+			];
+			int totalMatchCount = colorMatches.Count;
+			int winCount = colorMatches.Count(x => x.MatchWinner.Equals(teamAllianceColor, StringComparison.CurrentCultureIgnoreCase));
+			int tieCount = colorMatches.Count(x => x.MatchWinner.Equals("Tie", StringComparison.CurrentCultureIgnoreCase));
+			int lossCount = colorMatches.Count(x => x.MatchWinner.Equals(teamAllianceColor.Equals("Blue", StringComparison.CurrentCultureIgnoreCase) ? "Red" : "Blue", StringComparison.CurrentCultureIgnoreCase));
+			sectionHeader.Display.Add(new()
+			{
+				SectionLabel = $"As {teamAllianceColor} Alliance WLT",
+				SectionData = [
+					$"{winCount}-{lossCount}-{tieCount} - {totalMatchCount} Total",
+					$"{(totalMatchCount > 0 ? (double)winCount / totalMatchCount : 0):P1} Win Pct."
+				]
+			});
+        }
 	}
 }

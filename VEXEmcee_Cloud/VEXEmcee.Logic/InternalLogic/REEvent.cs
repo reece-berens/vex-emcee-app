@@ -57,7 +57,27 @@ namespace VEXEmcee.Logic.InternalLogic
 				reAPIRequest.Season = [activeSeason.ID];
 			}
 
-			RE.Objects.PaginatedEvent reAPIResponse = await RE.API.Events.List(reAPIRequest);
+			//RE.Objects.PaginatedEvent reAPIResponse = await RE.API.Events.List(reAPIRequest);
+			RE.Objects.PaginatedEvent reAPIResponse = new()
+			{
+				Meta = new()
+				{
+					Current_Page = 1,
+					Last_Page = 1
+				},
+				Data = [
+					new() {
+						Id = 60144,
+						Name = "Air Capital Showdown Middle School Signature Event: Presented by NWI Aerostructures",
+						Divisions = [
+							new() {
+								Id = 1,
+								Name = "Division 1"
+							}
+						]
+					}
+				]
+			};
 			if (reAPIResponse == null)
 			{
 				//some error occurred reading the data, return no events and an error message
