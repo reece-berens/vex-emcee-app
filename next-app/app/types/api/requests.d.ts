@@ -6,7 +6,7 @@ namespace VEXEmcee {
             }
 
             interface GetMatchInfoRequest extends BaseRequest {
-                MatchID: number;
+                MatchKey: string;
             }
 
             interface GetMatchListRequest extends BaseRequest {

@@ -35,7 +35,7 @@ export default function MatchInfoPage(): JSX.Element {
 
     useEffect(() => { if (matchId) load(matchId); }, [matchId]);
 
-    const goToMatch = (id?: number) => { if (!id) return; router.push(`/match/${id}`); }
+    const goToMatch = (id?: string) => { if (!id) return; router.push(`/match/${id}`); }
 
     const buildMatchIdentifier = (round: number, number: number, instance: number) => {
         let outputString = "";
@@ -78,13 +78,13 @@ export default function MatchInfoPage(): JSX.Element {
                 <>
                     <Grid container alignItems="center" justifyContent="space-between">
                         <Grid item>
-                            <IconButton onClick={() => goToMatch(match.PreviousMatchID)}><ArrowBackIcon /></IconButton>
+                            <IconButton onClick={() => goToMatch(match.PreviousMatchKey)}><ArrowBackIcon /></IconButton>
                         </Grid>
                         <Grid item>
                             <Typography variant="h6">{buildMatchIdentifier(match.MatchRound, match.MatchNumber, match.MatchInstance)}</Typography>
                         </Grid>
                         <Grid item>
-                            <IconButton onClick={() => goToMatch(match.NextMatchID)}><ArrowForwardIcon /></IconButton>
+                            <IconButton onClick={() => goToMatch(match.NextMatchKey)}><ArrowForwardIcon /></IconButton>
                         </Grid>
                     </Grid>
 

@@ -36,7 +36,7 @@ export default function MatchListPage(): JSX.Element {
             {loading && <Typography>Loading...</Typography>}
             <List>
                 {matches.map(m => (
-                    <ListItem key={m.ID} button onClick={() => router.push(`/match/${m.ID}`)}>
+                    <ListItem key={m.Key} button onClick={() => router.push(`/match/${m.Key}`)}>
                         <Paper sx={{ width: '100%', p: 1 }}>
                             <Grid container alignItems="center">
                                 <Grid item xs={5}>

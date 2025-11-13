@@ -3,7 +3,7 @@ namespace VEXEmcee {
         namespace Objects {
             namespace MatchList {
                 interface Base {
-                    ID: number;
+                    Key: string;
                     MatchName: string;
                     SortOrder: number;
                     Scored: boolean;

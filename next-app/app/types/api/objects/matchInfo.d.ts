@@ -10,8 +10,8 @@ namespace VEXEmcee {
                     //Qualification, Round of 16, QF, SF, etc.
                     MatchRound: number;
                     Scored: boolean;
-                    NextMatchID: number;
-                    PreviousMatchID: number;
+                    NextMatchKey: string;
+                    PreviousMatchKey: string;
                 }
 
                 interface V5RC extends Base {

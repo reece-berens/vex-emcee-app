@@ -2,7 +2,7 @@ import Cookies from 'js-cookie';
 
 const GetMatchInfo = async (request: VEXEmcee.API.Requests.GetMatchInfoRequest): Promise<VEXEmcee.API.Responses.GetMatchInfoResponse> => {
     const builtURL = new URL("matchInfo", process.env.NEXT_PUBLIC_BASE_URL);
-    builtURL.searchParams.append("matchID", request.MatchID.toString());
+    builtURL.searchParams.append("matchKey", request.MatchKey.toString());
     const session = Cookies.get('VEXEmceeSession') || '';
 
     const fetchResult = await fetch(builtURL, {
