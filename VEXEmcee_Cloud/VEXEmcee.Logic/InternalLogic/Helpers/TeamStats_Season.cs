@@ -70,7 +70,12 @@ namespace VEXEmcee.Logic.InternalLogic.Helpers
 					teamStats_Season.Stats.DenormData.QualiMatches.WPTotal += ranking.WP;
 					teamStats_Season.Stats.DenormData.QualiMatches.APTotal += ranking.AP;
 					teamStats_Season.Stats.DenormData.QualiMatches.SPTotal += ranking.SP;
-					//method Helpers.TeamStats_Denorm.AddREMatchToDenormData already populates MatchCount, so can use that for averages
+					teamStats_Season.Stats.DenormData.QualiMatches.Win += ranking.Wins;
+					teamStats_Season.Stats.DenormData.QualiMatches.Loss += ranking.Losses;
+					teamStats_Season.Stats.DenormData.QualiMatches.Tie += ranking.Ties;
+					teamStats_Season.Stats.DenormData.QualiMatches.MatchCount += ranking.Wins + ranking.Losses + ranking.Ties;
+					teamStats_Season.Stats.DenormData.QualiMatches.HighScore = Math.Max(teamStats_Season.Stats.DenormData.QualiMatches.HighScore, ranking.High_Score);
+					teamStats_Season.Stats.DenormData.QualiMatches.WinPercentage = teamStats_Season.Stats.DenormData.QualiMatches.MatchCount > 0 ? (teamStats_Season.Stats.DenormData.QualiMatches.Win + (0.5 * teamStats_Season.Stats.DenormData.QualiMatches.Tie)) / (double)teamStats_Season.Stats.DenormData.QualiMatches.MatchCount : 0;
 					teamStats_Season.Stats.DenormData.QualiMatches.WPAvg = teamStats_Season.Stats.DenormData.QualiMatches.MatchCount > 0 ? (double)teamStats_Season.Stats.DenormData.QualiMatches.WPTotal / teamStats_Season.Stats.DenormData.QualiMatches.MatchCount : 0;
                     teamStats_Season.Stats.DenormData.QualiMatches.APAvg = teamStats_Season.Stats.DenormData.QualiMatches.MatchCount > 0 ? (double)teamStats_Season.Stats.DenormData.QualiMatches.APTotal / teamStats_Season.Stats.DenormData.QualiMatches.MatchCount : 0;
                     teamStats_Season.Stats.DenormData.QualiMatches.SPAvg = teamStats_Season.Stats.DenormData.QualiMatches.MatchCount > 0 ? (double)teamStats_Season.Stats.DenormData.QualiMatches.SPTotal / teamStats_Season.Stats.DenormData.QualiMatches.MatchCount : 0;

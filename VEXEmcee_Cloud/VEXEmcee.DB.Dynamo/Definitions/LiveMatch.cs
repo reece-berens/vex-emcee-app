@@ -10,7 +10,7 @@ namespace VEXEmcee.DB.Dynamo.Definitions
 	public class LiveMatch
 	{
 		[DynamoDBHashKey]
-		public int ID { get; set; }
+		public string CompositeKey { get; set; }
 		[DynamoDBRangeKey]
 		public int EventID { get; set; }
 		public int DivisionID { get; set; }

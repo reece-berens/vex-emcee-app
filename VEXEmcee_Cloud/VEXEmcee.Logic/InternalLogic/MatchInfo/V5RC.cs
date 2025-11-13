@@ -29,7 +29,7 @@ namespace VEXEmcee.Logic.InternalLogic.MatchInfo
 			//probably store in the database or some memory cache so that it persists between different lambda context sessions
 
 			//get the match from LiveMatches
-			Definitions.LiveMatch thisMatch = await Accessors.LiveMatch.GetByMatchID(request.MatchID, request.SessionEventID.Value);
+			Definitions.LiveMatch thisMatch = await Accessors.LiveMatch.GetByMatchID(request.MatchKey, request.SessionEventID.Value);
 			if (thisMatch == null)
 			{
 				response.ErrorMessage = "The specified match does not exist.";
@@ -146,18 +146,18 @@ namespace VEXEmcee.Logic.InternalLogic.MatchInfo
 				);
 
 				MatchList.V5RC.SortMatches(matchesThisTournament);
-				int indexOfCurrent = matchesThisTournament.FindIndex(m => m.ID == thisMatch.ID);
+				int indexOfCurrent = matchesThisTournament.FindIndex(m => m.CompositeKey == thisMatch.CompositeKey);
 				if (indexOfCurrent != -1)
 				{
 					if (indexOfCurrent > 0)
 					{
 						Definitions.LiveMatch previousMatch = matchesThisTournament[indexOfCurrent - 1];
-						matchInfo.PreviousMatchID = previousMatch.ID;
+						matchInfo.PreviousMatchKey = previousMatch.CompositeKey;
 					}
 					if (indexOfCurrent < matchesThisTournament.Count - 1)
 					{
 						Definitions.LiveMatch nextMatch = matchesThisTournament[indexOfCurrent + 1];
-						matchInfo.NextMatchID = nextMatch.ID;
+						matchInfo.NextMatchKey = nextMatch.CompositeKey;
                     }
                 }
 

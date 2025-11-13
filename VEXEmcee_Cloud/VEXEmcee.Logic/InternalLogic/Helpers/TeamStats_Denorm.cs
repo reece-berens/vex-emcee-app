@@ -13,47 +13,13 @@ namespace VEXEmcee.Logic.InternalLogic.Helpers
 				RE.Objects.Alliance otherAlliance = match.Alliances.FirstOrDefault(a => a != thisAlliance);
 				if (thisAlliance != null && otherAlliance != null)
 				{
-					//All Matches
-					denormData.AllMatches.MatchCount++;
-					denormData.AllMatches.PointsForTotal += thisAlliance.Score;
-					denormData.AllMatches.PointsAgainstTotal += otherAlliance.Score;
-					denormData.AllMatches.PointsForAvg = denormData.AllMatches.PointsForTotal / (double)denormData.AllMatches.MatchCount;
-					denormData.AllMatches.PointsAgainstAvg = denormData.AllMatches.PointsAgainstTotal / (double)denormData.AllMatches.MatchCount;
-					if (thisAlliance.Score == otherAlliance.Score)
-					{
-						denormData.AllMatches.Tie++;
-					}
-					else if (thisAlliance.Score < otherAlliance.Score)
-					{
-						denormData.AllMatches.Loss++;
-					}
-					else
-					{
-						denormData.AllMatches.Win++;
-					}
-					denormData.AllMatches.WinPercentage = (denormData.AllMatches.Win + (0.5 * denormData.AllMatches.Tie)) / (double)denormData.AllMatches.MatchCount;
-
 					//Quali Matches
 					if (match.Round == MatchRoundType.Qualification)
 					{
-						denormData.QualiMatches.MatchCount++;
 						denormData.QualiMatches.PointsForTotal += thisAlliance.Score;
 						denormData.QualiMatches.PointsAgainstTotal += otherAlliance.Score;
-						denormData.QualiMatches.PointsForAvg = denormData.QualiMatches.PointsForTotal / (double)denormData.QualiMatches.MatchCount;
-						denormData.QualiMatches.PointsAgainstAvg = denormData.QualiMatches.PointsAgainstTotal / (double)denormData.QualiMatches.MatchCount;
-						if (thisAlliance.Score == otherAlliance.Score)
-						{
-							denormData.QualiMatches.Tie++;
-						}
-						else if (thisAlliance.Score < otherAlliance.Score)
-						{
-							denormData.QualiMatches.Loss++;
-						}
-						else
-						{
-							denormData.QualiMatches.Win++;
-						}
-						denormData.QualiMatches.WinPercentage = (denormData.QualiMatches.Win + (0.5 * denormData.QualiMatches.Tie)) / (double)denormData.QualiMatches.MatchCount;
+						//denormData.QualiMatches.PointsForAvg = denormData.QualiMatches.PointsForTotal / (double)denormData.QualiMatches.MatchCount;
+						//denormData.QualiMatches.PointsAgainstAvg = denormData.QualiMatches.PointsAgainstTotal / (double)denormData.QualiMatches.MatchCount;
 						//WP/AP/SP will come in rankings
 					}
 					//Elim Matches
@@ -81,6 +47,23 @@ namespace VEXEmcee.Logic.InternalLogic.Helpers
 						denormData.ElimMatches.WinPercentage = (denormData.ElimMatches.Win + (0.5 * denormData.ElimMatches.Tie)) / (double)denormData.ElimMatches.MatchCount;
 					}
 				}
+			}
+		}
+
+		internal static void BuildAllMatchesData(DenormData denormData)
+		{
+			if (denormData != null)
+			{
+				denormData.AllMatches.MatchCount = denormData.QualiMatches.MatchCount + denormData.ElimMatches.MatchCount;
+				denormData.AllMatches.PointsForTotal = denormData.QualiMatches.PointsForTotal + denormData.ElimMatches.PointsForTotal;
+				denormData.AllMatches.PointsAgainstTotal = denormData.QualiMatches.PointsAgainstTotal + denormData.ElimMatches.PointsAgainstTotal;
+				denormData.AllMatches.PointsForAvg = denormData.AllMatches.MatchCount > 0 ? denormData.AllMatches.PointsForTotal / (double)denormData.AllMatches.MatchCount : 0;
+				denormData.AllMatches.PointsAgainstAvg = denormData.AllMatches.MatchCount > 0 ? denormData.AllMatches.PointsAgainstTotal / (double)denormData.AllMatches.MatchCount : 0;
+				denormData.AllMatches.Win = denormData.QualiMatches.Win + denormData.ElimMatches.Win;
+				denormData.AllMatches.Loss = denormData.QualiMatches.Loss + denormData.ElimMatches.Loss;
+				denormData.AllMatches.Tie = denormData.QualiMatches.Tie + denormData.ElimMatches.Tie;
+				denormData.AllMatches.WinPercentage = denormData.AllMatches.MatchCount > 0 ? 
+					(denormData.AllMatches.Win + (0.5 * denormData.AllMatches.Tie)) / (double)denormData.AllMatches.MatchCount : 0;
 			}
 		}
 	}
