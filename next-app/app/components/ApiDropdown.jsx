@@ -1,16 +1,51 @@
+/**
+ * ApiDropdown Component
+ *
+ * A fully accessible custom dropdown component that fetches options from APIs or custom functions.
+ * Replaces native <select> elements with full styling control and better UX.
+ *
+ * Features:
+ * - Fetches data from API endpoints or custom functions
+ * - Full keyboard navigation (Arrow keys, Enter, Escape)
+ * - Click outside to close
+ * - Loading and error states
+ * - Customizable field mapping for different data structures
+ *
+ * @param {string} endpoint - API endpoint URL to fetch options from
+ * @param {Function} fetchFunction - Custom function to fetch options (alternative to endpoint)
+ * @param {string} dataField - Field name containing the options array in API response (default: "programs")
+ * @param {string} placeholder - Text to show when no option is selected
+ * @param {any} value - Currently selected value
+ * @param {Function} onChange - Callback when selection changes
+ * @param {string} displayField - Object property to display as option text
+ * @param {string} valueField - Object property to use as option value
+ * @param {string} className - CSS class for styling
+ */
+
 import { useState, useEffect, useRef } from "react";
-import { getPrograms } from "../serverConnector/programs";
 
-export default function ApiDropdown({ endpoint, placeholder, value, onChange, displayField, valueField, className }) {
-	const [options, setOptions] = useState([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
-	const [isOpen, setIsOpen] = useState(false);
-	const [focusedIndex, setFocusedIndex] = useState(-1);
+export default function ApiDropdown({
+	endpoint,
+	fetchFunction,
+	dataField = "programs", // default to 'programs' for backward compatibility
+	placeholder,
+	value,
+	onChange,
+	displayField,
+	valueField,
+	className,
+}) {
+	// Component state
+	const [options, setOptions] = useState([]); // Available dropdown options
+	const [loading, setLoading] = useState(true); // Loading state during API call
+	const [error, setError] = useState(null); // Error message if API call fails
+	const [isOpen, setIsOpen] = useState(false); // Whether dropdown is expanded
+	const [focusedIndex, setFocusedIndex] = useState(-1); // Currently focused option for keyboard nav
 
+	// Reference to dropdown container for click-outside detection
 	const dropdownRef = useRef(null);
 
-	// Handle clicking outside to close dropdown
+	// Close dropdown when clicking outside
 	useEffect(() => {
 		const handleClickOutside = (event) => {
 			if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -25,15 +60,42 @@ export default function ApiDropdown({ endpoint, placeholder, value, onChange, di
 		}
 	}, [isOpen]);
 
+	// Fetch options from API or custom function on component mount
 	useEffect(() => {
-		// This function runs when component mounts
 		const fetchOptions = async () => {
 			try {
 				setLoading(true);
-				const result = await getPrograms();
+				let result;
 
+				if (fetchFunction) {
+					// Use provided custom function (e.g., getPrograms)
+					result = await fetchFunction();
+				} else if (endpoint) {
+					// Make generic API call to endpoint
+					const response = await fetch(endpoint);
+					if (!response.ok) {
+						throw new Error(`API call failed: ${response.status}`);
+					}
+					const data = await response.json();
+
+					// Handle different API response formats:
+					// 1. Direct array: [{ id: 1, name: "Item" }, ...]
+					// 2. Object with success flag: { success: true, data: [...] }
+					// 3. Plain object: { items: [...] }
+					if (Array.isArray(data)) {
+						result = { success: true, [dataField]: data };
+					} else if (data.success !== undefined) {
+						result = data; // Use response as-is if it has success field
+					} else {
+						// Assume it's a successful response, wrap it
+						result = { success: true, [dataField]: data };
+					}
+				}
+
+				// Extract options from result based on success status
 				if (result.success) {
-					setOptions(result.programs);
+					const dataArray = dataField ? result[dataField] : result;
+					setOptions(dataArray);
 					setError(null);
 				} else {
 					setError(result.error);
@@ -43,13 +105,14 @@ export default function ApiDropdown({ endpoint, placeholder, value, onChange, di
 				setError(err.message);
 				setOptions([]);
 			} finally {
-				setLoading(false); // Always clear loading
+				setLoading(false); // Always clear loading state
 			}
 		};
 
 		fetchOptions();
-	}, []); // Empty array = run once when component mounts
+	}, []); // Run once when component mounts
 
+	// Loading state UI
 	if (loading) {
 		return (
 			<div className={`${className} custom-dropdown`}>
@@ -58,6 +121,7 @@ export default function ApiDropdown({ endpoint, placeholder, value, onChange, di
 		);
 	}
 
+	// Error state UI
 	if (error) {
 		return (
 			<div className={`${className} custom-dropdown`}>
@@ -72,6 +136,7 @@ export default function ApiDropdown({ endpoint, placeholder, value, onChange, di
 				ref={dropdownRef}
 				className={`${className} custom-dropdown ${isOpen ? "open" : ""}`}
 				onClick={() => {
+					// Toggle dropdown open/closed
 					if (isOpen) {
 						setIsOpen(false);
 						setFocusedIndex(-1);
@@ -80,6 +145,7 @@ export default function ApiDropdown({ endpoint, placeholder, value, onChange, di
 					}
 				}}
 				onKeyDown={(e) => {
+					// Keyboard navigation
 					if (e.key === "Enter" || e.key === " ") {
 						e.preventDefault();
 						if (isOpen && focusedIndex >= 0) {
@@ -112,6 +178,8 @@ export default function ApiDropdown({ endpoint, placeholder, value, onChange, di
 				<span className="dropdown-text">
 					{value ? options.find((opt) => opt[valueField] === value)?.[displayField] : placeholder}
 				</span>
+
+				{/* Dropdown arrow icon */}
 				<span className="dropdown-arrow">
 					<svg
 						width="20"
@@ -129,6 +197,7 @@ export default function ApiDropdown({ endpoint, placeholder, value, onChange, di
 					</svg>
 				</span>
 
+				{/* Dropdown options list */}
 				{isOpen && (
 					<ul className="dropdown-list">
 						{options.map((option, index) => (
@@ -145,6 +214,7 @@ export default function ApiDropdown({ endpoint, placeholder, value, onChange, di
 								}}
 							>
 								<span>{option[displayField]}</span>
+								{/* Checkmark for selected item */}
 								{value === option[valueField] && (
 									<svg
 										width="20"

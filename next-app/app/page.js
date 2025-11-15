@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import ApiDropdown from "./components/ApiDropdown";
 import { useScrollY } from "./components/ScrollWrapper";
 import { useSetPageTitle } from "./components/ScrollWrapper";
+import { getPrograms } from "./serverConnector/programs";
 
 export default function Home() {
 	const scrollY = useScrollY();
@@ -35,7 +36,8 @@ export default function Home() {
 					>
 						<h2 className="text-base text-bold text-white">Search events by program, region, and name</h2>
 						<ApiDropdown
-							endpoint="http://localhost:5181/VEXEmcee/dynamogetselectableprograms" // Add the API endpoint
+							fetchFunction={getPrograms}
+							dataField="programs"
 							placeholder="Program (V5, IQ, U, etc.)"
 							value={selectedProgram}
 							onChange={setSelectedProgram}
