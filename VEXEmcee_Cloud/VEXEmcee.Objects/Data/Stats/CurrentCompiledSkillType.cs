@@ -11,6 +11,6 @@ namespace VEXEmcee.Objects.Data.Stats
 		public int SeasonHighScore { get; set; }
 
 		[JsonPropertyName("T")]
-		public bool SeasonHighScoreToday { get; set; }
+		public bool SeasonHighScoreThisEvent { get; set; }
 	}
 }

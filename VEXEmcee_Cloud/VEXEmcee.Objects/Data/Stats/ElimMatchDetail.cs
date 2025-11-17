@@ -4,7 +4,7 @@ namespace VEXEmcee.Objects.Data.Stats
 {
 	public class ElimMatchDetail : MatchDetail
 	{
-		[JsonPropertyName("A")]
+		[JsonPropertyName("T")]
 		public string TeamAlliance_denorm { get; set; }
 		[JsonPropertyName("S")]
 		public int TeamScore_denorm { get; set; }

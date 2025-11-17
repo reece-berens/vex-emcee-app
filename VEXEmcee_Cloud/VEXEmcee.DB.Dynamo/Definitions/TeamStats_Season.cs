@@ -1,6 +1,4 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2.DocumentModel;
-using System.Text.Json;
 using VEXEmcee.Objects.Data.Stats;
 
 namespace VEXEmcee.DB.Dynamo.Definitions
@@ -9,46 +7,46 @@ namespace VEXEmcee.DB.Dynamo.Definitions
 	public class TeamStats_Season
 	{
 		[DynamoDBHashKey]
-		public int TeamID { get; set; }
-		[DynamoDBProperty(typeof(SeasonStatsTypeConverter))]
-		public TeamStatsSeason Stats { get; set; }
-		public List<int> EventsIncluded { get; set; }
-	}
-
-	public class SeasonStatsTypeConverter : IPropertyConverter
-	{
-		public object FromEntry(DynamoDBEntry entry)
+		public string CompositeKey
 		{
-			string entryString = entry.AsString();
-			if (string.IsNullOrWhiteSpace(entryString))
+			get
 			{
-				return null;
+				return GetCompositeKey(SeasonID, TeamID);
 			}
-			else
+			set
 			{
-				return JsonSerializer.Deserialize<TeamStatsSeason>(entryString);
+				string compositeKey = value;
+				if (string.IsNullOrWhiteSpace(compositeKey))
+				{
+					SeasonID = 0;
+					TeamID = 0;
+				}
+				else
+				{
+					string[] parts = compositeKey.Split('~');
+					if (parts.Length == 2 && int.TryParse(parts[0], out int eventID) && int.TryParse(parts[1], out int teamID))
+					{
+						SeasonID = eventID;
+						TeamID = teamID;
+					}
+					else
+					{
+						throw new FormatException("Composite key format is invalid. Expected format: 'seasonID~teamID'");
+					}
+				}
 			}
 		}
+		[DynamoDBRangeKey]
+		public int TeamID { get; set; }
+		public int SeasonID { get; set; }
+		[DynamoDBProperty(typeof(JsonPropertyConverter<TeamStatsSeason>))]
+		public TeamStatsSeason Stats { get; set; }
+		[DynamoDBProperty(typeof(JsonPropertyConverter<List<int>>))]
+		public List<int> EventsIncluded { get; set; }
 
-		public DynamoDBEntry ToEntry(object value)
+		public static string GetCompositeKey(int seasonID, int teamID)
 		{
-			if (value is TeamStatsSeason)
-			{
-				string json = JsonSerializer.Serialize(value as TeamStatsSeason);
-				return new Primitive
-				{
-					Value = json,
-					Type = DynamoDBEntryType.String
-				};
-			}
-			else
-			{
-				return new Primitive
-				{
-					Value = null,
-					Type = DynamoDBEntryType.String
-				};
-			}
+			return $"{seasonID}~{teamID}";
 		}
 	}
 }

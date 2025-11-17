@@ -32,7 +32,7 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 						ExpressionStatement = "Selectable = :selectable",
 						ExpressionAttributeValues = new Dictionary<string, Amazon.DynamoDBv2.DocumentModel.DynamoDBEntry>()
 						{
-							{":selectable", new Amazon.DynamoDBv2.DocumentModel.DynamoDBBool(true) }
+							{":selectable", new Amazon.DynamoDBv2.DocumentModel.Primitive("1", true) }
 						}
 					}
 				});
@@ -54,6 +54,33 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 			{
 				Console.WriteLine($"Exception - {MethodBase.GetCurrentMethod()?.Name} - {ex.Message}");
 				throw new DynamoDBException(3, $"Generic exception received: {ex.Message}");
+			}
+		}
+
+		/// <summary>
+		/// Saves the specified program to the database.
+		/// </summary>
+		/// <remarks>This method validates the database table associated with <see cref="Definitions.Program"/> before
+		/// saving the program. If the save operation fails due to a DynamoDB-specific issue, the exception is logged and
+		/// rethrown. For other exceptions, a <see cref="DynamoDBException"/> is thrown with additional context.</remarks>
+		/// <param name="program">The program object to be saved. This must be a valid instance of <see cref="Definitions.Program"/>.</param>
+		/// <exception cref="DynamoDBException">Thrown if a DynamoDB-specific error occurs during the save operation or if a generic exception is encountered.</exception>
+		public static async Task SaveProgram(Definitions.Program program)
+		{
+			try
+			{
+				await Common.ValidateTable<Definitions.Program>();
+				await Dynamo.Context.SaveAsync(program);
+			}
+			catch (DynamoDBException ex)
+			{
+				ex.LogException();
+				throw;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Exception - {MethodBase.GetCurrentMethod()?.Name} - {ex.Message}");
+				throw new DynamoDBException(7, $"Generic exception received: {ex.Message}");
 			}
 		}
 	}

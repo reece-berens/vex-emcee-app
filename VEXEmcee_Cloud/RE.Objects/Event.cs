@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace RE.Objects
 {
 	public class Event
@@ -14,6 +16,7 @@ namespace RE.Objects
 		public List<Division> Divisions { get; set; }
 		public EventLevel Level { get; set; }
 		public bool Ongoing { get; set; }
+		[JsonPropertyName("awards_finalized")]
 		public bool AwardsFinalized { get; set; }
 		public EventType EventType { get; set; }
 	}

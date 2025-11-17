@@ -4,6 +4,13 @@ namespace VEXEmcee.Objects.Data.Stats
 {
 	public class TeamStatsSeason
 	{
+		public TeamStatsSeason()
+		{
+			Awards = [];
+			DenormData = new();
+			Skills = [];
+			Events = [];
+		}
 		[JsonPropertyName("D")]
 		public DenormData DenormData { get; set; }
 		[JsonPropertyName("A")]

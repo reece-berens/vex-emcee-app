@@ -28,11 +28,13 @@ namespace RE.API
 
 			try
 			{
+				await Task.Delay(Random.Shared.Next(1250, 2000)); //being a good steward of the API and not hitting it too fast
 				HttpRequestMessage request = new()
 				{
 					Method = HttpMethod.Get,
 					RequestUri = new(_baseUri, relativePath),
 				};
+				Console.WriteLine(relativePath);
 				request.Headers.Authorization = new("Bearer", _accessToken);
 				request.Headers.Accept.Add(new("application/json"));
 
@@ -50,7 +52,14 @@ namespace RE.API
 				else
 				{
 					string errorResponse = await response.Content.ReadAsStringAsync();
-					BaseDataResponse dataResponse = new()
+					Console.WriteLine(response.StatusCode);
+					Console.WriteLine(errorResponse);
+                    if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+                    {
+                        Console.WriteLine("RE.API.Accessor.BaseRequestData: Hit rate limit on RE API, immediately exiting and can continue later.");
+						Environment.Exit(1);
+                    }
+                    BaseDataResponse dataResponse = new()
 					{
 						WasSuccessful = false,
 						Error = JsonSerializer.Deserialize<RE.Objects.Error>(errorResponse),

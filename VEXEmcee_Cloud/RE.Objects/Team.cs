@@ -1,5 +1,8 @@
+using System.Diagnostics;
+
 namespace RE.Objects
 {
+	[DebuggerDisplay("{Number} {Team_Name}")]
 	public class Team
 	{
 		public int Id { get; set; }

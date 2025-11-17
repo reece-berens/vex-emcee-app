@@ -10,6 +10,6 @@ namespace RE.Objects
 		public IdInfo Division { get; set; }
 		public int Rank { get; set; }
 		public int Score { get; set; }
-		public int Attempts { get; set; }
+		public int? Attempts { get; set; }
 	}
 }

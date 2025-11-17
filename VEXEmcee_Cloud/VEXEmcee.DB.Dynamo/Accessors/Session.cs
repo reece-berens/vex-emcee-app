@@ -20,9 +20,9 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 			try
 			{
 				await Common.ValidateTable<Definitions.Session>();
-
+				
 				Definitions.Session session = await Dynamo.Context.LoadAsync<Definitions.Session>(sessionID);
-
+				
 				return session;
 			}
 			catch (DynamoDBException ex)
@@ -30,9 +30,14 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 				ex.LogException();
 				throw;
 			}
+			catch (System.InvalidOperationException ex)
+			{
+				Console.WriteLine($"InvalidOperationException - the key doesn't exist - return null for better error message");
+				return null;
+			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"Exception - {MethodBase.GetCurrentMethod()?.Name} - {ex.Message}");
+				Console.WriteLine($"Exception - {MethodBase.GetCurrentMethod()?.Name} - {ex.Message} {ex.GetType().FullName}");
 				throw new DynamoDBException(5, $"Generic exception received: {ex.Message}");
 			}
 		}
@@ -48,7 +53,7 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 		/// <exception cref="DynamoDBException">
 		/// Thrown when a DynamoDB-specific error occurs or a generic exception is caught during the registration process.
 		/// </exception>
-		public static async Task<Definitions.Session> RegisterSession(string sessionID)
+		public static async Task<Definitions.Session> RegisterNewSession(string sessionID)
 		{
 			try
 			{
@@ -73,6 +78,34 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 			{
 				Console.WriteLine($"Exception - {MethodBase.GetCurrentMethod()?.Name} - {ex.Message}");
 				throw new DynamoDBException(4, $"Generic exception received: {ex.Message}");
+			}
+		}
+
+		/// <summary>
+		/// Saves the specified session object to the database asynchronously.
+		/// </summary>
+		/// <remarks>This method validates the session table before saving the session object. If an exception occurs
+		/// during the save operation, it is logged and rethrown.</remarks>
+		/// <param name="session">The session object to be saved. Cannot be null.</param>
+		/// <returns>A task that represents the asynchronous save operation.</returns>
+		/// <exception cref="DynamoDBException">Thrown if an error occurs while interacting with the database. Thrown if a generic exception occurs during the
+		/// save operation.</exception>
+		public static async Task SaveSession(Definitions.Session session)
+		{
+			try
+			{
+				await Common.ValidateTable<Definitions.Session>();
+				await Dynamo.Context.SaveAsync(session);
+			}
+			catch (DynamoDBException ex)
+			{
+				ex.LogException();
+				throw;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Exception - {MethodBase.GetCurrentMethod()?.Name} - {ex.Message}");
+				throw new DynamoDBException(9, $"Generic exception received: {ex.Message}");
 			}
 		}
 	}
