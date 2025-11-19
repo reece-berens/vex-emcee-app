@@ -26,7 +26,7 @@ export default function MatchInfoPage(): JSX.Element {
     const load = async (id: string) => {
         setLoading(true);
         try {
-            const resp = await api.GetMatchInfo({ MatchID: Number(id) } as any);
+            const resp = await api.GetMatchInfo({ MatchKey: id } as Partial<VEXEmcee.API.Requests.GetMatchInfoRequest>);
             if (resp && resp.Success && resp.MatchInfo) setMatch(resp.MatchInfo as any);
             else setMatch(null);
         } catch (e) { console.error(e); setMatch(null); }
