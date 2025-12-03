@@ -194,6 +194,17 @@ namespace VEXEmcee.Logic.InternalLogic.MatchInfo
 					$"Elimination Matches: {blue1Season?.Stats.DenormData?.ElimMatches?.Win ?? 0}-{blue1Season?.Stats.DenormData?.ElimMatches?.Loss ?? 0}-{blue1Season?.Stats.DenormData?.ElimMatches?.Tie ?? 0} - {blue1Season?.Stats.DenormData?.ElimMatches?.WinPercentage:P1} Win Pct."
 				],
 			});
+			if (blue1Season.Stats.Awards?.Count > 0)
+			{
+				blue1SHSeason.Display.Add(new()
+				{
+					SectionLabel = "Awards",
+					SectionData = [
+						$"{blue1Season.Stats.Awards.Count} Total Awards",
+						$"{blue1Season.Stats.Awards.Count(Helpers.Award.IsJudgedAward)} Judged Awards"
+					]
+				});
+			}
 			blue1.Stats.Add(blue1SHSeason);
 
 			SectionHeader blue2SHSeason = new()
@@ -211,6 +222,17 @@ namespace VEXEmcee.Logic.InternalLogic.MatchInfo
 					$"Elimination Matches: {blue2Season?.Stats.DenormData?.ElimMatches?.Win ?? 0}-{blue2Season?.Stats.DenormData?.ElimMatches?.Loss ?? 0}-{blue2Season?.Stats.DenormData?.ElimMatches?.Tie ?? 0} - {blue2Season?.Stats.DenormData?.ElimMatches?.WinPercentage:P1} Win Pct."
 				],
 			});
+			if (blue2Season.Stats.Awards?.Count > 0)
+			{
+				blue2SHSeason.Display.Add(new()
+				{
+					SectionLabel = "Awards",
+					SectionData = [
+						$"{blue2Season.Stats.Awards.Count} Total Awards",
+						$"{blue2Season.Stats.Awards.Count(Helpers.Award.IsJudgedAward)} Judged Awards"
+					]
+				});
+			}
 			blue2.Stats.Add(blue2SHSeason);
 
 			SectionHeader red1SHSeason = new()
@@ -228,6 +250,17 @@ namespace VEXEmcee.Logic.InternalLogic.MatchInfo
 					$"Elimination Matches: {red1Season?.Stats.DenormData?.ElimMatches?.Win ?? 0}-{red1Season?.Stats.DenormData?.ElimMatches?.Loss ?? 0}-{red1Season?.Stats.DenormData?.ElimMatches?.Tie ?? 0} - {red1Season?.Stats.DenormData?.ElimMatches?.WinPercentage:P1} Win Pct."
 				],
 			});
+			if (red1Season.Stats.Awards?.Count > 0)
+			{
+				red1SHSeason.Display.Add(new()
+				{
+					SectionLabel = "Awards",
+					SectionData = [
+						$"{red1Season.Stats.Awards.Count} Total Awards",
+						$"{red1Season.Stats.Awards.Count(Helpers.Award.IsJudgedAward)} Judged Awards"
+					]
+				});
+			}
 			red1.Stats.Add(red1SHSeason);
 
 			SectionHeader red2SHSeason = new()
@@ -245,6 +278,17 @@ namespace VEXEmcee.Logic.InternalLogic.MatchInfo
 					$"Elimination Matches: {red2Season?.Stats.DenormData?.ElimMatches?.Win ?? 0}-{red2Season?.Stats.DenormData?.ElimMatches?.Loss ?? 0}-{red2Season?.Stats.DenormData?.ElimMatches?.Tie ?? 0} - {red2Season?.Stats.DenormData?.ElimMatches?.WinPercentage:P1} Win Pct."
 				],
 			});
+			if (red2Season.Stats.Awards?.Count > 0)
+			{
+				red2SHSeason.Display.Add(new()
+				{
+					SectionLabel = "Awards",
+					SectionData = [
+						$"{red2Season.Stats.Awards.Count} Total Awards",
+						$"{red2Season.Stats.Awards.Count(Helpers.Award.IsJudgedAward)} Judged Awards"
+					]
+				});
+			}
 			red2.Stats.Add(red2SHSeason);
 
             SectionHeader blue1SHThisEvent = new()
@@ -269,14 +313,30 @@ namespace VEXEmcee.Logic.InternalLogic.MatchInfo
                     $"{blue1Current?.EventStats.DenormData?.QualiMatches?.WinPercentage:P1} Win Pct."
                 ],
             });
-            blue1SHThisEvent.Display.Add(new()
-            {
-                SectionLabel = "Points Scored",
-                SectionData = [
-                    $"Total: {blue1Current?.EventStats.DenormData.AllMatches.PointsForTotal} points",
-                    $"Average per match: {blue1Current.EventStats.DenormData.AllMatches.PointsForAvg:F1} points"
-                ]
-            });
+			List<LiveMatch> blue1TeamMatchesThisEvent = [..matchesThisTournament
+					.Where(m =>
+						m.Alliances.Any(a => a.Teams.Any(t => t.ID == blue1.ID))
+						&& (m.ScoreFinalized || m.BlueScore > 0 || m.RedScore > 0)
+					)
+				];
+			List<LiveMatchAlliance> blue1TeamAlliances = [];
+			foreach (LiveMatch match in blue1TeamMatchesThisEvent)
+			{
+				LiveMatchAlliance alliance = match.Alliances.FirstOrDefault(a => a.Teams.Any(t => t.ID == blue1.ID));
+				if (alliance != null)
+				{
+					blue1TeamAlliances.Add(alliance);
+				}
+			}
+			int blue1PointsScored = blue1TeamAlliances.Sum(a => a.Score);
+			blue1SHThisEvent.Display.Add(new()
+			{
+				SectionLabel = "Points Scored",
+				SectionData = [
+					$"Total: {blue1PointsScored} points",
+						$"Average per match: {(blue1TeamMatchesThisEvent.Count > 0 ? blue1PointsScored / (double)blue1TeamMatchesThisEvent.Count : 0):F1} points"
+				]
+			});
             blue1.Stats.Add(blue1SHThisEvent);
 
             SectionHeader blue2SHThisEvent = new()
@@ -301,15 +361,31 @@ namespace VEXEmcee.Logic.InternalLogic.MatchInfo
                     $"{blue2Current?.EventStats.DenormData?.QualiMatches?.WinPercentage:P1} Win Pct."
                 ],
             });
-            blue2SHThisEvent.Display.Add(new()
-            {
-                SectionLabel = "Points Scored",
-                SectionData = [
-                    $"Total: {blue2Current?.EventStats.DenormData.AllMatches.PointsForTotal} points",
-                    $"Average per match: {blue2Current.EventStats.DenormData.AllMatches.PointsForAvg:F1} points"
-                ]
-            });
-            blue2.Stats.Add(blue2SHThisEvent);
+			List<LiveMatch> blue2TeamMatchesThisEvent = [..matchesThisTournament
+					.Where(m =>
+						m.Alliances.Any(a => a.Teams.Any(t => t.ID == blue2.ID))
+						&& (m.ScoreFinalized || m.BlueScore > 0 || m.RedScore > 0)
+					)
+				];
+			List<LiveMatchAlliance> blue2TeamAlliances = [];
+			foreach (LiveMatch match in blue1TeamMatchesThisEvent)
+			{
+				LiveMatchAlliance alliance = match.Alliances.FirstOrDefault(a => a.Teams.Any(t => t.ID == blue2.ID));
+				if (alliance != null)
+				{
+					blue2TeamAlliances.Add(alliance);
+				}
+			}
+			int blue2PointsScored = blue2TeamAlliances.Sum(a => a.Score);
+			blue2SHThisEvent.Display.Add(new()
+			{
+				SectionLabel = "Points Scored",
+				SectionData = [
+					$"Total: {blue2PointsScored} points",
+						$"Average per match: {(blue2TeamMatchesThisEvent.Count > 0 ? blue2PointsScored / (double)blue2TeamMatchesThisEvent.Count : 0):F1} points"
+				]
+			});
+			blue2.Stats.Add(blue2SHThisEvent);
 
             SectionHeader red1SHThisEvent = new()
             {
@@ -333,15 +409,31 @@ namespace VEXEmcee.Logic.InternalLogic.MatchInfo
                     $"{red1Current?.EventStats.DenormData?.QualiMatches?.WinPercentage:P1} Win Pct."
                 ],
             });
-            red1SHThisEvent.Display.Add(new()
-            {
-                SectionLabel = "Points Scored",
-                SectionData = [
-                    $"Total: {red1Current?.EventStats.DenormData.AllMatches.PointsForTotal} points",
-                    $"Average per match: {red1Current.EventStats.DenormData.AllMatches.PointsForAvg:F1} points"
-                ]
-            });
-            red1.Stats.Add(red1SHThisEvent);
+			List<LiveMatch> red1TeamMatchesThisEvent = [..matchesThisTournament
+					.Where(m =>
+						m.Alliances.Any(a => a.Teams.Any(t => t.ID == red1.ID))
+						&& (m.ScoreFinalized || m.BlueScore > 0 || m.RedScore > 0)
+					)
+				];
+			List<LiveMatchAlliance> red1TeamAlliances = [];
+			foreach (LiveMatch match in red1TeamMatchesThisEvent)
+			{
+				LiveMatchAlliance alliance = match.Alliances.FirstOrDefault(a => a.Teams.Any(t => t.ID == red1.ID));
+				if (alliance != null)
+				{
+					red1TeamAlliances.Add(alliance);
+				}
+			}
+			int red1PointsScored = red1TeamAlliances.Sum(a => a.Score);
+			red1SHThisEvent.Display.Add(new()
+			{
+				SectionLabel = "Points Scored",
+				SectionData = [
+					$"Total: {red1PointsScored} points",
+						$"Average per match: {(red1TeamMatchesThisEvent.Count > 0 ? red1PointsScored / (double)red1TeamMatchesThisEvent.Count : 0):F1} points"
+				]
+			});
+			red1.Stats.Add(red1SHThisEvent);
 
             SectionHeader red2SHThisEvent = new()
             {
@@ -365,15 +457,31 @@ namespace VEXEmcee.Logic.InternalLogic.MatchInfo
                     $"{red2Current?.EventStats.DenormData?.QualiMatches?.WinPercentage:P1} Win Pct."
                 ],
             });
+			List<LiveMatch> red2TeamMatchesThisEvent = [..matchesThisTournament
+					.Where(m =>
+						m.Alliances.Any(a => a.Teams.Any(t => t.ID == red2.ID))
+						&& (m.ScoreFinalized || m.BlueScore > 0 || m.RedScore > 0)
+					)
+				];
+			List<LiveMatchAlliance> red2TeamAlliances = [];
+			foreach (LiveMatch match in red2TeamMatchesThisEvent)
+			{
+				LiveMatchAlliance alliance = match.Alliances.FirstOrDefault(a => a.Teams.Any(t => t.ID == red2.ID));
+				if (alliance != null)
+				{
+					red2TeamAlliances.Add(alliance);
+				}
+			}
+			int red2PointsScored = red2TeamAlliances.Sum(a => a.Score);
 			red2SHThisEvent.Display.Add(new()
-            {
-                SectionLabel = "Points Scored",
-                SectionData = [
-                    $"Total: {red2Current?.EventStats.DenormData.AllMatches.PointsForTotal} points",
-                    $"Average per match: {red2Current.EventStats.DenormData.AllMatches.PointsForAvg:F1} points"
-                ]
-            });
-            red2.Stats.Add(red2SHThisEvent);
+			{
+				SectionLabel = "Points Scored",
+				SectionData = [
+					$"Total: {red2PointsScored} points",
+						$"Average per match: {(red2TeamMatchesThisEvent.Count > 0 ? red2PointsScored / (double)red2TeamMatchesThisEvent.Count : 0):F1} points"
+				]
+			});
+			red2.Stats.Add(red2SHThisEvent);
 
             if (matchesThisTournament != null && matchesThisTournament.Count > 0)
 			{

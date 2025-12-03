@@ -205,17 +205,17 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 						Alliances =
 						[
 							new LiveMatchAlliance()
-								{
-									Color = "Red",
-									Score = redAlliance.Score,
-									Teams = [..redAlliance.Teams.Select(t => new LiveMatchAllianceTeam() { ID = t?.Team?.Id ?? 0, Number = t.Team.Name })]
-								},
-								new LiveMatchAlliance()
-								{
-									Color = "Blue",
-									Score = blueAlliance.Score,
-									Teams = [..blueAlliance.Teams.Select(t => new LiveMatchAllianceTeam() { ID = t?.Team?.Id ?? 0, Number = t.Team.Name })]
-								}
+							{
+								Color = "Red",
+								Score = redAlliance.Score,
+								Teams = [..redAlliance.Teams.Select(t => new LiveMatchAllianceTeam() { ID = t?.Team?.Id ?? 0, Number = t.Team.Name })]
+							},
+							new LiveMatchAlliance()
+							{
+								Color = "Blue",
+								Score = blueAlliance.Score,
+								Teams = [..blueAlliance.Teams.Select(t => new LiveMatchAllianceTeam() { ID = t?.Team?.Id ?? 0, Number = t.Team.Name })]
+							}
 						],
 					};
 					currentEventMatches.Add(liveMatch);
@@ -259,12 +259,22 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 					{
 						liveMatch.BlueScore = blueAlliance.Score;
 						liveMatch.MatchWinner = blueAlliance.Score > redAlliance.Score ? "Blue" : (redAlliance.Score > blueAlliance.Score ? "Red" : "Tie");
+						LiveMatchAlliance lma = liveMatch.Alliances.FirstOrDefault(a => a.Color.Equals("Blue", StringComparison.OrdinalIgnoreCase));
+						if (lma != null)
+						{
+							lma.Score = blueAlliance.Score;
+						}
 						matchUpdated = true;
 					}
 					if (liveMatch.RedScore != redAlliance.Score)
 					{
 						liveMatch.RedScore = redAlliance.Score;
 						liveMatch.MatchWinner = blueAlliance.Score > redAlliance.Score ? "Blue" : (redAlliance.Score > blueAlliance.Score ? "Red" : "Tie");
+						LiveMatchAlliance lma = liveMatch.Alliances.FirstOrDefault(a => a.Color.Equals("Red", StringComparison.OrdinalIgnoreCase));
+						if (lma != null)
+						{
+							lma.Score = redAlliance.Score;
+						}
 						matchUpdated = true;
 					}
 					//check alliances for different teams

@@ -109,12 +109,22 @@ namespace VEXEmcee.Logic.InternalLogic.TeamInfo
 						&& (m.ScoreFinalized || m.BlueScore > 0 || m.RedScore > 0)
 					)
 				];
+				List<Definitions.LiveMatchAlliance> teamAlliances = [];
+				foreach (Definitions.LiveMatch match in teamMatchesThisEvent)
+				{
+					Definitions.LiveMatchAlliance alliance = match.Alliances.FirstOrDefault(a => a.Teams.Any(t => t.ID == thisTeam.ID));
+					if (alliance != null)
+					{
+						teamAlliances.Add(alliance);
+					}
+				}
+				int pointsScored = teamAlliances.Sum(a => a.Score);
 				currentEventSection.Display.Add(new()
 				{
 					SectionLabel = "Points Scored",
 					SectionData = [
-						$"Total: {teamMatchesThisEvent.Sum(m => m.Alliances.FirstOrDefault(a => a.Teams.Any(t => t.ID == thisTeam.ID))?.Score ?? 0)} points",
-						$"Average per match: {(teamMatchesThisEvent.Count > 0 ? (double)teamMatchesThisEvent.Sum(m => m.Alliances.FirstOrDefault(a => a.Teams.Any(t => t.ID == thisTeam.ID))?.Score ?? 0) / teamMatchesThisEvent.Count : 0):F1} points"
+						$"Total: {pointsScored} points",
+						$"Average per match: {(teamMatchesThisEvent.Count > 0 ? pointsScored / (double)teamMatchesThisEvent.Count : 0):F1} points"
 					]
 				});
 
