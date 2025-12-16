@@ -1,4 +1,5 @@
-﻿using VEXEmcee.DB.Dynamo.Definitions;
+﻿using RE.Objects;
+using VEXEmcee.DB.Dynamo.Definitions;
 using VEXEmcee.Objects.Data.Stats;
 
 namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
@@ -68,13 +69,19 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 					{
 						//find all matches this team has participated in
 						List<RE.Objects.MatchObj> matchesForTeam = [.. matchesAtDivision.Where(m => m.Alliances.Any(a => a.Teams.Any(t => t.Team.Id == teamID)))];
+						RE.Objects.Ranking rankingForTeam = rankingsAtDivision.FirstOrDefault(r => r.Team.Id == teamID);
+						Helpers.TeamStats_Season.AddInfoToSeasonEventStats(teamStats_Season, internalRefs.Event.ID, internalRefs.Event.Name, divisionID, matchesForTeam, rankingForTeam);
 						//populate the TeamStats_Season object with the match data
 						foreach (RE.Objects.MatchObj match in matchesForTeam)
 						{
 							Helpers.TeamStats_Denorm.AddREMatchToDenormData(teamID, teamStats_Season.Stats.DenormData, match);
 						}
-						RE.Objects.Ranking rankingForTeam = rankingsAtDivision.FirstOrDefault(r => r.Team.Id == teamID);
-						Helpers.TeamStats_Season.AddInfoToSeasonEventStats(teamStats_Season, internalRefs.Event.ID, internalRefs.Event.Name, divisionID, matchesForTeam, rankingForTeam);
+
+						//build AllMatches information from Quali and Elim matches here
+						Helpers.TeamStats_Denorm.BuildAllMatchesData(teamStats_Season.Stats.DenormData);
+						//also need to calculate quali PFA/PAA once scores from all matches are added to the stats
+						teamStats_Season.Stats.DenormData.QualiMatches.PointsForAvg = teamStats_Season.Stats.DenormData.QualiMatches.MatchCount > 0 ? teamStats_Season.Stats.DenormData.QualiMatches.PointsForTotal / (double)teamStats_Season.Stats.DenormData.QualiMatches.MatchCount : 0;
+						teamStats_Season.Stats.DenormData.QualiMatches.PointsAgainstAvg = teamStats_Season.Stats.DenormData.QualiMatches.MatchCount > 0 ? teamStats_Season.Stats.DenormData.QualiMatches.PointsAgainstTotal / (double)teamStats_Season.Stats.DenormData.QualiMatches.MatchCount : 0;
 					}
 				}
 			}
@@ -83,11 +90,17 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 
 		internal static async Task UpdateMatches(DB.Dynamo.Definitions.Event thisEvent, int divisionID, List<TeamStats_Season> seasonStats, List<TeamStats_CurrentEvent> currentEventStats,
 			List<LiveMatch> currentEventMatches, List<LiveMatch> matchesToUpdate
-		) 
+		)
 		{
+			Console.WriteLine(divisionID);
 			List<RE.Objects.MatchObj> matchesAtDivision = await Helpers.REAPI.Event.GetMatchesAtEventDivision(thisEvent.ID, divisionID);
 			Dictionary<int, TeamStats_CurrentEvent> currentEventStatsDict = currentEventStats.ToDictionary(x => x.TeamID, x => x);
 			Dictionary<int, TeamStats_Season> seasonStatsDict = seasonStats.ToDictionary(x => x.TeamID, x => x);
+
+			if (!thisEvent.DivisionTeams.ContainsKey(divisionID))
+			{
+				thisEvent.DivisionTeams[divisionID] = [];
+			}
 
 			//add stats for each match into the current event stats for each team that participated in a match
 			foreach (RE.Objects.MatchObj match in matchesAtDivision)
@@ -96,8 +109,13 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 				RE.Objects.Alliance redAlliance = match.Alliances.FirstOrDefault(a => a.Color?.Equals("red", StringComparison.InvariantCultureIgnoreCase) ?? false);
 				RE.Objects.Alliance blueAlliance = match.Alliances.FirstOrDefault(a => a.Color?.Equals("blue", StringComparison.InvariantCultureIgnoreCase) ?? false);
 				//for each team in the match, update their current event stats
-				if (redAlliance != null && blueAlliance != null)
+				if (redAlliance != null && blueAlliance != null && (redAlliance.Score != 0 || blueAlliance.Score != 0 || match.Scored))
 				{
+					/*
+					 * EDGE CASE TO RESOLVE SOMETIME
+					 * Event ID 60144, Round of 16 4-1 - Red and blue both have 0 score, but match was completed and Scored property from RE is false (Red got DQ, blue got 0 points)
+					 * Currently, this match will be skipped since both scores are 0 and match is not scored
+					*/
 					List<RE.Objects.Alliance> curAllianceList = [redAlliance, blueAlliance];
 					foreach (RE.Objects.Alliance alliance in curAllianceList)
 					{
@@ -111,21 +129,14 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 							if (currentEventStatsDict.TryGetValue(team?.Team?.Id ?? 0, out TeamStats_CurrentEvent teamStats_CurrentEvent))
 							{
 								//do the current event stats
-								teamStats_CurrentEvent.EventStats.DenormData.AllMatches.MatchCount++;
 								teamStats_CurrentEvent.EventStats.DenormData.AllMatches.PointsForTotal += alliance.Score;
 								teamStats_CurrentEvent.EventStats.DenormData.AllMatches.PointsAgainstTotal += (alliance == redAlliance ? blueAlliance.Score : redAlliance.Score);
-								teamStats_CurrentEvent.EventStats.DenormData.AllMatches.Win += (alliance.Score > (alliance == redAlliance ? blueAlliance.Score : redAlliance.Score)) ? 1 : 0;
-								teamStats_CurrentEvent.EventStats.DenormData.AllMatches.Loss += (alliance.Score < (alliance == redAlliance ? blueAlliance.Score : redAlliance.Score)) ? 1 : 0;
-								teamStats_CurrentEvent.EventStats.DenormData.AllMatches.Tie += (alliance.Score == (alliance == redAlliance ? blueAlliance.Score : redAlliance.Score)) ? 1 : 0;
 
 								if (Helpers.Match.IsQualiMatch(match))
 								{
-									teamStats_CurrentEvent.EventStats.DenormData.QualiMatches.MatchCount++;
+									//W/L/T comes from rankings so that DQs are counted properly
 									teamStats_CurrentEvent.EventStats.DenormData.QualiMatches.PointsForTotal += alliance.Score;
 									teamStats_CurrentEvent.EventStats.DenormData.QualiMatches.PointsAgainstTotal += (alliance == redAlliance ? blueAlliance.Score : redAlliance.Score);
-									teamStats_CurrentEvent.EventStats.DenormData.QualiMatches.Win += (alliance.Score > (alliance == redAlliance ? blueAlliance.Score : redAlliance.Score)) ? 1 : 0;
-									teamStats_CurrentEvent.EventStats.DenormData.QualiMatches.Loss += (alliance.Score < (alliance == redAlliance ? blueAlliance.Score : redAlliance.Score)) ? 1 : 0;
-									teamStats_CurrentEvent.EventStats.DenormData.QualiMatches.Tie += (alliance.Score == (alliance == redAlliance ? blueAlliance.Score : redAlliance.Score)) ? 1 : 0;
 								}
 								else if (Helpers.Match.IsElimMatch(match))
 								{
@@ -156,12 +167,9 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 
 								if (Helpers.Match.IsQualiMatch(match))
 								{
-									teamStats_CurrentEvent.CompiledStats.DenormData.QualiMatches.MatchCount++;
+									//W/L/T comes from rankings so that DQs are counted properly
 									teamStats_CurrentEvent.CompiledStats.DenormData.QualiMatches.PointsForTotal += alliance.Score;
 									teamStats_CurrentEvent.CompiledStats.DenormData.QualiMatches.PointsAgainstTotal += (alliance == redAlliance ? blueAlliance.Score : redAlliance.Score);
-									teamStats_CurrentEvent.CompiledStats.DenormData.QualiMatches.Win += (alliance.Score > (alliance == redAlliance ? blueAlliance.Score : redAlliance.Score)) ? 1 : 0;
-									teamStats_CurrentEvent.CompiledStats.DenormData.QualiMatches.Loss += (alliance.Score < (alliance == redAlliance ? blueAlliance.Score : redAlliance.Score)) ? 1 : 0;
-									teamStats_CurrentEvent.CompiledStats.DenormData.QualiMatches.Tie += (alliance.Score == (alliance == redAlliance ? blueAlliance.Score : redAlliance.Score)) ? 1 : 0;
 								}
 								else if (Helpers.Match.IsElimMatch(match))
 								{
@@ -175,99 +183,124 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 							}
 						}
 					}
-
-					//update any LiveMatch objects as needed
-					LiveMatch liveMatch = currentEventMatches.FirstOrDefault(x => x.ID == match.Id);
-					if (liveMatch == null)
+				}
+				//update any LiveMatch objects as needed
+				LiveMatch liveMatch = currentEventMatches.FirstOrDefault(x => x.CompositeKey == match.GetLiveMatchCompositeKey());
+				if (liveMatch == null)
+				{
+					//the match has not been created yet, create it and add to current and update lists
+					liveMatch = new()
 					{
-						//the match has not been created yet, create it and add to current and update lists
-						liveMatch = new()
+						EventID = thisEvent.ID,
+						DivisionID = divisionID,
+						Instance = match.Instance,
+						MatchNumber = match.MatchNumber,
+						Round = match.Round,
+						ScoreFinalized = match.Scored,
+						Name = match.Name,
+						Field = match.Field,
+						BlueScore = blueAlliance.Score,
+						RedScore = redAlliance.Score,
+						MatchWinner = blueAlliance.Score > redAlliance.Score ? "Blue" : (redAlliance.Score > blueAlliance.Score ? "Red" : "Tie"),
+						Alliances =
+						[
+							new LiveMatchAlliance()
+							{
+								Color = "Red",
+								Score = redAlliance.Score,
+								Teams = [..redAlliance.Teams.Select(t => new LiveMatchAllianceTeam() { ID = t?.Team?.Id ?? 0, Number = t.Team.Name })]
+							},
+							new LiveMatchAlliance()
+							{
+								Color = "Blue",
+								Score = blueAlliance.Score,
+								Teams = [..blueAlliance.Teams.Select(t => new LiveMatchAllianceTeam() { ID = t?.Team?.Id ?? 0, Number = t.Team.Name })]
+							}
+						],
+					};
+					currentEventMatches.Add(liveMatch);
+					matchesToUpdate.Add(liveMatch);
+				}
+				else
+				{
+					//see if any of the data in the match has changed, update if so
+					bool matchUpdated = false;
+					if (liveMatch.Instance != match.Instance)
+					{
+						liveMatch.Instance = match.Instance;
+						matchUpdated = true;
+					}
+					if (liveMatch.MatchNumber != match.MatchNumber)
+					{
+						liveMatch.MatchNumber = match.MatchNumber;
+						matchUpdated = true;
+					}
+					if (liveMatch.Round != match.Round)
+					{
+						liveMatch.Round = match.Round;
+						matchUpdated = true;
+					}
+					if (liveMatch.ScoreFinalized != match.Scored)
+					{
+						liveMatch.ScoreFinalized = match.Scored;
+						matchUpdated = true;
+					}
+					if (liveMatch.Name != match.Name)
+					{
+						liveMatch.Name = match.Name;
+						matchUpdated = true;
+					}
+					if (liveMatch.Field != match.Field)
+					{
+						liveMatch.Field = match.Field;
+						matchUpdated = true;
+					}
+					if (liveMatch.BlueScore != blueAlliance.Score)
+					{
+						liveMatch.BlueScore = blueAlliance.Score;
+						liveMatch.MatchWinner = blueAlliance.Score > redAlliance.Score ? "Blue" : (redAlliance.Score > blueAlliance.Score ? "Red" : "Tie");
+						LiveMatchAlliance lma = liveMatch.Alliances.FirstOrDefault(a => a.Color.Equals("Blue", StringComparison.OrdinalIgnoreCase));
+						if (lma != null)
 						{
-							ID = match.Id,
-							EventID = thisEvent.ID,
-							DivisionID = divisionID,
-							Instance = match.Instance,
-							MatchNumber = match.MatchNumber,
-							Round = match.Round,
-							ScoreFinalized = match.Scored,
-							Name = match.Name,
-							Field = match.Field,
-							BlueScore = blueAlliance.Score,
-							RedScore = redAlliance.Score,
-							MatchWinner = blueAlliance.Score > redAlliance.Score ? "Blue" : (redAlliance.Score > blueAlliance.Score ? "Red" : "Tie"),
-							Alliances =
-							[
-								new LiveMatchAlliance()
-								{
-									Color = "Red",
-									Score = redAlliance.Score,
-									Teams = [..redAlliance.Teams.Select(t => new LiveMatchAllianceTeam() { ID = t?.Team?.Id ?? 0, Number = t.Team.Name })]
-								},
-								new LiveMatchAlliance()
-								{
-									Color = "Blue",
-									Score = blueAlliance.Score,
-									Teams = [..blueAlliance.Teams.Select(t => new LiveMatchAllianceTeam() { ID = t?.Team?.Id ?? 0, Number = t.Team.Name })]
-								}
-							],
-						};
-						currentEventMatches.Add(liveMatch);
+							lma.Score = blueAlliance.Score;
+						}
+						matchUpdated = true;
+					}
+					if (liveMatch.RedScore != redAlliance.Score)
+					{
+						liveMatch.RedScore = redAlliance.Score;
+						liveMatch.MatchWinner = blueAlliance.Score > redAlliance.Score ? "Blue" : (redAlliance.Score > blueAlliance.Score ? "Red" : "Tie");
+						LiveMatchAlliance lma = liveMatch.Alliances.FirstOrDefault(a => a.Color.Equals("Red", StringComparison.OrdinalIgnoreCase));
+						if (lma != null)
+						{
+							lma.Score = redAlliance.Score;
+						}
+						matchUpdated = true;
+					}
+					//check alliances for different teams
+					matchUpdated |= UpdateLiveMatchTeamsFromMatchObj(match, liveMatch);
+
+					if (matchUpdated)
+					{
 						matchesToUpdate.Add(liveMatch);
 					}
-					else
-					{
-						//see if any of the data in the match has changed, update if so
-						bool matchUpdated = false;
-						if (liveMatch.Instance != match.Instance)
-						{
-							liveMatch.Instance = match.Instance;
-							matchUpdated = true;
-						}
-						if (liveMatch.MatchNumber != match.MatchNumber)
-						{
-							liveMatch.MatchNumber = match.MatchNumber;
-							matchUpdated = true;
-						}
-						if (liveMatch.Round != match.Round)
-						{
-							liveMatch.Round = match.Round;
-							matchUpdated = true;
-						}
-						if (liveMatch.ScoreFinalized != match.Scored)
-						{
-							liveMatch.ScoreFinalized = match.Scored;
-							matchUpdated = true;
-						}
-						if (liveMatch.Name != match.Name)
-						{
-							liveMatch.Name = match.Name;
-							matchUpdated = true;
-						}
-						if (liveMatch.Field != match.Field)
-						{
-							liveMatch.Field = match.Field;
-							matchUpdated = true;
-						}
-						if (liveMatch.BlueScore != blueAlliance.Score)
-						{
-							liveMatch.BlueScore = blueAlliance.Score;
-							liveMatch.MatchWinner = blueAlliance.Score > redAlliance.Score ? "Blue" : (redAlliance.Score > blueAlliance.Score ? "Red" : "Tie");
-							matchUpdated = true;
-						}
-						if (liveMatch.RedScore != redAlliance.Score)
-						{
-							liveMatch.RedScore = redAlliance.Score;
-							liveMatch.MatchWinner = blueAlliance.Score > redAlliance.Score ? "Blue" : (redAlliance.Score > blueAlliance.Score ? "Red" : "Tie");
-							matchUpdated = true;
-						}
-						//check alliances for different teams
-						matchUpdated |= UpdateLiveMatchTeamsFromMatchObj(match, liveMatch);
+				}
+			}
 
-						if (matchUpdated)
-						{
-							matchesToUpdate.Add(liveMatch);
-						}
-					}
+			//update the W/L/T for AllMatches for current event and season compiled stats to account for DQs correctly
+			foreach (TeamStats_CurrentEvent teamStats_CurrentEvent in currentEventStats)
+			{
+				QualiMatchStats qualiStatsEvent = teamStats_CurrentEvent.EventStats.DenormData.QualiMatches;
+				QualiMatchStats qualiStatsCompiled = teamStats_CurrentEvent.CompiledStats.DenormData.QualiMatches;
+				teamStats_CurrentEvent.EventStats.DenormData.AllMatches.Win = qualiStatsEvent.Win + teamStats_CurrentEvent.EventStats.DenormData.ElimMatches.Win;
+				teamStats_CurrentEvent.EventStats.DenormData.AllMatches.Loss = qualiStatsEvent.Loss + teamStats_CurrentEvent.EventStats.DenormData.ElimMatches.Loss;
+				teamStats_CurrentEvent.EventStats.DenormData.AllMatches.Tie = qualiStatsEvent.Tie + teamStats_CurrentEvent.EventStats.DenormData.ElimMatches.Tie;
+				if (seasonStatsDict.TryGetValue(teamStats_CurrentEvent.TeamID, out TeamStats_Season teamStats_Season))
+				{
+					QualiMatchStats qualiStatsSeason = teamStats_Season.Stats.DenormData.QualiMatches;
+					teamStats_CurrentEvent.CompiledStats.DenormData.AllMatches.Win = qualiStatsSeason.Win + qualiStatsEvent.Win + teamStats_CurrentEvent.EventStats.DenormData.ElimMatches.Win;
+					teamStats_CurrentEvent.CompiledStats.DenormData.AllMatches.Loss = qualiStatsSeason.Loss + qualiStatsEvent.Loss + teamStats_CurrentEvent.EventStats.DenormData.ElimMatches.Loss;
+					teamStats_CurrentEvent.CompiledStats.DenormData.AllMatches.Tie = qualiStatsSeason.Tie + qualiStatsEvent.Tie + teamStats_CurrentEvent.EventStats.DenormData.ElimMatches.Tie;
 				}
 			}
 		}
@@ -293,7 +326,13 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 				}
 				//update the current event denorm data stats
 				//only use WP/AP/SP from the ranking, all other information either comes from match data or is calculated at the very end
+				//Need to do W/L/T here also because the ranking accounts for DQs in Quals while match data does not
 				QualiMatchStats qualiStatsEvent = teamStats_CurrentEvent.EventStats.DenormData.QualiMatches;
+				qualiStatsEvent.Win = ranking.Wins;
+				qualiStatsEvent.Loss = ranking.Losses;
+				qualiStatsEvent.Tie = ranking.Ties;
+				qualiStatsEvent.MatchCount = ranking.Wins + ranking.Losses + ranking.Ties;
+				qualiStatsEvent.HighScore = ranking.High_Score;
 				qualiStatsEvent.WPTotal = ranking.WP;
 				qualiStatsEvent.APTotal = ranking.AP;
 				qualiStatsEvent.SPTotal = ranking.SP;
@@ -301,6 +340,11 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 
 				QualiMatchStats qualiStatsSeason = teamStats_Season.Stats.DenormData.QualiMatches;
 				QualiMatchStats qualiStatsCompiled = teamStats_CurrentEvent.CompiledStats.DenormData.QualiMatches;
+				qualiStatsCompiled.Win = qualiStatsSeason.Win + qualiStatsEvent.Win;
+				qualiStatsCompiled.Loss = qualiStatsSeason.Loss + qualiStatsEvent.Loss;
+				qualiStatsCompiled.Tie = qualiStatsSeason.Tie + qualiStatsEvent.Tie;
+				qualiStatsCompiled.MatchCount = qualiStatsSeason.MatchCount + qualiStatsEvent.MatchCount;
+				qualiStatsCompiled.HighScore = Math.Max(qualiStatsSeason.HighScore, qualiStatsEvent.HighScore);
 				qualiStatsCompiled.WPTotal = qualiStatsSeason.WPTotal + qualiStatsEvent.WPTotal;
 				qualiStatsCompiled.APTotal = qualiStatsSeason.APTotal + qualiStatsEvent.APTotal;
 				qualiStatsCompiled.SPTotal = qualiStatsSeason.SPTotal + qualiStatsEvent.SPTotal;

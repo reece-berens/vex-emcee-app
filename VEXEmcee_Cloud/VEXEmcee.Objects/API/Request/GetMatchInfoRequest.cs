@@ -2,6 +2,6 @@
 {
 	public class GetMatchInfoRequest : BaseRequest
 	{
-		public int MatchID { get; set; }
+		public string MatchKey { get; set; }
 	}
 }

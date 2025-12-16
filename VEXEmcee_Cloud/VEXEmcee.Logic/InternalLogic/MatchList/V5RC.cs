@@ -36,7 +36,7 @@ namespace VEXEmcee.Logic.InternalLogic.MatchList
 
 		internal static bool IsScored(Definitions.LiveMatch match)
 		{
-			return match.BlueScore != 0 || match.RedScore != 0;
+			return match.BlueScore != 0 || match.RedScore != 0 || match.ScoreFinalized;
 		}
 
 		internal static void SortMatches(List<Definitions.LiveMatch> matches)
@@ -103,7 +103,7 @@ namespace VEXEmcee.Logic.InternalLogic.MatchList
 		{
 			Objects.Data.ClientApp.MatchList.V5RC returnValue = new()
 			{
-				ID = match.ID,
+				Key = match.CompositeKey,
 				MatchName = match.Name,
 				Scored = IsScored(match),
 				Blue = new()

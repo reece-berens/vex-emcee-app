@@ -6,7 +6,7 @@ namespace VEXEmcee.Objects.Data.ClientApp.MatchList
 	[JsonDerivedType(typeof(V5RC), "V5RC")]
 	public class Base
 	{
-		public int ID { get; set; }
+		public string Key { get; set; }
 		public string MatchName { get; set; }
 		public int SortOrder { get; set; }
 		public bool Scored { get; set; }

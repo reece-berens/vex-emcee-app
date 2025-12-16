@@ -26,10 +26,11 @@ namespace VEXEmcee.Logic.InternalLogic.TeamInfo
 			Definitions.Team thisTeam = teamsAtEvent.FirstOrDefault(t => t.ID == request.TeamID);
 			Definitions.TeamStats_CurrentEvent teamStats_CurrentEvent = await Accessors.TeamStats_CurrentEvent.GetByCompositeKey(thisEvent.ID, request.TeamID);
 			Definitions.TeamStats_Season teamStats_Season = await Accessors.TeamStats_Season.GetByCompositeKey(thisEvent.SeasonID, request.TeamID);
-			if (thisTeam != null && teamStats_CurrentEvent != null && teamStats_Season != null)
+			List<Definitions.LiveMatch> liveMatches = await Accessors.LiveMatch.GetByEventID(thisEvent.ID);
+            if (thisTeam != null && teamStats_CurrentEvent != null && teamStats_Season != null)
 			{
 				response.TeamInfo.ID = thisTeam.ID;
-				response.TeamInfo.Location = thisTeam.CityState_denorm;
+				response.TeamInfo.Location = $"{thisTeam.Organization} - {thisTeam.CityState_denorm}";
 				response.TeamInfo.Number = thisTeam.Number;
 				response.TeamInfo.TeamName = thisTeam.TeamName;
 				response.TeamInfo.Sections = [];
@@ -66,7 +67,7 @@ namespace VEXEmcee.Logic.InternalLogic.TeamInfo
 				};
 				currentEventSection.Display.Add(new()
 				{
-					SectionLabel = "W-L-T",
+					SectionLabel = "Qualification W-L-T",
 					SectionData = [
 						$"{teamStats_CurrentEvent.EventStats?.DenormData?.QualiMatches?.Win ?? 0}-{teamStats_CurrentEvent.EventStats?.DenormData?.QualiMatches?.Loss ?? 0}-{teamStats_CurrentEvent.EventStats?.DenormData?.QualiMatches?.Tie ?? 0}",
 						$"{teamStats_CurrentEvent.EventStats?.DenormData?.QualiMatches?.WinPercentage:P1} Win Rate"
@@ -79,11 +80,59 @@ namespace VEXEmcee.Logic.InternalLogic.TeamInfo
 						teamStats_CurrentEvent.EventStats?.CurrentQualiRank != null ? $"#{teamStats_CurrentEvent.EventStats.CurrentQualiRank}" : "N/A"
 					]
 				});
-				response.TeamInfo.Sections.Add(currentEventSection);
+				currentEventSection.Display.Add(new()
+				{
+					SectionLabel = "WP-SP-AP",
+					SectionData = [
+						$"Total: {teamStats_CurrentEvent.EventStats?.DenormData?.QualiMatches?.WPTotal ?? 0} WP - {teamStats_CurrentEvent.EventStats?.DenormData?.QualiMatches?.SPTotal ?? 0} SP - {teamStats_CurrentEvent.EventStats?.DenormData?.QualiMatches?.APTotal ?? 0} AP",
+						$"Average per match: {teamStats_CurrentEvent.EventStats?.DenormData?.QualiMatches?.WPAvg:F1} WP - {teamStats_CurrentEvent.EventStats?.DenormData?.QualiMatches?.SPAvg:F1} SP - {teamStats_CurrentEvent.EventStats?.DenormData?.QualiMatches?.APAvg:F1} AP"
+					]
+				});
+                SectionDisplay skillsResults = new()
+				{
+					SectionLabel = "Skills Results",
+					SectionData = []
+				};
+				if (teamStats_CurrentEvent.EventStats.Skills.TryGetValue("driver", out var driverSkills))
+				{
+					skillsResults.SectionData.Add($"Driver: {driverSkills.Attempts} attempts, {driverSkills.HighScore} high score");
+				}
+                if (teamStats_CurrentEvent.EventStats.Skills.TryGetValue("programming", out var progSkills))
+                {
+                    skillsResults.SectionData.Add($"Programming: {progSkills.Attempts} attempts, {progSkills.HighScore} high score");
+                }
+                currentEventSection.Display.Add(skillsResults);
+				
+				List<Definitions.LiveMatch> teamMatchesThisEvent = [..liveMatches
+					.Where(m => 
+						m.Alliances.Any(a => a.Teams.Any(t => t.ID == thisTeam.ID))
+						&& (m.ScoreFinalized || m.BlueScore > 0 || m.RedScore > 0)
+					)
+				];
+				List<Definitions.LiveMatchAlliance> teamAlliances = [];
+				foreach (Definitions.LiveMatch match in teamMatchesThisEvent)
+				{
+					Definitions.LiveMatchAlliance alliance = match.Alliances.FirstOrDefault(a => a.Teams.Any(t => t.ID == thisTeam.ID));
+					if (alliance != null)
+					{
+						teamAlliances.Add(alliance);
+					}
+				}
+				int pointsScored = teamAlliances.Sum(a => a.Score);
+				currentEventSection.Display.Add(new()
+				{
+					SectionLabel = "Points Scored",
+					SectionData = [
+						$"Total: {pointsScored} points",
+						$"Average per match: {(teamMatchesThisEvent.Count > 0 ? pointsScored / (double)teamMatchesThisEvent.Count : 0):F1} points"
+					]
+				});
+
+                response.TeamInfo.Sections.Add(currentEventSection);
 
 				SectionHeader seasonSection = new()
 				{
-					Name = "This Season",
+					Name = "This Season (including this event)",
 					Order = 1,
 					Display = []
 				};
@@ -91,9 +140,17 @@ namespace VEXEmcee.Logic.InternalLogic.TeamInfo
 				{
 					SectionLabel = "W-L-T",
 					SectionData = [
-						$"{teamStats_Season.Stats?.DenormData?.QualiMatches?.Win ?? 0}-{teamStats_Season.Stats?.DenormData?.QualiMatches?.Loss ?? 0}-{teamStats_Season.Stats?.DenormData?.QualiMatches?.Tie ?? 0}",
-						$"{teamStats_Season.Stats?.DenormData?.QualiMatches?.WinPercentage:P1} Win Rate"
+						$"{teamStats_CurrentEvent?.CompiledStats?.DenormData?.AllMatches?.Win ?? 0}-{teamStats_CurrentEvent?.CompiledStats?.DenormData?.AllMatches?.Loss ?? 0}-{teamStats_CurrentEvent?.CompiledStats?.DenormData?.AllMatches?.Tie ?? 0}",
+						$"{teamStats_CurrentEvent?.CompiledStats?.DenormData?.AllMatches?.WinPercentage:P1} Win Rate"
 					]
+				});
+				seasonSection.Display.Add(new()
+				{
+					SectionLabel = "WP-SP-AP",
+					SectionData = [
+						$"Total: {teamStats_CurrentEvent?.CompiledStats?.DenormData?.QualiMatches?.WPTotal ?? 0} WP - {teamStats_CurrentEvent?.CompiledStats?.DenormData?.QualiMatches?.SPTotal ?? 0} SP - {teamStats_CurrentEvent?.CompiledStats?.DenormData?.QualiMatches?.APTotal ?? 0} AP",
+                        $"Average per match: {teamStats_CurrentEvent?.CompiledStats?.DenormData?.QualiMatches?.WPAvg:F1} WP - {teamStats_CurrentEvent?.CompiledStats?.DenormData?.QualiMatches?.SPAvg:F1} SP - {teamStats_CurrentEvent?.CompiledStats?.DenormData?.QualiMatches?.APAvg:F1} AP"
+                    ]
 				});
 				response.TeamInfo.Sections.Add(seasonSection);
 			}
