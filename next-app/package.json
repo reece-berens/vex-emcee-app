@@ -14,10 +14,10 @@
     "@mui/icons-material": "^5.14.11",
     "@mui/material": "^5.14.11",
     "js-cookie": "^3.0.5",
-    "next": "15.3.3",
+    "next": "15.3.6",
     "normalize.css": "^8.0.1",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
