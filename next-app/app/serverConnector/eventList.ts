@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
 
-const GetEventList = async (request: VEXEmcee.API.Requests.GetREEventListRequest): Promise<VEXEmcee.API.Responses.GetREEventListResponse> => {
+const GetEventList = async (request: VEXEmcee.API.Requests.GetREEventListRequest = {}): Promise<VEXEmcee.API.Responses.GetREEventListResponse> => {
     const builtURL = new URL("events", process.env.NEXT_PUBLIC_BASE_URL);
     if (request.Page || request.Page === 0) {
         builtURL.searchParams.append("page", request.Page.toString());

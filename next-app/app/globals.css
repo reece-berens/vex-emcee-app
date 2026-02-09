@@ -9,6 +9,7 @@
 	--background-color3: #f7f6f4; /* Lightest gray (for cards, stand-out items) */
 	--background-color1-transparent: rgba(232, 230, 227, 0.5); /* Transparent version of bg3 for header */
 	--background-very-transparent: rgba(255, 255, 255, 0.2); /* Very transparent background for homepage cardbacks */
+	--error-color1: #ef4444; /* Red error color */
 	--font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 	--font-size-hero: 24px;
 	--font-size-lg: 20px;
@@ -24,6 +25,7 @@
 	--ui-purple-light: #f8f6fb; /* Subtle backgrounds, hover states */
 	--ui-purple: #8b6bc2; /* Main accent - buttons, links */
 	--ui-purple-dark: #7356b3; /* Strong emphasis, active states */
+	--ui-purple-disabled: #a8a4c9; /* Disabled button version */
 
 	/* Red vs Blue accent colorings */
 	--accent-red: #ff0035; /* Red */
@@ -39,7 +41,7 @@
 
 	/* Common shadow variables */
 	--shadow-inset: inset 0 1px 3px 0 rgba(0, 0, 0, 0.08), inset 0 1.5px 6px 0 rgba(0, 0, 0, 0.04);
-	--shadow-default: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1.5px 6px 0 rgba(0, 0, 0, 0.04);
+	--shadow-default: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 2px 8px 0 rgba(0, 0, 0, 0.06);
 	--shadow-hover: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
 	--shadow-focus: 0 6px 20px 0 rgba(0, 0, 0, 0.2);
 }
@@ -124,19 +126,29 @@ p {
 	color: var(--text-color);
 	overflow: hidden; /* Prevent body scroll */
 
-	background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E"),
+	background-image:
+		url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E"),
 		radial-gradient(circle at 25% 25%, rgba(139, 107, 194, 0.8) 0%, transparent 60%),
 		radial-gradient(circle at 75% 75%, rgba(255, 0, 53, 0.7) 0%, transparent 55%),
 		radial-gradient(circle at 50% 10%, rgba(53, 149, 218, 0.6) 0%, transparent 50%),
 		radial-gradient(circle at 10% 80%, rgba(139, 107, 194, 0.5) 0%, transparent 45%),
 		linear-gradient(135deg, #8b6bc2 0%, #3595da 50%, #ff0035 100%);
 
-	background-size: 100px 100px, 200vw 200vh, 180vw 180vh, 160vw 160vh, 140vw 140vh, 100% 100%;
+	background-size:
+		100px 100px,
+		200vw 200vh,
+		180vw 180vh,
+		160vw 160vh,
+		140vw 140vh,
+		100% 100%;
 	/* Offset positioning to account for oversizing */
-	background-position: 0 0, calc(-50vw + var(--scroll-x, 0px) * 2) calc(-50vh + var(--scroll-y, 0px)),
+	background-position:
+		0 0,
+		calc(-50vw + var(--scroll-x, 0px) * 2) calc(-50vh + var(--scroll-y, 0px)),
 		calc(-40vw - var(--scroll-x, 0px)) calc(-40vh - var(--scroll-y, 0px) * 1.5),
 		calc(-30vw + var(--scroll-x, 0px) * 0.5) calc(-30vh + var(--scroll-y, 0px) * 2),
-		calc(-20vw - var(--scroll-x, 0px) * 1.5) calc(-20vh - var(--scroll-y, 0px)), center center;
+		calc(-20vw - var(--scroll-x, 0px) * 1.5) calc(-20vh - var(--scroll-y, 0px)),
+		center center;
 	background-attachment: fixed;
 	min-height: 100vh;
 }
@@ -218,6 +230,8 @@ p {
 
 /* Button Styles */
 .btn {
+	color: var(--text-color);
+	background: var(--background-color3);
 	padding: var(--space-sm) var(--space-md);
 	display: flex;
 	justify-content: space-between;
@@ -228,7 +242,10 @@ p {
 	border: 1px solid transparent;
 	border-radius: var(--border-radius);
 	box-shadow: var(--shadow-default);
-	transition: background var(--transition), color var(--transition), border-color var(--transition);
+	transition:
+		background var(--transition),
+		color var(--transition),
+		border-color var(--transition);
 }
 
 .btn:is(:hover, :focus-visible) {
@@ -248,13 +265,23 @@ p {
 	color: var(--background-color3);
 }
 
+.btn:disabled {
+	background-color: var(--ui-purple-disabled);
+	color: rgba(255, 255, 255, 0.7);
+	pointer-events: none;
+	box-shadow: none;
+}
+
 /* Generic input styling for whole app */
 input {
 	background: var(--background-color3);
 	color: var(--text-color);
 	border-radius: var(--border-radius-input);
 	font-size: var(--font-size);
-	transition: background var(--transition), color var(--transition), border-color var(--transition),
+	transition:
+		background var(--transition),
+		color var(--transition),
+		border-color var(--transition),
 		box-shadow var(--transition);
 
 	/* Add subtle inset shadow to look "recessed" */
@@ -279,7 +306,10 @@ input:is(:hover, :focus-visible) {
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	border: 1px solid var(--secondary-color); /* Light border by default */
-	transition: background-color var(--transition), color var(--transition), border-color var(--transition),
+	transition:
+		background-color var(--transition),
+		color var(--transition),
+		border-color var(--transition),
 		box-shadow var(--transition);
 	position: relative;
 	display: flex;
@@ -302,6 +332,35 @@ input:is(:hover, :focus-visible) {
 
 .custom-dropdown.open .dropdown-arrow {
 	transform: rotate(180deg);
+}
+
+.custom-dropdown .placeholder {
+	color: var(--text-muted);
+	font-style: italic;
+}
+
+.custom-dropdown.has-error {
+	border-color: var(--error-color1);
+	opacity: 0.7;
+	pointer-events: none;
+}
+
+.custom-dropdown.disabled {
+	opacity: 0.7;
+	pointer-events: none;
+}
+
+.dropdown-wrapper {
+	display: flex;
+	flex-direction: column;
+}
+
+.dropdown-error,
+.dropdown-message {
+	color: var(--background-color3);
+	font-size: var(--font-size-sm);
+	margin-block: var(--space-xs);
+	padding-left: var(--space-sm);
 }
 
 .dropdown-list {
@@ -332,7 +391,7 @@ input:is(:hover, :focus-visible) {
 }
 
 .dropdown-list li {
-	padding: var(--space-md);
+	padding: var(--space-lg);
 	cursor: pointer;
 	transition: background var(--transition);
 	border-bottom: 1px solid rgba(0, 0, 0, 0.1);

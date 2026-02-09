@@ -27,6 +27,9 @@ import { useState, useEffect, useRef } from "react";
 export default function ApiDropdown({
 	endpoint,
 	fetchFunction,
+	staticOptions, // Array of options to use instead of fetching
+	enabled = true,
+	emptyMessage = "No results found",
 	dataField = "programs", // default to 'programs' for backward compatibility
 	placeholder,
 	value,
@@ -62,6 +65,19 @@ export default function ApiDropdown({
 
 	// Fetch options from API or custom function on component mount
 	useEffect(() => {
+		// If static options provided, use those directly
+		if (staticOptions) {
+			setOptions(staticOptions);
+			setLoading(false);
+			return;
+		}
+
+		// If not enabled, stay in initial disabled state
+		if (!enabled) {
+			setLoading(false);
+			return;
+		}
+
 		const fetchOptions = async () => {
 			try {
 				setLoading(true);
@@ -93,9 +109,9 @@ export default function ApiDropdown({
 				}
 
 				// Extract options from result based on success status
-				if (result.success) {
-					const dataArray = dataField ? result[dataField] : result;
-					setOptions(dataArray);
+				if (result.success || result.Success) {
+					const dataArray = dataField ? result[dataField] || result.data : result;
+					setOptions(dataArray || []);
 					setError(null);
 				} else {
 					setError(result.error);
@@ -110,7 +126,7 @@ export default function ApiDropdown({
 		};
 
 		fetchOptions();
-	}, []); // Run once when component mounts
+	}, [staticOptions]);
 
 	// Loading state UI
 	if (loading) {
@@ -121,22 +137,16 @@ export default function ApiDropdown({
 		);
 	}
 
-	// Error state UI
-	if (error) {
-		return (
-			<div className={`${className} custom-dropdown`}>
-				<div className="dropdown-text">Error loading options</div>
-			</div>
-		);
-	}
+	const isEmpty = !loading && !error && options.length === 0;
+	const showNoResults = enabled && isEmpty;
 
 	return (
-		<>
+		<div className="dropdown-wrapper">
 			<div
 				ref={dropdownRef}
-				className={`${className} custom-dropdown ${isOpen ? "open" : ""}`}
+				className={`${className} custom-dropdown ${isOpen ? "open" : ""} ${error ? "has-error" : ""} ${isEmpty ? "disabled" : ""}`}
 				onClick={() => {
-					// Toggle dropdown open/closed
+					if (error || isEmpty) return;
 					if (isOpen) {
 						setIsOpen(false);
 						setFocusedIndex(-1);
@@ -145,16 +155,14 @@ export default function ApiDropdown({
 					}
 				}}
 				onKeyDown={(e) => {
-					// Keyboard navigation
+					if (error || isEmpty) return;
 					if (e.key === "Enter" || e.key === " ") {
 						e.preventDefault();
 						if (isOpen && focusedIndex >= 0) {
-							// Select focused item
 							onChange(options[focusedIndex][valueField]);
 							setIsOpen(false);
 							setFocusedIndex(-1);
 						} else {
-							// Toggle dropdown
 							setIsOpen(!isOpen);
 						}
 					} else if (isOpen) {
@@ -170,42 +178,54 @@ export default function ApiDropdown({
 						}
 					}
 				}}
-				tabIndex="0"
+				tabIndex={error || isEmpty ? -1 : 0}
 				role="combobox"
 				aria-expanded={isOpen}
 			>
-				{/* Display current selection or placeholder */}
 				<span className="dropdown-text">
-					{value ? options.find((opt) => opt[valueField] === value)?.[displayField] : placeholder}
+					{options.find((opt) => opt[valueField] === value)?.[displayField] || (
+						<span className="placeholder">{placeholder}</span>
+					)}
 				</span>
 
-				{/* Dropdown arrow icon */}
 				<span className="dropdown-arrow">
-					<svg
-						width="20"
-						height="20"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-					>
-						<path
+					{error ? (
+						<svg
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="var(--error-color1)"
+							strokeWidth="1.5"
 							strokeLinecap="round"
 							strokeLinejoin="round"
-							strokeWidth="2"
-							d="m19.5 8.25-7.5 7.5-7.5-7.5"
-						></path>
-					</svg>
+						>
+							<path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+						</svg>
+					) : (
+						<svg
+							width="20"
+							height="20"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth="2"
+								d="m19.5 8.25-7.5 7.5-7.5-7.5"
+							/>
+						</svg>
+					)}
 				</span>
 
-				{/* Dropdown options list */}
 				{isOpen && (
 					<ul className="dropdown-list">
 						{options.map((option, index) => (
 							<li
 								key={option[valueField]}
-								className={`dropdown-item ${focusedIndex === index ? "focused" : ""} ${
-									value === option[valueField] ? "selected" : ""
-								}`}
+								className={`dropdown-item ${focusedIndex === index ? "focused" : ""} ${value === option[valueField] ? "selected" : ""}`}
 								onClick={(e) => {
 									e.stopPropagation();
 									onChange(option[valueField]);
@@ -214,7 +234,6 @@ export default function ApiDropdown({
 								}}
 							>
 								<span>{option[displayField]}</span>
-								{/* Checkmark for selected item */}
 								{value === option[valueField] && (
 									<svg
 										width="20"
@@ -228,7 +247,7 @@ export default function ApiDropdown({
 											strokeLinecap="round"
 											strokeLinejoin="round"
 											d="m4.5 12.75 6 6 9-13.5"
-										></path>
+										/>
 									</svg>
 								)}
 							</li>
@@ -236,6 +255,8 @@ export default function ApiDropdown({
 					</ul>
 				)}
 			</div>
-		</>
+			{error && <span className="dropdown-error">{error}</span>}
+			{showNoResults && <span className="dropdown-message">{emptyMessage}</span>}
+		</div>
 	);
 }

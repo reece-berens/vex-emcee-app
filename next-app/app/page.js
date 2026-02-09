@@ -6,6 +6,7 @@ import ApiDropdown from "./components/ApiDropdown";
 import { useScrollY } from "./components/ScrollWrapper";
 import { useSetPageTitle } from "./components/ScrollWrapper";
 import { getPrograms } from "./serverConnector/programs";
+import GetEventList from "./serverConnector/eventList";
 
 export default function Home() {
 	const scrollY = useScrollY();
@@ -13,10 +14,17 @@ export default function Home() {
 	const [regionSearch, setRegionSearch] = useState("");
 	const [eventSearch, setEventSearch] = useState("");
 	const [selectedProgram, setSelectedProgram] = useState("");
+	const [selectedEvent, setSelectedEvent] = useState("");
+	const [fetchKey, setFetchKey] = useState(0);
 
 	useEffect(() => {
 		setPageTitle("Find Your VEX Tournament");
 	}, []);
+
+	const handleApplyFilters = () => {
+		setSelectedEvent(""); // Clear previous selection
+		setFetchKey((prev) => prev + 1);
+	};
 
 	return (
 		<main className="layout-main">
@@ -34,142 +42,94 @@ export default function Home() {
 						id="search-filters-id"
 						className={styles.filters}
 					>
-						<h2 className="text-base text-bold text-white">Search events by program, region, and name</h2>
-						<ApiDropdown
-							fetchFunction={getPrograms}
-							dataField="programs"
-							placeholder="Program (V5, IQ, U, etc.)"
-							value={selectedProgram}
-							onChange={setSelectedProgram}
-							aria-label="Program search"
-							displayField="Name" // Shows "V5", "IQ", etc.
-							valueField="ID" // Uses the ID as value
-							className={styles.searchField}
-						/>
-						<input
-							id="region-input"
-							type="text"
-							placeholder="Region"
-							value={regionSearch}
-							onChange={(e) => setRegionSearch(e.target.value)}
-							aria-label="Region search"
-							className={styles.searchField}
-						/>
-						<input
-							id="event-input"
-							type="text"
-							placeholder="Event Name"
-							value={eventSearch}
-							onChange={(e) => setEventSearch(e.target.value)}
-							aria-label="Event name search"
-							className={styles.searchField}
-						/>
-						<div className={styles.buttonFooter}>
-							<button
-								className={`btn ${styles.clearButton}`}
-								onClick={() => {
-									setRegionSearch("");
-									setEventSearch("");
-									setSelectedProgram("");
-								}}
-							>
-								Clear all
-							</button>
-							<button className={`btn ${styles.searchButton}`}>
-								<svg
-									width="18"
-									height="18"
-									fill="none"
-									strokeWidth="2"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
+						{/* Filters section */}
+						<div className={styles.filtersSection}>
+							<h2 className="text-base text-bold text-white">Filter and Select Your Event</h2>
+							<ApiDropdown
+								fetchFunction={getPrograms}
+								dataField="programs"
+								placeholder="Select Program..."
+								value={selectedProgram}
+								onChange={setSelectedProgram}
+								aria-label="Program search"
+								displayField="Name"
+								valueField="ID"
+								className={styles.searchField}
+							/>
+							{/* <input
+								id="region-input"
+								type="text"
+								placeholder="Region"
+								value={regionSearch}
+								onChange={(e) => setRegionSearch(e.target.value)}
+								aria-label="Region search"
+								className={styles.searchField}
+							/> */}
+							{/* Region - hardcoded values */}
+							<ApiDropdown
+								staticOptions={[
+									{ ID: "", Name: "Any Region" },
+									{ ID: "Kansas", Name: "Kansas" },
+								]}
+								placeholder="Select Region..."
+								value={regionSearch}
+								onChange={setRegionSearch}
+								displayField="Name"
+								valueField="ID"
+								className={styles.searchField}
+							/>
+							<div className={styles.filterActions}>
+								<button
+									className={`btn ${styles.clearButton}`}
+									onClick={() => {
+										setRegionSearch("");
+										setSelectedProgram("");
+									}}
 								>
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-									></path>
-								</svg>
-								Search
-							</button>
+									Clear filters
+								</button>
+								<button
+									className={`btn ${styles.filterButton}`}
+									onClick={handleApplyFilters}
+									disabled={!selectedProgram}
+								>
+									Apply filters
+								</button>
+							</div>
 						</div>
-					</div>
-				</section>
 
-				{/* New Recent Events section */}
-				<section className="cardback bg-transparent">
-					<div className={styles.eventsList}>
-						<h2 className="text-base text-bold text-white">Recent Events</h2>
-						<a
-							href="#"
-							className="card"
-						>
-							<h3 className="text-sm heading-tertiary">VEX IQ Challenge - Regional Championship</h3>
-							<p className="text-sm text-muted">Austin, TX • March 15, 2024</p>
-						</a>
-						<a
-							href="#"
-							className="card"
-						>
-							<h3 className="text-sm heading-tertiary">V5RC High School Tournament</h3>
-							<p className="text-sm text-muted">Dallas, TX • March 12, 2024</p>
-						</a>
-						<a
-							href="#"
-							className="card"
-						>
-							<h3 className="text-sm heading-tertiary">VEX U Competition</h3>
-							<p className="text-sm text-muted">Houston, TX • March 10, 2024</p>
-						</a>
-						<a
-							href="#"
-							className="card"
-						>
-							<h3 className="text-sm heading-tertiary">VEX IQ Elementary Skills Challenge</h3>
-							<p className="text-sm text-muted">San Antonio, TX • March 8, 2024</p>
-						</a>
-						<a
-							href="#"
-							className="card"
-						>
-							<h3 className="text-sm heading-tertiary">V5RC Middle School State Championship</h3>
-							<p className="text-sm text-muted">Fort Worth, TX • March 5, 2024</p>
-						</a>
-						<a
-							href="#"
-							className="card"
-						>
-							<h3 className="text-sm heading-tertiary">VEX U Engineering Division</h3>
-							<p className="text-sm text-muted">Plano, TX • March 2, 2024</p>
-						</a>
-						<a
-							href="#"
-							className="card"
-						>
-							<h3 className="text-sm heading-tertiary">VEX IQ Teamwork Challenge</h3>
-							<p className="text-sm text-muted">Arlington, TX • February 28, 2024</p>
-						</a>
-						<a
-							href="#"
-							className="card"
-						>
-							<h3 className="text-sm heading-tertiary">V5RC District Tournament</h3>
-							<p className="text-sm text-muted">Garland, TX • February 25, 2024</p>
-						</a>
-						<a
-							href="#"
-							className="card"
-						>
-							<h3 className="text-sm heading-tertiary">VEX U Research Division Finals</h3>
-							<p className="text-sm text-muted">Richardson, TX • February 22, 2024</p>
-						</a>
-						<a
-							href="#"
-							className="card"
-						>
-							<h3 className="text-sm heading-tertiary">VEX IQ Create Award Showcase</h3>
-							<p className="text-sm text-muted">McKinney, TX • February 18, 2024</p>
-						</a>
+						{/* Main event selection */}
+						<div className={styles.mainEventSection}>
+							<ApiDropdown
+								key={fetchKey}
+								enabled={fetchKey > 0}
+								fetchFunction={() =>
+									GetEventList({
+										ProgramID: selectedProgram || undefined,
+										Region: regionSearch || undefined,
+									})
+								}
+								dataField="Events"
+								placeholder="Select Event..."
+								emptyMessage="No events found"
+								value={selectedEvent}
+								onChange={setSelectedEvent}
+								aria-label="Event selection"
+								displayField="Name"
+								valueField="ID"
+								className={styles.eventDropdown}
+							/>
+
+							{/* Main action */}
+							<div className={styles.mainAction}>
+								<button
+									className={`btn ${styles.continueButton}`}
+									disabled={!selectedEvent}
+								>
+									Continue
+								</button>
+							</div>
+						</div>
 					</div>
 				</section>
 			</div>

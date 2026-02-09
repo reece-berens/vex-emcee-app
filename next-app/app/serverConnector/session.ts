@@ -7,18 +7,22 @@
 
 import Cookies from 'js-cookie';
 
+/** Result type for session operations */
+interface SessionResult {
+    success: boolean;
+    session?: string;
+    error?: string;
+}
+
 /**
  * Registers a new session with the VEX Emcee API
  * 
- * @returns {Promise<Object>} Result object with success status and session data
- * @returns {boolean} result.success - Whether the session was created successfully
- * @returns {string} result.session - The session token (if successful)
- * @returns {string} result.error - Error message (if failed)
+ * @returns {Promise<SessionResult>} Result object with success status and session data
  */
-const registerSession = async () => {
+const registerSession = async (): Promise<SessionResult> => {
     try {
         // Make POST request to register a new session
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}registersession`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -38,7 +42,7 @@ const registerSession = async () => {
         
         return { success: false, error: 'Failed to register session' };
     } catch (error) {
-        return { success: false, error: error.message };
+        return { success: false, error: (error as Error).message };
     }
 };
 
@@ -47,7 +51,7 @@ const registerSession = async () => {
  * 
  * @returns {string|undefined} The session token, or undefined if not found
  */
-const getSession = () => {
+const getSession = (): string | undefined => {
     return Cookies.get('VEXEmceeSession');
 };
 
@@ -57,12 +61,9 @@ const getSession = () => {
  * This function checks for an existing session cookie. If found, it returns
  * that session. If not found, it automatically registers a new session.
  * 
- * @returns {Promise<Object>} Result object with success status and session data
- * @returns {boolean} result.success - Whether a session is available
- * @returns {string} result.session - The session token (if successful)
- * @returns {string} result.error - Error message (if failed)
+ * @returns {Promise<SessionResult>} Result object with success status and session data
  */
-const ensureSession = async () => {
+const ensureSession = async (): Promise<SessionResult> => {
     // Check if we already have a session
     const existingSession = getSession();
     if (existingSession) {
@@ -74,3 +75,4 @@ const ensureSession = async () => {
 };
 
 export { registerSession, getSession, ensureSession };
+export type { SessionResult };

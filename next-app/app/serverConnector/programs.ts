@@ -1,28 +1,68 @@
-import Cookies from 'js-cookie';
+/**
+ * Programs API Connector for VEX Emcee App
+ *
+ * Handles fetching VEX robotics program data (V5, IQ, U, etc.) from the API.
+ * Programs are used to filter events by competition type.
+ */
 
-const GetProgramList = async (request: VEXEmcee.API.Requests.GetSelectableProgramsRequest): Promise<VEXEmcee.API.Responses.GetSelectableProgramsResponse> => {
-    const builtURL = new URL("selectableprograms", process.env.NEXT_PUBLIC_BASE_URL);
-    const session = Cookies.get('VEXEmceeSession') || '';
+import { ensureSession } from "./session";
 
-    const fetchResult = await fetch(builtURL, {
-        method: "GET",
-        headers: {
-            'VEXEmceeSession': session
-        }
-    });
-
-    if (fetchResult.ok) {
-        const resultData = await fetchResult.json();
-        const tempThing = resultData as VEXEmcee.API.Responses.GetMatchListResponse;
-        return tempThing;
-    }
-    else {
-        const errorMessage: VEXEmcee.API.Responses.GetMatchListResponse = {
-            ErrorMessage: `ERROR getting data: ${fetchResult.statusText}`,
-            Success: false,
-        };
-        return errorMessage;
-    }
+/** Shape of a program object from the API */
+interface Program {
+	ID: number;
+	Name: string;
 }
 
-export default GetProgramList;
+/** Result type for getPrograms */
+interface ProgramsResult {
+	success: boolean;
+	programs?: Program[];
+	error?: string;
+}
+
+/**
+ * Fetches the list of available VEX programs from the API
+ *
+ * Programs represent different VEX competition types like:
+ * - V5: VEX Robotics Competition
+ * - IQ: VEX IQ Challenge
+ * - U: VEX U (University level)
+ * - etc.
+ *
+ * @returns {Promise<ProgramsResult>} Result object with success status and programs data
+ *
+ * @example
+ * const result = await getPrograms();
+ * if (result.success) {
+ *   console.log(result.programs); // [{ ID: 1, Name: "V5RC", ... }, ...]
+ * }
+ */
+const getPrograms = async (): Promise<ProgramsResult> => {
+	try {
+		const sessionResult = await ensureSession();
+		if (!sessionResult.success) {
+			return { success: false, error: "Failed to establish session" };
+		}
+
+		const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}selectableprograms`, {
+			method: "GET",
+			headers: {
+				VEXEmceeSession: sessionResult.session!,
+			},
+		});
+
+		if (response.ok) {
+			const data = await response.json();
+			if (data.Success && data.Programs) {
+				return { success: true, programs: data.Programs };
+			}
+		}
+
+		return { success: false, error: "Failed to fetch programs" };
+	} catch (error) {
+		return { success: false, error: (error as Error).message };
+	}
+};
+
+export { getPrograms };
+export type { Program, ProgramsResult };

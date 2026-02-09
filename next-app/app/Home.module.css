@@ -1,32 +1,65 @@
 .searchField {
-	padding: var(--space-lg) var(--space-md); /* Increased vertical space */
+	padding: var(--space-lg);
 }
 
-.filters {
+.eventDropdown {
+	padding: var(--space-xl) var(--space-lg);
+	font-size: 18px;
+}
+
+.filtersSection {
 	display: flex;
 	flex-direction: column;
 	transition: background var(--transition);
 	gap: var(--space-md);
 }
 
-.eventsList {
+.mainEventSection {
 	display: flex;
 	flex-direction: column;
+	transition: background var(--transition);
 	gap: var(--space-md);
 }
 
-.buttonFooter {
+.filterActions {
 	display: flex;
 	justify-content: space-between;
+	margin-bottom: var(--space-xl);
+}
+
+.mainAction {
+	display: flex;
+	justify-content: center;
 	margin-top: var(--space-md);
 }
 
-.searchButton {
+/* .eventsList {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-md);
+} */
+
+/* .buttonFooter {
+	display: flex;
+	justify-content: space-between;
+	margin-top: var(--space-md);
+} */
+
+.filterButton {
 	background: var(--ui-purple-dark);
 	color: var(--background-color3);
 	gap: var(--space-sm);
 	padding: var(--space-md) var(--space-xl);
 	margin-right: var(--space-lg);
+}
+
+.continueButton {
+	background: var(--ui-purple-dark);
+	color: var(--background-color3);
+	gap: var(--space-sm);
+	padding: var(--space-md) var(--space-xl);
+	width: 50%;
+	justify-content: center;
 }
 
 .clearButton {
