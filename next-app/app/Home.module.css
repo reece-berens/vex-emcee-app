@@ -1,12 +1,34 @@
+/**
+ * Home Page Styles (Home.module.css)
+ *
+ * Component-specific styles for the Home/Event Selection page.
+ * Uses CSS Modules for scoped class names.
+ *
+ * Layout sections:
+ * - filtersSection: Program and Region dropdowns with action buttons
+ * - mainEventSection: Event dropdown, Division dropdown, Continue button
+ */
+
+/* ============================================
+   FORM FIELDS
+   ============================================ */
+
+/** Standard padding for filter dropdowns */
 .searchField {
 	padding: var(--space-lg);
 }
 
+/** Larger, more prominent event dropdown */
 .eventDropdown {
 	padding: var(--space-xl) var(--space-lg);
 	font-size: 18px;
 }
 
+/* ============================================
+   LAYOUT SECTIONS
+   ============================================ */
+
+/** Top section: Program/Region filters */
 .filtersSection {
 	display: flex;
 	flex-direction: column;
@@ -14,6 +36,7 @@
 	gap: var(--space-md);
 }
 
+/** Bottom section: Event selection and continue */
 .mainEventSection {
 	display: flex;
 	flex-direction: column;
@@ -21,30 +44,25 @@
 	gap: var(--space-md);
 }
 
+/** Container for Clear/Apply filter buttons */
 .filterActions {
 	display: flex;
 	justify-content: space-between;
 	margin-bottom: var(--space-xl);
 }
 
+/** Container for Continue button (centered) */
 .mainAction {
 	display: flex;
 	justify-content: center;
 	margin-top: var(--space-md);
 }
 
-/* .eventsList {
-	display: flex;
-	flex-direction: column;
-	gap: var(--space-md);
-} */
+/* ============================================
+   BUTTONS
+   ============================================ */
 
-/* .buttonFooter {
-	display: flex;
-	justify-content: space-between;
-	margin-top: var(--space-md);
-} */
-
+/** Apply filters button - purple accent */
 .filterButton {
 	background: var(--ui-purple-dark);
 	color: var(--background-color3);
@@ -53,6 +71,7 @@
 	margin-right: var(--space-lg);
 }
 
+/** Continue button - prominent, half-width, centered */
 .continueButton {
 	background: var(--ui-purple-dark);
 	color: var(--background-color3);
@@ -62,6 +81,7 @@
 	justify-content: center;
 }
 
+/** Clear filters button - text-only style */
 .clearButton {
 	background: none;
 	box-shadow: none;
@@ -78,6 +98,10 @@
 	border: none;
 	color: var(--text-color);
 }
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 
 @media (min-width: 768px) {
 	.searchButton {

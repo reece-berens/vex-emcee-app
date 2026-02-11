@@ -1,0 +1,81 @@
+/**
+ * LoadingOverlay Styles
+ *
+ * Styles for the full-screen loading overlay with pixel-art animation.
+ * The overlay covers the entire viewport with a semi-transparent background
+ * and centers the loading animation + text.
+ */
+
+/* ============================================
+   OVERLAY CONTAINER
+   ============================================ */
+
+/** Full-screen overlay with dark semi-transparent background */
+.overlay {
+	position: fixed;
+	inset: 0; /* Shorthand for top/right/bottom/left: 0 */
+	background: rgba(0, 0, 0, 0.8);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+	animation: fadeIn 0.2s ease-out;
+}
+
+/** Fade in animation for smooth appearance */
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+/* ============================================
+   CONTENT CONTAINER
+   ============================================ */
+
+/** Centers the grid and text vertically */
+.content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 16px;
+}
+
+/** Loading text below the animation */
+.text {
+	color: var(--background-color3);
+	font-weight: 700;
+	font-size: 18px;
+}
+
+/* ============================================
+   PIXEL GRID
+   ============================================ */
+
+/** 20x20 grid of 3px pixels with 1px gaps */
+.grid {
+	display: grid;
+	grid-template-columns: repeat(20, 3px);
+	grid-template-rows: repeat(20, 3px);
+	gap: 1px;
+}
+
+/** Individual pixel - transparent by default */
+.pixel {
+	width: 3px;
+	height: 3px;
+	background: transparent;
+}
+
+/** Red pixels (VEX red alliance color) */
+.pixel.red {
+	background: var(--accent-red);
+}
+
+/** Blue pixels (VEX blue alliance color) */
+.pixel.blue {
+	background: var(--accent-blue);
+}

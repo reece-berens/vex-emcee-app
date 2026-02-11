@@ -1,0 +1,136 @@
+/**
+ * BottomNav Styles
+ *
+ * Two-layer animation system for the active tab indicator:
+ *
+ * 1. PILL LAYER (.pill)
+ *    - Invisible container that slides left/right via transform
+ *    - Its ::before pseudo-element renders the actual visible pill
+ *    - Transition on transform creates the sliding animation
+ *
+ * 2. TAB LAYER (.tab::before)
+ *    - Each tab has its own ::before for the hover "ghost" effect
+ *    - Fades in on hover (opacity transition)
+ *    - Same visual style as pill but independent per tab
+ *
+ * Why two layers?
+ * - The pill needs to slide smoothly between tabs (transform animation)
+ * - The hover ghost needs to fade in/out on each tab independently (opacity animation)
+ * - Using the same element for both would cause conflicting animations
+ */
+
+/* ============================================
+   NAV CONTAINER
+   ============================================ */
+.nav {
+	position: relative; /* Positioning context for the sliding pill */
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+
+	/* Frosted glass effect */
+	background: var(--background-color1-transparent);
+	backdrop-filter: blur(20px) saturate(200%) brightness(1.1);
+	-webkit-backdrop-filter: blur(20px) saturate(200%) brightness(1.1); /* Safari */
+
+	border-top: 1px solid var(--primary-color-transparent);
+	transition: background var(--transition);
+}
+
+/* ============================================
+   TAB ITEMS
+   ============================================ */
+.tab {
+	position: relative; /* For the hover ghost ::before */
+	display: flex;
+	flex: 1; /* Equal width tabs */
+	flex-direction: column;
+	align-items: center;
+	padding: var(--space-sm) var(--space-md);
+
+	color: var(--background-color3);
+	text-decoration: none;
+	transition: color var(--transition);
+	z-index: 1000; /* Above the sliding pill */
+}
+
+.tab:hover:not(.disabled) {
+	color: var(--ui-purple-dark);
+}
+
+/* Hover ghost effect - fades in behind the tab on hover */
+.tab::before {
+	content: "";
+	position: absolute;
+	top: 5px;
+	bottom: 5px;
+	left: 10%;
+	right: 10%;
+
+	background: var(--ui-purple-light);
+	border-radius: var(--border-radius-big);
+	box-shadow: var(--shadow-inset);
+
+	opacity: 0; /* Hidden by default */
+	transition: opacity 0.3s ease;
+	z-index: -1; /* Behind tab content */
+}
+
+/* Show ghost on hover (but not on active or disabled tabs) */
+.tab:hover:not(.disabled):not(.active)::before {
+	opacity: 0.4;
+}
+
+.tab.active {
+	color: var(--text-color);
+}
+
+.tab.disabled {
+	opacity: 0.4;
+	pointer-events: none; /* Prevent clicks and hover effects */
+}
+
+/* ============================================
+   TAB CONTENT (Icon + Label)
+   ============================================ */
+.icon {
+	position: relative;
+	top: 4px; /* Fine-tune vertical alignment */
+}
+
+.label {
+	position: relative;
+	bottom: 1px; /* Fine-tune vertical alignment */
+	font-size: var(--font-size-sm);
+	font-weight: 500;
+}
+
+/* ============================================
+   SLIDING PILL INDICATOR
+   ============================================ */
+.pill {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+
+	/* Width set dynamically via inline style: 100% / numTabs */
+	/* Transform set dynamically: translateX(activeIndex * 100%) */
+
+	background: transparent; /* Container is invisible */
+	transition: transform 0.3s ease; /* Smooth slide animation */
+}
+
+/* The actual visible pill - rendered inside the sliding container */
+.pill::before {
+	content: "";
+	position: absolute;
+	top: 5px;
+	bottom: 5px;
+	left: 10%;
+	right: 10%;
+
+	background: var(--ui-purple-light);
+	border-radius: var(--border-radius-big);
+	box-shadow: var(--shadow-inset);
+}

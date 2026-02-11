@@ -1,79 +1,143 @@
+/**
+ * Global Styles (globals.css)
+ *
+ * App-wide styles and design system definitions.
+ * This file establishes the visual foundation for the entire app.
+ *
+ * Organization:
+ * 1. CSS Custom Properties (Design Tokens)
+ * 2. CSS Reset
+ * 3. Typography Utilities
+ * 4. Layout System
+ * 5. Button Styles
+ * 6. Input Styles
+ * 7. Dropdown Styles
+ * 8. Card Styles
+ * 9. Responsive Breakpoints
+ */
+
+/* ============================================
+   1. CSS CUSTOM PROPERTIES (Design Tokens)
+   ============================================
+   These variables define the design system and
+   should be used throughout the app for consistency.
+*/
 :root {
-	--text-color: #333; /* Default text color */
-	--text-muted: #7f8797; /* Muted text color */
-	--primary-color: #465362; /* Dark gray */
-	--primary-color-transparent: rgba(70, 83, 98, 0.5); /* Transparent version of primary for header border */
-	--secondary-color: #9ba7b5; /* Alt gray */
-	--background-color1: #e8e6e3; /* Light gray */
-	--background-color2: #cccccc; /* Medium gray */
-	--background-color3: #f7f6f4; /* Lightest gray (for cards, stand-out items) */
-	--background-color1-transparent: rgba(232, 230, 227, 0.5); /* Transparent version of bg3 for header */
-	--background-very-transparent: rgba(255, 255, 255, 0.2); /* Very transparent background for homepage cardbacks */
-	--error-color1: #ef4444; /* Red error color */
+	/* --------------------------------------------
+	   Text Colors
+	   -------------------------------------------- */
+	--text-color: #333;           /* Primary text */
+	--text-muted: #7f8797;        /* Secondary/muted text */
+
+	/* --------------------------------------------
+	   Brand Colors
+	   -------------------------------------------- */
+	--primary-color: #465362;                           /* Dark gray - borders, accents */
+	--primary-color-transparent: rgba(70, 83, 98, 0.5); /* For subtle borders */
+	--secondary-color: #9ba7b5;                         /* Medium gray */
+
+	/* --------------------------------------------
+	   Background Colors
+	   -------------------------------------------- */
+	--background-color1: #e8e6e3;                        /* Light gray - main bg */
+	--background-color2: #cccccc;                        /* Medium gray - card backs */
+	--background-color3: #f7f6f4;                        /* Lightest - cards, inputs */
+	--background-color1-transparent: rgba(232, 230, 227, 0.5); /* For frosted glass effect */
+	--background-very-transparent: rgba(255, 255, 255, 0.2);   /* Subtle overlays */
+
+	/* --------------------------------------------
+	   Semantic Colors
+	   -------------------------------------------- */
+	--error-color1: #ef4444;      /* Error states, validation */
+
+	/* --------------------------------------------
+	   Purple UI Palette
+	   Used for interactive elements (buttons, links, focus states)
+	   -------------------------------------------- */
+	--ui-purple-light: #f8f6fb;   /* Hover backgrounds, subtle highlights */
+	--ui-purple: #8b6bc2;         /* Primary accent - buttons, links */
+	--ui-purple-dark: #7356b3;    /* Strong emphasis - active states */
+	--ui-purple-disabled: #a8a4c9; /* Disabled button state */
+
+	/* --------------------------------------------
+	   VEX Alliance Colors
+	   Red vs Blue theming for match displays
+	   -------------------------------------------- */
+	--accent-red: #ff0035;        /* Red alliance */
+	--accent-blue: #3595da;       /* Blue alliance */
+
+	/* --------------------------------------------
+	   Typography
+	   -------------------------------------------- */
 	--font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-	--font-size-hero: 24px;
-	--font-size-lg: 20px;
-	--font-size: 16px;
-	--font-size-sm: 14px;
-	--border-radius-input: 8px;
-	--border-radius: 12px;
-	--border-radius-big: 24px;
-	--border-radius-pill: 100px;
+	--font-size-hero: 24px;       /* Page titles */
+	--font-size-lg: 20px;         /* Section headers */
+	--font-size: 16px;            /* Body text */
+	--font-size-sm: 14px;         /* Small text, labels */
+
+	/* --------------------------------------------
+	   Border Radius
+	   -------------------------------------------- */
+	--border-radius-input: 8px;   /* Form inputs */
+	--border-radius: 12px;        /* Cards, buttons */
+	--border-radius-big: 24px;    /* Large containers */
+	--border-radius-pill: 100px;  /* Pill shapes */
+
+	/* --------------------------------------------
+	   Spacing Scale
+	   Based on rem units (1rem = 16px default)
+	   -------------------------------------------- */
+	--space-xs: 0.25rem;          /* 4px */
+	--space-sm: 0.5rem;           /* 8px */
+	--space-md: 0.75rem;          /* 12px */
+	--space-lg: 1rem;             /* 16px */
+	--space-xl: 1.5rem;           /* 24px */
+	--space-xxl: 2rem;            /* 32px */
+
+	/* --------------------------------------------
+	   Transitions
+	   -------------------------------------------- */
 	--transition: 0.15s ease;
 
-	/* Purple UI palette */
-	--ui-purple-light: #f8f6fb; /* Subtle backgrounds, hover states */
-	--ui-purple: #8b6bc2; /* Main accent - buttons, links */
-	--ui-purple-dark: #7356b3; /* Strong emphasis, active states */
-	--ui-purple-disabled: #a8a4c9; /* Disabled button version */
+	/* --------------------------------------------
+	   Shadows
+	   -------------------------------------------- */
+	/* Inset shadow for "pressed" elements (nav pills, inputs on focus) */
+	--shadow-inset:
+		inset 0 2px 4px rgba(107, 75, 155, 0.35),
+		inset 0 4px 8px rgba(107, 75, 155, 0.25),
+		inset 0 -1px 2px rgba(255, 255, 255, 0.3);
 
-	/* Red vs Blue accent colorings */
-	--accent-red: #ff0035; /* Red */
-	--accent-blue: #3595da; /* Blue */
-
-	/* Common spacing variables */
-	--space-xs: 0.25rem;
-	--space-sm: 0.5rem;
-	--space-md: 0.75rem;
-	--space-lg: 1rem;
-	--space-xl: 1.5rem;
-	--space-xxl: 2rem;
-
-	/* Common shadow variables */
-	--shadow-inset: inset 0 1px 3px 0 rgba(0, 0, 0, 0.08), inset 0 1.5px 6px 0 rgba(0, 0, 0, 0.04);
+	/* Elevation shadows for cards/buttons */
 	--shadow-default: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 2px 8px 0 rgba(0, 0, 0, 0.06);
 	--shadow-hover: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
 	--shadow-focus: 0 6px 20px 0 rgba(0, 0, 0, 0.2);
 }
 
-/* Resetting browser defaults */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p {
+/* ============================================
+   2. CSS RESET
+   ============================================
+   Normalize browser defaults for consistent styling
+*/
+h1, h2, h3, h4, h5, h6, p {
 	font-size: inherit;
 	font-weight: inherit;
 	margin: 0;
 }
 
-/* Generic text size classes using the existing root variables */
-.text-lg {
-	font-size: var(--font-size-lg);
-}
-.text-base {
-	font-size: var(--font-size);
-}
-.text-sm {
-	font-size: var(--font-size-sm);
-}
-.text-hero {
-	font-size: var(--font-size-hero);
-}
+/* ============================================
+   3. TYPOGRAPHY UTILITIES
+   ============================================
+   Reusable text styling classes
+*/
 
-/* Typography utilities */
+/* Size classes */
+.text-lg { font-size: var(--font-size-lg); }
+.text-base { font-size: var(--font-size); }
+.text-sm { font-size: var(--font-size-sm); }
+.text-hero { font-size: var(--font-size-hero); }
+
+/* Heading styles with appropriate margins */
 .heading-primary {
 	font-weight: 700;
 	color: var(--text-color);
@@ -92,40 +156,56 @@ p {
 	margin-bottom: var(--space-sm);
 }
 
-.text-muted {
-	color: var(--text-muted);
-	font-weight: 400;
-}
+/* Text modifiers */
+.text-muted { color: var(--text-muted); font-weight: 400; }
+.text-bold { font-weight: 600; }
+.text-label { color: var(--text-color); margin-bottom: var(--space-xs); }
+.text-white { color: var(--background-color3); }
 
-.text-bold {
-	font-weight: 600;
-}
+/* Background modifiers */
+.bg-transparent { background: var(--background-very-transparent) !important; }
 
-.text-label {
-	color: var(--text-color);
-	margin-bottom: var(--space-xs);
-}
+/* ============================================
+   4. LAYOUT SYSTEM
+   ============================================
+   Core layout structure for the app.
 
-.text-white {
-	color: var(--background-color3);
-}
+   Visual structure:
+   ┌─────────────────────────────┐
+   │ .layout-header (fixed)      │
+   ├─────────────────────────────┤
+   │ .scroll-wrapper             │
+   │   └─ .layout-main           │
+   │        └─ .layout-content   │
+   ├─────────────────────────────┤
+   │ .layout-footer (fixed)      │
+   └─────────────────────────────┘
+*/
 
-.bg-transparent {
-	background: var(--background-very-transparent) !important;
-}
-
-/* Classic 3-Column Layout using Flexbox */
+/**
+ * Root layout container
+ * - Full viewport height
+ * - Flex column for header/content/footer structure
+ * - Gradient background with noise texture overlay
+ */
 .layout {
 	display: flex;
 	flex-direction: column;
 	height: 100vh;
-	/* background: var(--background-color1); */
-	/* background: linear-gradient(180deg, #ebe8e5 0%, #e8e6e3 50%, #ddd9d4 100%); */
 	font-family: var(--font-family);
 	margin: 0 !important;
 	color: var(--text-color);
-	overflow: hidden; /* Prevent body scroll */
+	overflow: hidden; /* Prevent body scroll - scroll happens in .scroll-wrapper */
 
+	/*
+	 * Complex gradient background:
+	 * 1. SVG noise texture for grain effect
+	 * 2-5. Radial gradients for color blobs (purple, red, blue)
+	 * 6. Base linear gradient
+	 *
+	 * The oversized gradients (200vw, 180vw, etc.) allow for
+	 * parallax-style movement via CSS custom properties
+	 */
 	background-image:
 		url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E"),
 		radial-gradient(circle at 25% 25%, rgba(139, 107, 194, 0.8) 0%, transparent 60%),
@@ -141,7 +221,8 @@ p {
 		160vw 160vh,
 		140vw 140vh,
 		100% 100%;
-	/* Offset positioning to account for oversizing */
+
+	/* Offset positioning for parallax effect (controlled by --scroll-x/y vars) */
 	background-position:
 		0 0,
 		calc(-50vw + var(--scroll-x, 0px) * 2) calc(-50vh + var(--scroll-y, 0px)),
@@ -149,10 +230,15 @@ p {
 		calc(-30vw + var(--scroll-x, 0px) * 0.5) calc(-30vh + var(--scroll-y, 0px) * 2),
 		calc(-20vw - var(--scroll-x, 0px) * 1.5) calc(-20vh - var(--scroll-y, 0px)),
 		center center;
+
 	background-attachment: fixed;
 	min-height: 100vh;
 }
 
+/**
+ * Fixed header with frosted glass effect
+ * Opacity is controlled dynamically based on scroll position
+ */
 .layout-header {
 	position: fixed;
 	top: 0;
@@ -162,40 +248,57 @@ p {
 	padding: var(--space-lg);
 	transition: background var(--transition);
 	text-align: center;
+
+	/* Frosted glass effect */
 	background: var(--background-color1-transparent);
-	backdrop-filter: blur(20px) saturate(200%) brightness(1.1); /* Blur effect behind header */
-	-webkit-backdrop-filter: blur(20px) saturate(200%) brightness(1.1); /* Safari support */
-	border-bottom: 1px solid var(--primary-color-transparent); /* Subtle border */
+	backdrop-filter: blur(20px) saturate(200%) brightness(1.1);
+	-webkit-backdrop-filter: blur(20px) saturate(200%) brightness(1.1); /* Safari */
+
+	border-bottom: 1px solid var(--primary-color-transparent);
 	z-index: 1001;
 	overflow: hidden;
 	flex-shrink: 0;
 	clip-path: inset(0 0 0 0);
 }
 
+/**
+ * Fixed footer (contains BottomNav)
+ * Same frosted glass effect as header
+ */
 .layout-footer {
 	color: var(--text-color);
-	padding: var(--space-lg);
 	transition: background var(--transition);
-	text-align: center;
 	background: var(--background-color1-transparent);
-	backdrop-filter: blur(20px) saturate(200%) brightness(1.1); /* Blur effect behind header */
-	-webkit-backdrop-filter: blur(20px) saturate(200%) brightness(1.1); /* Safari support */
-	border-top: 1px solid var(--primary-color-transparent); /* Subtle border */
+	backdrop-filter: blur(20px) saturate(200%) brightness(1.1);
+	-webkit-backdrop-filter: blur(20px) saturate(200%) brightness(1.1);
+	border-top: 1px solid var(--primary-color-transparent);
 }
 
+/**
+ * Scrollable content wrapper
+ * This is where page content scrolls, not the body
+ */
 .scroll-wrapper {
 	display: flex;
 	flex-direction: column;
 	flex: 1 1 0;
 	min-width: 0;
-	overflow-y: auto; /* Make main content scrollable */
+	overflow-y: auto;
 }
 
+/**
+ * Main content area
+ * Adds padding and accounts for fixed header height
+ */
 .layout-main {
 	padding-inline: var(--space-lg);
-	padding-top: 54px;
+	padding-top: 54px; /* Height of header */
 }
 
+/**
+ * Content container with max-width
+ * Centers content and constrains width on larger screens
+ */
 .layout-content {
 	display: flex;
 	flex-direction: column;
@@ -206,6 +309,7 @@ p {
 	max-width: 600px;
 }
 
+/* Sidebar layouts (for future desktop use) */
 .layout-sidebar {
 	background: var(--secondary-color);
 	width: 100%;
@@ -228,7 +332,15 @@ p {
 	padding: var(--space-sm);
 }
 
-/* Button Styles */
+/* ============================================
+   5. BUTTON STYLES
+   ============================================
+*/
+
+/**
+ * Base button style
+ * All buttons should use .btn class plus optional modifiers
+ */
 .btn {
 	color: var(--text-color);
 	background: var(--background-color3);
@@ -255,6 +367,7 @@ p {
 	color: var(--text-color);
 }
 
+/* Button variants */
 .btn-primary {
 	background: var(--ui-purple);
 	color: var(--background-color3);
@@ -272,7 +385,15 @@ p {
 	box-shadow: none;
 }
 
-/* Generic input styling for whole app */
+/* ============================================
+   6. INPUT STYLES
+   ============================================
+*/
+
+/**
+ * Generic input styling
+ * Applied to all <input> elements
+ */
 input {
 	background: var(--background-color3);
 	color: var(--text-color);
@@ -284,7 +405,7 @@ input {
 		border-color var(--transition),
 		box-shadow var(--transition);
 
-	/* Add subtle inset shadow to look "recessed" */
+	/* Subtle inset shadow for "recessed" look */
 	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
 	border: 1px solid rgba(0, 0, 0, 0.05);
 }
@@ -295,9 +416,19 @@ input:is(:hover, :focus-visible) {
 	opacity: 0.9;
 }
 
-/* Generic dropdown styling */
+/* ============================================
+   7. DROPDOWN STYLES
+   ============================================
+   Styles for the custom ApiDropdown component.
+   These are global because the component uses
+   className strings rather than CSS modules.
+*/
+
+/**
+ * Dropdown trigger/button
+ */
 .custom-dropdown {
-	background-color: var(--background-color3); /* Match inputs */
+	background-color: var(--background-color3);
 	color: var(--text-color);
 	border-radius: var(--border-radius);
 	font-size: var(--font-size);
@@ -305,7 +436,7 @@ input:is(:hover, :focus-visible) {
 	appearance: none;
 	-webkit-appearance: none;
 	-moz-appearance: none;
-	border: 1px solid var(--secondary-color); /* Light border by default */
+	border: 1px solid var(--secondary-color);
 	transition:
 		background-color var(--transition),
 		color var(--transition),
@@ -323,6 +454,7 @@ input:is(:hover, :focus-visible) {
 	box-shadow: var(--shadow-inset);
 }
 
+/* Dropdown arrow icon */
 .dropdown-arrow {
 	display: flex;
 	align-items: center;
@@ -330,31 +462,37 @@ input:is(:hover, :focus-visible) {
 	pointer-events: none;
 }
 
+/* Rotate arrow when open */
 .custom-dropdown.open .dropdown-arrow {
 	transform: rotate(180deg);
 }
 
+/* Placeholder text styling */
 .custom-dropdown .placeholder {
 	color: var(--text-muted);
 	font-style: italic;
 }
 
+/* Error state */
 .custom-dropdown.has-error {
 	border-color: var(--error-color1);
 	opacity: 0.7;
 	pointer-events: none;
 }
 
+/* Disabled state */
 .custom-dropdown.disabled {
 	opacity: 0.7;
 	pointer-events: none;
 }
 
+/* Wrapper for dropdown + error message */
 .dropdown-wrapper {
 	display: flex;
 	flex-direction: column;
 }
 
+/* Error and empty state messages */
 .dropdown-error,
 .dropdown-message {
 	color: var(--background-color3);
@@ -363,21 +501,27 @@ input:is(:hover, :focus-visible) {
 	padding-left: var(--space-sm);
 }
 
+/**
+ * Dropdown options list
+ * Positioned absolutely below the trigger
+ */
 .dropdown-list {
-	position: absolute; /* Changed from fixed */
-	top: calc(100% + 4px); /* Position below trigger */
+	position: absolute;
+	top: calc(100% + 4px);
 	left: -1px;
 	width: calc(100%);
 	background: var(--background-color3);
 	border: 1px solid var(--primary-color);
 	border-radius: var(--border-radius);
 	box-shadow: var(--shadow-hover);
-	z-index: 1001; /* Keep high z-index */
+	z-index: 1001;
 	max-height: 60vh;
 	overflow-y: auto;
 	margin: 0;
 	padding: 0;
 	list-style: none;
+
+	/* Animate in from slightly above */
 	transform: translateY(-10px) scale(0.95);
 	opacity: 0;
 	animation: dropdownOpen 0.2s ease-out forwards;
@@ -390,6 +534,7 @@ input:is(:hover, :focus-visible) {
 	}
 }
 
+/* Individual dropdown option */
 .dropdown-list li {
 	padding: var(--space-lg);
 	cursor: pointer;
@@ -406,6 +551,7 @@ input:is(:hover, :focus-visible) {
 	border-bottom: none;
 }
 
+/* Option content layout (text + checkmark) */
 .dropdown-item {
 	display: flex;
 	justify-content: space-between;
@@ -417,21 +563,29 @@ input:is(:hover, :focus-visible) {
 	background: var(--background-color2);
 }
 
-/* Currently focused/hovered item */
+/* Keyboard-focused or hovered item */
 .dropdown-item.focused,
 .dropdown-item:hover {
 	background: var(--ui-purple);
 	color: var(--background-color3);
 }
 
-/* Selected AND focused */
+/* Selected AND focused/hovered */
 .dropdown-item.selected.focused,
 .dropdown-item.selected:hover {
 	background: var(--ui-purple-dark);
 	color: var(--background-color3);
 }
 
-/* Card Styles */
+/* ============================================
+   8. CARD STYLES
+   ============================================
+*/
+
+/**
+ * Card background/container
+ * Used to group related content with subtle styling
+ */
 .cardback {
 	background: var(--background-color2);
 	box-shadow: var(--shadow-inset);
@@ -441,6 +595,10 @@ input:is(:hover, :focus-visible) {
 	position: relative;
 }
 
+/**
+ * Individual card
+ * Interactive element with hover effects
+ */
 .card {
 	background: var(--background-color3);
 	box-shadow: var(--shadow-default);
@@ -458,6 +616,7 @@ input:is(:hover, :focus-visible) {
 	background: var(--ui-purple-light);
 }
 
+/* Card as link - reset link styles */
 a.card {
 	text-decoration: none;
 	color: inherit;
@@ -470,7 +629,12 @@ a.card:focus {
 	text-decoration: none;
 }
 
-/* Tablet mode */
+/* ============================================
+   9. RESPONSIVE BREAKPOINTS
+   ============================================
+*/
+
+/* Tablet (768px+) */
 @media (min-width: 768px) {
 	.layout-sidebar,
 	.layout-extra {
@@ -483,7 +647,7 @@ a.card:focus {
 	}
 }
 
-/* Desktop mode */
+/* Desktop (1024px+) */
 @media (min-width: 1024px) {
 	.layout-content {
 		max-width: 800px;

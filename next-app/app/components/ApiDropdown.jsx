@@ -1,22 +1,50 @@
 /**
  * ApiDropdown Component
  *
- * A fully accessible custom dropdown component that fetches options from APIs or custom functions.
- * Replaces native <select> elements with full styling control and better UX.
+ * A fully accessible custom dropdown that can fetch options from APIs,
+ * use custom fetch functions, or display static options.
  *
  * Features:
- * - Fetches data from API endpoints or custom functions
+ * - Fetches data from API endpoints or custom async functions
+ * - Supports static options (no fetch needed)
  * - Full keyboard navigation (Arrow keys, Enter, Escape)
  * - Click outside to close
- * - Loading and error states
+ * - Loading, error, and empty states
  * - Customizable field mapping for different data structures
+ * - Can be disabled/enabled dynamically
+ *
+ * Usage examples:
+ *
+ * 1. With API fetch function:
+ *    <ApiDropdown
+ *        fetchFunction={getPrograms}
+ *        dataField="programs"
+ *        displayField="Name"
+ *        valueField="ID"
+ *        ...
+ *    />
+ *
+ * 2. With static options:
+ *    <ApiDropdown
+ *        staticOptions={[{ ID: 1, Name: "Option 1" }, ...]}
+ *        displayField="Name"
+ *        valueField="ID"
+ *        ...
+ *    />
+ *
+ * 3. Disabled until enabled:
+ *    <ApiDropdown enabled={someCondition} ... />
  *
  * @param {string} endpoint - API endpoint URL to fetch options from
- * @param {Function} fetchFunction - Custom function to fetch options (alternative to endpoint)
- * @param {string} dataField - Field name containing the options array in API response (default: "programs")
- * @param {string} placeholder - Text to show when no option is selected
- * @param {any} value - Currently selected value
- * @param {Function} onChange - Callback when selection changes
+ * @param {Function} fetchFunction - Custom async function to fetch options (alternative to endpoint)
+ * @param {Array} staticOptions - Array of options to use instead of fetching
+ * @param {boolean} enabled - Whether the dropdown should fetch/be interactive (default: true)
+ * @param {string} emptyMessage - Message shown when no options available
+ * @param {string} dataField - Field name containing the options array in API response
+ * @param {string} placeholder - Text shown when no option is selected
+ * @param {any} value - Currently selected value (controlled)
+ * @param {Function} onChange - Callback when selection changes: (newValue) => void
+ * @param {Function} onDataLoaded - Callback when data is fetched: (data) => void
  * @param {string} displayField - Object property to display as option text
  * @param {string} valueField - Object property to use as option value
  * @param {string} className - CSS class for styling
@@ -27,28 +55,39 @@ import { useState, useEffect, useRef } from "react";
 export default function ApiDropdown({
 	endpoint,
 	fetchFunction,
-	staticOptions, // Array of options to use instead of fetching
+	staticOptions,
 	enabled = true,
 	emptyMessage = "No results found",
-	dataField = "programs", // default to 'programs' for backward compatibility
+	dataField = "programs",
 	placeholder,
 	value,
 	onChange,
+	onDataLoaded,
 	displayField,
 	valueField,
 	className,
 }) {
-	// Component state
-	const [options, setOptions] = useState([]); // Available dropdown options
-	const [loading, setLoading] = useState(true); // Loading state during API call
-	const [error, setError] = useState(null); // Error message if API call fails
-	const [isOpen, setIsOpen] = useState(false); // Whether dropdown is expanded
-	const [focusedIndex, setFocusedIndex] = useState(-1); // Currently focused option for keyboard nav
+	// ============================================
+	// STATE
+	// ============================================
 
-	// Reference to dropdown container for click-outside detection
+	const [options, setOptions] = useState([]); // Available dropdown options
+	const [loading, setLoading] = useState(true); // True while fetching data
+	const [error, setError] = useState(null); // Error message if fetch failed
+	const [isOpen, setIsOpen] = useState(false); // Whether dropdown list is visible
+	const [focusedIndex, setFocusedIndex] = useState(-1); // Keyboard navigation: currently focused option
+
+	// Ref for click-outside detection
 	const dropdownRef = useRef(null);
 
-	// Close dropdown when clicking outside
+	// ============================================
+	// EFFECTS
+	// ============================================
+
+	/**
+	 * Close dropdown when clicking outside
+	 * Only attaches listener when dropdown is open
+	 */
 	useEffect(() => {
 		const handleClickOutside = (event) => {
 			if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -63,21 +102,29 @@ export default function ApiDropdown({
 		}
 	}, [isOpen]);
 
-	// Fetch options from API or custom function on component mount
+	/**
+	 * Fetch options on mount (or when dependencies change)
+	 *
+	 * Three modes:
+	 * 1. staticOptions provided → use directly, no fetch
+	 * 2. enabled=false → stay in disabled state, no fetch
+	 * 3. Otherwise → fetch from endpoint or fetchFunction
+	 */
 	useEffect(() => {
-		// If static options provided, use those directly
+		// Mode 1: Static options - use directly
 		if (staticOptions) {
 			setOptions(staticOptions);
 			setLoading(false);
 			return;
 		}
 
-		// If not enabled, stay in initial disabled state
+		// Mode 2: Not enabled - stay disabled
 		if (!enabled) {
 			setLoading(false);
 			return;
 		}
 
+		// Mode 3: Fetch data
 		const fetchOptions = async () => {
 			try {
 				setLoading(true);
@@ -94,24 +141,21 @@ export default function ApiDropdown({
 					}
 					const data = await response.json();
 
-					// Handle different API response formats:
-					// 1. Direct array: [{ id: 1, name: "Item" }, ...]
-					// 2. Object with success flag: { success: true, data: [...] }
-					// 3. Plain object: { items: [...] }
+					// Normalize response format
 					if (Array.isArray(data)) {
 						result = { success: true, [dataField]: data };
 					} else if (data.success !== undefined) {
-						result = data; // Use response as-is if it has success field
+						result = data;
 					} else {
-						// Assume it's a successful response, wrap it
 						result = { success: true, [dataField]: data };
 					}
 				}
 
-				// Extract options from result based on success status
+				// Extract options from result
 				if (result.success || result.Success) {
 					const dataArray = dataField ? result[dataField] || result.data : result;
 					setOptions(dataArray || []);
+					onDataLoaded?.(dataArray || []); // Notify parent component
 					setError(null);
 				} else {
 					setError(result.error);
@@ -121,24 +165,35 @@ export default function ApiDropdown({
 				setError(err.message);
 				setOptions([]);
 			} finally {
-				setLoading(false); // Always clear loading state
+				setLoading(false);
 			}
 		};
 
 		fetchOptions();
-	}, [staticOptions]);
+	}, [staticOptions]); // Only re-run if staticOptions changes
 
-	// Loading state UI
+	// ============================================
+	// RENDER: LOADING STATE
+	// ============================================
+
 	if (loading) {
 		return (
-			<div className={`${className} custom-dropdown`}>
+			<div className={`${className} custom-dropdown disabled`}>
 				<div className="dropdown-text">Loading...</div>
 			</div>
 		);
 	}
 
+	// ============================================
+	// DERIVED STATE
+	// ============================================
+
 	const isEmpty = !loading && !error && options.length === 0;
 	const showNoResults = enabled && isEmpty;
+
+	// ============================================
+	// RENDER: MAIN DROPDOWN
+	// ============================================
 
 	return (
 		<div className="dropdown-wrapper">
@@ -146,6 +201,7 @@ export default function ApiDropdown({
 				ref={dropdownRef}
 				className={`${className} custom-dropdown ${isOpen ? "open" : ""} ${error ? "has-error" : ""} ${isEmpty ? "disabled" : ""}`}
 				onClick={() => {
+					// Don't open if in error or empty state
 					if (error || isEmpty) return;
 					if (isOpen) {
 						setIsOpen(false);
@@ -155,14 +211,18 @@ export default function ApiDropdown({
 					}
 				}}
 				onKeyDown={(e) => {
+					// Keyboard navigation
 					if (error || isEmpty) return;
+
 					if (e.key === "Enter" || e.key === " ") {
 						e.preventDefault();
 						if (isOpen && focusedIndex >= 0) {
+							// Select focused option
 							onChange(options[focusedIndex][valueField]);
 							setIsOpen(false);
 							setFocusedIndex(-1);
 						} else {
+							// Toggle dropdown
 							setIsOpen(!isOpen);
 						}
 					} else if (isOpen) {
@@ -182,14 +242,17 @@ export default function ApiDropdown({
 				role="combobox"
 				aria-expanded={isOpen}
 			>
+				{/* Selected value display (or placeholder) */}
 				<span className="dropdown-text">
 					{options.find((opt) => opt[valueField] === value)?.[displayField] || (
 						<span className="placeholder">{placeholder}</span>
 					)}
 				</span>
 
+				{/* Dropdown arrow / error icon */}
 				<span className="dropdown-arrow">
 					{error ? (
+						// Error state: warning icon
 						<svg
 							width="20"
 							height="20"
@@ -203,6 +266,7 @@ export default function ApiDropdown({
 							<path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
 						</svg>
 					) : (
+						// Normal state: chevron down
 						<svg
 							width="20"
 							height="20"
@@ -220,6 +284,7 @@ export default function ApiDropdown({
 					)}
 				</span>
 
+				{/* Dropdown options list (only rendered when open) */}
 				{isOpen && (
 					<ul className="dropdown-list">
 						{options.map((option, index) => (
@@ -227,13 +292,14 @@ export default function ApiDropdown({
 								key={option[valueField]}
 								className={`dropdown-item ${focusedIndex === index ? "focused" : ""} ${value === option[valueField] ? "selected" : ""}`}
 								onClick={(e) => {
-									e.stopPropagation();
+									e.stopPropagation(); // Prevent triggering parent onClick
 									onChange(option[valueField]);
 									setIsOpen(false);
 									setFocusedIndex(-1);
 								}}
 							>
 								<span>{option[displayField]}</span>
+								{/* Checkmark for selected option */}
 								{value === option[valueField] && (
 									<svg
 										width="20"
@@ -255,7 +321,11 @@ export default function ApiDropdown({
 					</ul>
 				)}
 			</div>
+
+			{/* Error message (shown below dropdown) */}
 			{error && <span className="dropdown-error">{error}</span>}
+
+			{/* Empty state message */}
 			{showNoResults && <span className="dropdown-message">{emptyMessage}</span>}
 		</div>
 	);
