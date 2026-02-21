@@ -17,6 +17,17 @@
 import "./globals.css";
 import BottomNav from "./components/BottomNav";
 import AppWrapper from "./components/AppWrapper";
+import { Inter, Space_Grotesk } from "next/font/google";
+
+const inter = Inter({
+	subsets: ["latin"],
+	variable: "--font-inter",
+});
+
+const spaceGrotesk = Space_Grotesk({
+	subsets: ["latin"],
+	variable: "--font-space-grotesk",
+});
 
 /** Next.js metadata - used for <title> and <meta> tags */
 export const metadata = {
@@ -29,13 +40,14 @@ export const metadata = {
  */
 export default function RootLayout({ children }) {
 	return (
-		<html lang="en">
+		<html
+			lang="en"
+			className={`${inter.variable} ${spaceGrotesk.variable}`}
+		>
 			<body className="layout">
 				{/* AppWrapper provides global state context
 				    Footer is passed as prop so it renders outside the scroll area */}
-				<AppWrapper footer={<BottomNav />}>
-					{children}
-				</AppWrapper>
+				<AppWrapper footer={<BottomNav />}>{children}</AppWrapper>
 			</body>
 		</html>
 	);

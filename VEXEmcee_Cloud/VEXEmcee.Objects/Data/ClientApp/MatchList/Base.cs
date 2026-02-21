@@ -10,5 +10,7 @@ namespace VEXEmcee.Objects.Data.ClientApp.MatchList
 		public string MatchName { get; set; }
 		public int SortOrder { get; set; }
 		public bool Scored { get; set; }
+		public DateTime? Scheduled { get; set; }
+		public DateTime? Started { get; set; }
 	}
 }

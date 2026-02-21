@@ -20,7 +20,7 @@ import styles from "./Home.module.css";
 import { useState, useEffect } from "react";
 import ApiDropdown from "./components/ApiDropdown";
 import LoadingOverlay from "./components/LoadingOverlay";
-import { useScrollY, useSetPageTitle, useSetEventRegistered, useEventFilters, useSetEventFilters } from "./components/AppWrapper";
+import { useSetPageTitle, useSetEventRegistered, useEventFilters, useSetEventFilters } from "./components/AppWrapper";
 import { useRouter } from "next/navigation";
 import { getPrograms } from "./serverConnector/programs";
 import GetEventList from "./serverConnector/eventList";
@@ -28,7 +28,6 @@ import RegisterEventDivision from "./serverConnector/registerEventDivision";
 
 export default function Home() {
 	// Global state from AppWrapper
-	const scrollY = useScrollY();
 	const setPageTitle = useSetPageTitle();
 	const setEventRegistered = useSetEventRegistered();
 	const router = useRouter();
@@ -83,14 +82,10 @@ export default function Home() {
 	const handleContinue = async () => {
 		setIsRegistering(true);
 
-		// TEMP: Mock success for testing (swap for real API when ready)
-		await new Promise((resolve) => setTimeout(resolve, 2000));
-		const result = { Success: true };
-
-		// const result = await RegisterEventDivision({
-		//     EventID: filters.event,
-		//     DivisionID: filters.division,
-		// });
+		const result = await RegisterEventDivision({
+			EventID: filters.event,
+			DivisionID: filters.division,
+		});
 
 		setIsRegistering(false);
 
@@ -105,16 +100,10 @@ export default function Home() {
 			{/* Full-screen loading overlay - shown during registration */}
 			<LoadingOverlay isOpen={isRegistering} />
 
-			<main className="layout-main">
+			<main className={`layout-main ${styles.homeMain}`}>
 				<div className="layout-content">
 					{/* Hero title with scroll-based clip animation */}
-					<h1
-						className="text-hero heading-primary text-white"
-						style={{
-							// Clips from top as user scrolls, creating a "disappearing" effect
-							clipPath: scrollY > 0 ? `inset(${Math.min(100, scrollY * 3)}% 0 0 0)` : "none",
-						}}
-					>
+					<h1 className={`text-hero heading-primary text-white ${styles.heroText}`}>
 						Find Your VEX Tournament
 					</h1>
 
@@ -204,16 +193,7 @@ export default function Home() {
 									value={filters.event}
 									onChange={(val) => updateFilter("event", val)}
 									onDataLoaded={(data) => {
-										// TEMP: Add fake divisions for testing
-										const testData = data.map((event) => ({
-											...event,
-											Divisions: [
-												{ ID: 1, Name: "Division 1" },
-												{ ID: 2, Name: "Division 2" },
-												{ ID: 3, Name: "Division 3" },
-											],
-										}));
-										updateFilter("events", testData);
+										updateFilter("events", data);
 									}}
 									aria-label="Event selection"
 									displayField="Name"

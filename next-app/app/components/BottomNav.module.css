@@ -99,7 +99,7 @@
 }
 
 .label {
-	position: relative;
+	/* position: relative; */
 	bottom: 1px; /* Fine-tune vertical alignment */
 	font-size: var(--font-size-sm);
 	font-weight: 500;

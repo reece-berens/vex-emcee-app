@@ -192,6 +192,8 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 							ScoreFinalized = match.Scored,
 							Name = match.Name,
 							Field = match.Field,
+							Scheduled = match.Scheduled,
+							Started = match.Started,
 							BlueScore = blueAlliance.Score,
 							RedScore = redAlliance.Score,
 							MatchWinner = blueAlliance.Score > redAlliance.Score ? "Blue" : (redAlliance.Score > blueAlliance.Score ? "Red" : "Tie"),

@@ -47,8 +47,8 @@
 /** Loading text below the animation */
 .text {
 	color: var(--background-color3);
-	font-weight: 700;
-	font-size: 18px;
+	font-weight: 600;
+	font-size: var(--font-size-lg);
 }
 
 /* ============================================

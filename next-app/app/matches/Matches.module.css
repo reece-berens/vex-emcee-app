@@ -1,0 +1,207 @@
+/**
+ * Matches Page Styles (Matches.module.css)
+ */
+
+/* ============================================
+   PAGE LAYOUT
+   ============================================ */
+
+.page {
+}
+
+.pageTitle {
+	color: var(--background-color3);
+}
+
+/* ============================================
+   MATCH LIST
+   ============================================ */
+
+.section {
+	padding-block: var(--space-xl);
+}
+
+.cardGrid {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-md);
+}
+
+.card {
+	display: flex;
+	flex-direction: column;
+	padding: 0px;
+	background-color: var(--background-color1-transparent);
+}
+
+.topRow {
+	height: 24px;
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	align-items: center;
+	padding: var(--space-xs) var(--space-md);
+	border-bottom: 1px solid var(--primary-color-transparent);
+	background-color: var(--background-color3);
+}
+
+.matchName {
+	font-family: var(--font-display);
+	font-weight: 600;
+}
+
+.scheduled {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-family: var(--font-display);
+}
+
+.statusWrapper {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+/* .liveText {
+	display: flex;
+	align-items: center;
+	gap: var(--space-xs);
+	font-family: var(--font-display);
+	font-size: var(--font-size-sm);
+	font-weight: 600;
+	letter-spacing: 0.5px;
+	color: var(--background-color3);
+	background-color: var(--ui-purple);
+	border-radius: var(--border-radius-label);
+	padding: 0px var(--space-sm) 1px;
+	animation: pulse 1.5s steps(4) infinite;
+}
+
+@keyframes pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.7;
+	}
+} */
+
+/* Little dot before the LIVE text */
+/* .liveText::before {
+	content: "";
+	width: 6px;
+	height: 6px;
+	background-color: currentColor;
+	border-radius: var(--border-radius-pill);
+} */
+
+/* VS Wrapper (VS, WIN, TIE) - only shows on tablet size or larger */
+.vsWrapper {
+	display: none;
+}
+
+@media (min-width: 768px) {
+	.vsWrapper {
+		position: absolute;
+		align-self: center;
+		justify-self: center;
+		display: flex;
+		align-items: center;
+		gap: var(--space-xs);
+		padding: var(--space-sm);
+	}
+}
+
+.vsText {
+	font-size: var(--font-size);
+	font-weight: 500;
+}
+
+.vsText.redWin {
+	color: var(--accent-red);
+}
+
+.vsText.blueWin {
+	color: var(--accent-blue);
+}
+
+.vsText.tie {
+	color: var(--ui-purple-dark);
+}
+
+.middleRow {
+	display: flex;
+	align-items: center;
+	padding: var(--space-xs);
+}
+
+.alliance {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--space-xs);
+	padding: var(--space-xs);
+	flex: 1;
+}
+
+.teamRed {
+	font-family: var(--font-display);
+	font-weight: 600;
+	color: var(--background-color3);
+	background-color: var(--accent-red);
+	border-radius: var(--border-radius-label);
+	padding: 1px var(--space-sm);
+}
+
+.teamBlue {
+	font-family: var(--font-display);
+	font-weight: 600;
+	color: var(--background-color3);
+	background-color: var(--accent-blue);
+	border-radius: var(--border-radius-label);
+	padding: 1px var(--space-sm);
+}
+
+.bottomRow {
+	position: relative;
+	display: flex;
+	justify-content: space-around;
+	padding: 0px var(--space-xs) var(--space-xs);
+}
+
+.score {
+	font-family: var(--font-display);
+	font-size: var(--font-size-lg);
+	font-weight: 600;
+	text-align: center;
+	padding-inline: var(--space-xxs);
+	padding-bottom: 1px;
+	border-bottom: 3px solid transparent;
+}
+
+.score.win {
+	border-bottom: 3px solid var(--ui-purple-dark);
+}
+
+/* ============================================
+   SKELETON LOADING
+   ============================================ */
+
+.skeletonCard {
+	height: 106px;
+	background: linear-gradient(90deg, rgba(0, 0, 0, 0.09) 25%, rgba(0, 0, 0, 0.06) 50%, rgba(0, 0, 0, 0.09) 75%);
+	background-size: 200% 100%;
+	animation: shimmer 1.5s infinite;
+	border-radius: var(--border-radius);
+}
+
+@keyframes shimmer {
+	0% {
+		background-position: 200% 0;
+	}
+	100% {
+		background-position: -200% 0;
+	}
+}

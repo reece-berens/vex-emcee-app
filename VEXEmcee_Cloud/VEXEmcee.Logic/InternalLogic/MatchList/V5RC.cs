@@ -106,6 +106,8 @@ namespace VEXEmcee.Logic.InternalLogic.MatchList
 				ID = match.ID,
 				MatchName = match.Name,
 				Scored = IsScored(match),
+				Scheduled = match.Scheduled,
+				Started = match.Started,
 				Blue = new()
 				{
 					Score = match.BlueScore,

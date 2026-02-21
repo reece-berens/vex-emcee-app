@@ -9,6 +9,18 @@
  * - mainEventSection: Event dropdown, Division dropdown, Continue button
  */
 
+/** Remove top padding for .layout-main on home page */
+.homeMain {
+	padding-top: 0px;
+	padding-bottom: 45px; /* Offset for the exact size of the hero text h1 */
+	margin-block: auto;
+}
+
+/** Adding extra padding to top of hero text since it doesn't clip away near the top like on other screens */
+.heroText {
+	padding-top: var(--space-lg);
+}
+
 /* ============================================
    FORM FIELDS
    ============================================ */

@@ -26,73 +26,87 @@
 	/* --------------------------------------------
 	   Text Colors
 	   -------------------------------------------- */
-	--text-color: #333;           /* Primary text */
-	--text-muted: #7f8797;        /* Secondary/muted text */
+	--text-color: #333; /* Primary text */
+	--text-muted: #7f8797; /* Secondary/muted text */
 
 	/* --------------------------------------------
 	   Brand Colors
 	   -------------------------------------------- */
-	--primary-color: #465362;                           /* Dark gray - borders, accents */
+	--primary-color: #465362; /* Dark gray - borders, accents */
 	--primary-color-transparent: rgba(70, 83, 98, 0.5); /* For subtle borders */
-	--secondary-color: #9ba7b5;                         /* Medium gray */
+	--secondary-color: #9ba7b5; /* Medium gray */
 
 	/* --------------------------------------------
 	   Background Colors
 	   -------------------------------------------- */
-	--background-color1: #e8e6e3;                        /* Light gray - main bg */
-	--background-color2: #cccccc;                        /* Medium gray - card backs */
-	--background-color3: #f7f6f4;                        /* Lightest - cards, inputs */
+	--background-color1: #e8e6e3; /* Light gray - main bg */
+	--background-color2: #cccccc; /* Medium gray - card backs */
+	--background-color3: #f7f6f4; /* Lightest - cards, inputs */
 	--background-color1-transparent: rgba(232, 230, 227, 0.5); /* For frosted glass effect */
-	--background-very-transparent: rgba(255, 255, 255, 0.2);   /* Subtle overlays */
+	--background-very-transparent: rgba(255, 255, 255, 0.2); /* Subtle overlays */
+
+	--background-color1: #f0ebe5; /* Warmer cream instead of #e8e6e3 */
+	--background-color2: #d9d4cc; /* Warmer divider instead of #cccccc */
+	--background-color3: #faf8f5; /* Warmer white instead of #f7f6f4 */
 
 	/* --------------------------------------------
 	   Semantic Colors
 	   -------------------------------------------- */
-	--error-color1: #ef4444;      /* Error states, validation */
+	--error-color1: #ef4444; /* Error states, validation */
 
 	/* --------------------------------------------
 	   Purple UI Palette
 	   Used for interactive elements (buttons, links, focus states)
 	   -------------------------------------------- */
-	--ui-purple-light: #f8f6fb;   /* Hover backgrounds, subtle highlights */
-	--ui-purple: #8b6bc2;         /* Primary accent - buttons, links */
-	--ui-purple-dark: #7356b3;    /* Strong emphasis - active states */
+	--ui-purple-light: #f8f6fb; /* Hover backgrounds, subtle highlights */
+	--ui-purple: #8b6bc2; /* Primary accent - buttons, links */
+	--ui-purple-dark: #7356b3; /* Strong emphasis - active states */
 	--ui-purple-disabled: #a8a4c9; /* Disabled button state */
 
 	/* --------------------------------------------
 	   VEX Alliance Colors
 	   Red vs Blue theming for match displays
 	   -------------------------------------------- */
-	--accent-red: #ff0035;        /* Red alliance */
-	--accent-blue: #3595da;       /* Blue alliance */
+	--accent-red: #ff0035; /* Red alliance */
+	--accent-blue: #0a84ff; /* Blue alliance */
+
+	/* --------------------------------------------
+	   Status Colors
+	   Colors used for match success or other statuses
+	   -------------------------------------------- */
+	--ui-green: #34c759;
+	--ui-gold: gold;
 
 	/* --------------------------------------------
 	   Typography
 	   -------------------------------------------- */
-	--font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-	--font-size-hero: 24px;       /* Page titles */
-	--font-size-lg: 20px;         /* Section headers */
-	--font-size: 16px;            /* Body text */
-	--font-size-sm: 14px;         /* Small text, labels */
+	--font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	--font-display: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+	--font-size-hero: 24px; /* Page titles */
+	--font-size-lg: 20px; /* Section headers */
+	--font-size: 16px; /* Body text */
+	--font-size-sm: 14px; /* Small text, labels */
 
 	/* --------------------------------------------
 	   Border Radius
 	   -------------------------------------------- */
-	--border-radius-input: 8px;   /* Form inputs */
-	--border-radius: 12px;        /* Cards, buttons */
-	--border-radius-big: 24px;    /* Large containers */
-	--border-radius-pill: 100px;  /* Pill shapes */
+	--border-radius-label: 6px; /* Team numbers, little labels */
+	--border-radius-input: 8px; /* Form inputs */
+	--border-radius: 12px; /* Cards, buttons */
+	--border-radius-big: 24px; /* Large containers */
+	--border-radius-pill: 100px; /* Pill shapes */
 
 	/* --------------------------------------------
 	   Spacing Scale
 	   Based on rem units (1rem = 16px default)
 	   -------------------------------------------- */
-	--space-xs: 0.25rem;          /* 4px */
-	--space-sm: 0.5rem;           /* 8px */
-	--space-md: 0.75rem;          /* 12px */
-	--space-lg: 1rem;             /* 16px */
-	--space-xl: 1.5rem;           /* 24px */
-	--space-xxl: 2rem;            /* 32px */
+	--space-xxs: 2px;
+	--space-xs: 0.25rem; /* 4px */
+	--space-sm: 0.5rem; /* 8px */
+	--space-md: 0.75rem; /* 12px */
+	--space-lg: 1rem; /* 16px */
+	--space-xl: 1.5rem; /* 24px */
+	--space-xxl: 2rem; /* 32px */
 
 	/* --------------------------------------------
 	   Transitions
@@ -104,8 +118,7 @@
 	   -------------------------------------------- */
 	/* Inset shadow for "pressed" elements (nav pills, inputs on focus) */
 	--shadow-inset:
-		inset 0 2px 4px rgba(107, 75, 155, 0.35),
-		inset 0 4px 8px rgba(107, 75, 155, 0.25),
+		inset 0 2px 4px rgba(107, 75, 155, 0.35), inset 0 4px 8px rgba(107, 75, 155, 0.25),
 		inset 0 -1px 2px rgba(255, 255, 255, 0.3);
 
 	/* Elevation shadows for cards/buttons */
@@ -119,7 +132,13 @@
    ============================================
    Normalize browser defaults for consistent styling
 */
-h1, h2, h3, h4, h5, h6, p {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
 	font-size: inherit;
 	font-weight: inherit;
 	margin: 0;
@@ -132,10 +151,18 @@ h1, h2, h3, h4, h5, h6, p {
 */
 
 /* Size classes */
-.text-lg { font-size: var(--font-size-lg); }
-.text-base { font-size: var(--font-size); }
-.text-sm { font-size: var(--font-size-sm); }
-.text-hero { font-size: var(--font-size-hero); }
+.text-lg {
+	font-size: var(--font-size-lg);
+}
+.text-base {
+	font-size: var(--font-size);
+}
+.text-sm {
+	font-size: var(--font-size-sm);
+}
+.text-hero {
+	font-size: var(--font-size-hero);
+}
 
 /* Heading styles with appropriate margins */
 .heading-primary {
@@ -157,13 +184,25 @@ h1, h2, h3, h4, h5, h6, p {
 }
 
 /* Text modifiers */
-.text-muted { color: var(--text-muted); font-weight: 400; }
-.text-bold { font-weight: 600; }
-.text-label { color: var(--text-color); margin-bottom: var(--space-xs); }
-.text-white { color: var(--background-color3); }
+.text-muted {
+	color: var(--text-muted);
+	font-weight: 400;
+}
+.text-bold {
+	font-weight: 600;
+}
+.text-label {
+	color: var(--text-color);
+	margin-bottom: var(--space-xs);
+}
+.text-white {
+	color: var(--background-color3);
+}
 
 /* Background modifiers */
-.bg-transparent { background: var(--background-very-transparent) !important; }
+.bg-transparent {
+	background: var(--background-very-transparent) !important;
+}
 
 /* ============================================
    4. LAYOUT SYSTEM
@@ -197,23 +236,22 @@ h1, h2, h3, h4, h5, h6, p {
 	color: var(--text-color);
 	overflow: hidden; /* Prevent body scroll - scroll happens in .scroll-wrapper */
 
+	/* ============================================
+	   BACKGROUND OPTIONS
+	   Uncomment ONE option at a time.
+	   ============================================ */
+
 	/*
-	 * Complex gradient background:
-	 * 1. SVG noise texture for grain effect
-	 * 2-5. Radial gradients for color blobs (purple, red, blue)
-	 * 6. Base linear gradient
-	 *
-	 * The oversized gradients (200vw, 180vw, etc.) allow for
-	 * parallax-style movement via CSS custom properties
+	 * OPTION 1: MORE PURPLE (Default - Light text, saturated purple/blue/red)
+	 * Full gradient with parallax blobs. Use with light text (text-white class).
 	 */
-	background-image:
+	/* background-image:
 		url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E"),
 		radial-gradient(circle at 25% 25%, rgba(139, 107, 194, 0.8) 0%, transparent 60%),
 		radial-gradient(circle at 75% 75%, rgba(255, 0, 53, 0.7) 0%, transparent 55%),
 		radial-gradient(circle at 50% 10%, rgba(53, 149, 218, 0.6) 0%, transparent 50%),
 		radial-gradient(circle at 10% 80%, rgba(139, 107, 194, 0.5) 0%, transparent 45%),
-		linear-gradient(135deg, #8b6bc2 0%, #3595da 50%, #ff0035 100%);
-
+		linear-gradient(135deg, var(--ui-purple) 0%, var(--accent-blue) 50%, var(--accent-red) 100%);
 	background-size:
 		100px 100px,
 		200vw 200vh,
@@ -221,14 +259,50 @@ h1, h2, h3, h4, h5, h6, p {
 		160vw 160vh,
 		140vw 140vh,
 		100% 100%;
-
-	/* Offset positioning for parallax effect (controlled by --scroll-x/y vars) */
 	background-position:
 		0 0,
 		calc(-50vw + var(--scroll-x, 0px) * 2) calc(-50vh + var(--scroll-y, 0px)),
 		calc(-40vw - var(--scroll-x, 0px)) calc(-40vh - var(--scroll-y, 0px) * 1.5),
 		calc(-30vw + var(--scroll-x, 0px) * 0.5) calc(-30vh + var(--scroll-y, 0px) * 2),
 		calc(-20vw - var(--scroll-x, 0px) * 1.5) calc(-20vh - var(--scroll-y, 0px)),
+		center center; */
+
+	/*
+	 * OPTION 2: LIGHT MODE (Dark text, cream background with subtle blobs)
+	 * Use with dark text (text-color). Change cardback to use frosted glass.
+	 * Uncomment below and comment out Option 1 above.
+	 */
+	/* background-image:
+		url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.1'/%3E%3C/svg%3E"),
+		radial-gradient(circle at 10% 15%, rgba(10, 132, 255, 0.55) 0%, transparent 40%),
+		radial-gradient(circle at 90% 85%, rgba(255, 0, 53, 0.5) 0%, transparent 40%),
+		radial-gradient(circle at 85% 20%, rgba(139, 107, 194, 0.25) 0%, transparent 30%);
+	background-color: #f0ebe5;
+	background-size: 100px 100px, 100% 100%, 100% 100%, 100% 100%;
+	background-position: 0 0, 0 0, 0 0, 0 0; */
+
+	/*
+	 * OPTION 3: BALANCED AND FLIPPED (Light text, less purple, more blue/red, red/blue gradient flipped horizontally)
+	 * Similar to current but with reduced purple. Use with light text.
+	 * Uncomment below and comment out Option 1 above.
+	 */
+	background-image:
+		url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E"),
+		radial-gradient(circle at 75% 30%, rgba(10, 132, 255, 0.75) 0%, transparent 55%),
+		radial-gradient(circle at 25% 70%, rgba(255, 0, 53, 0.7) 0%, transparent 55%),
+		radial-gradient(circle at 50% 50%, #8b6bc273 0%, transparent 55%),
+		linear-gradient(230deg, var(--accent-blue) 0%, var(--ui-purple) 50%, var(--accent-red) 100%);
+	background-size:
+		100px 100px,
+		180vw 180vh,
+		160vw 160vh,
+		140vw 140vh,
+		100% 100%;
+	background-position:
+		0 0,
+		calc(-40vw + var(--scroll-x, 0px) * 2) calc(-40vh + var(--scroll-y, 0px)),
+		calc(-30vw - var(--scroll-x, 0px)) calc(-30vh - var(--scroll-y, 0px) * 1.5),
+		calc(-20vw + var(--scroll-x, 0px) * 0.5) calc(-20vh + var(--scroll-y, 0px) * 2),
 		center center;
 
 	background-attachment: fixed;
@@ -244,6 +318,7 @@ h1, h2, h3, h4, h5, h6, p {
 	top: 0;
 	left: 0;
 	right: 0;
+	height: 21px; /* Hard set height 54px - 1px border - 32px padding = 21px */
 	color: var(--text-color);
 	padding: var(--space-lg);
 	transition: background var(--transition);
@@ -407,13 +482,18 @@ input {
 
 	/* Subtle inset shadow for "recessed" look */
 	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
-	border: 1px solid rgba(0, 0, 0, 0.05);
+	border: 1px solid transparent;
+}
+
+input::placeholder {
+	color: var(--text-muted);
+	font-style: italic;
 }
 
 input:is(:hover, :focus-visible) {
 	background: var(--ui-purple-light);
 	box-shadow: var(--shadow-inset);
-	opacity: 0.9;
+	border-color: var(--primary-color);
 }
 
 /* ============================================
@@ -560,7 +640,7 @@ input:is(:hover, :focus-visible) {
 
 /* Currently selected item */
 .dropdown-item.selected {
-	background: var(--background-color2);
+	background: var(--background-color1);
 }
 
 /* Keyboard-focused or hovered item */
@@ -669,7 +749,6 @@ a.card:focus {
 		min-width: 150px;
 	}
 
-	.layout-header,
 	.layout-footer {
 		text-align: initial;
 	}

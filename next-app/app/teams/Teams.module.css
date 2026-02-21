@@ -1,0 +1,176 @@
+/**
+ * Teams Page Styles (Teams.module.css)
+ *
+ * Styles for the teams list page including:
+ * - Page background override
+ * - Team list container
+ * - Team list items
+ */
+
+/* ============================================
+   PAGE LAYOUT
+   ============================================ */
+
+/** Override gradient background for list page */
+.page {
+	/* background: var(--background-color2); */
+	padding-inline: 0px;
+}
+
+.pageTitle {
+	padding-inline: var(--space-lg);
+	color: var(--background-color3);
+	margin-bottom: 0px;
+}
+
+/* ============================================
+   SEARCH BAR
+   ============================================ */
+
+@property --gradient-angle {
+	syntax: "<angle>";
+	initial-value: 0deg;
+	inherits: false;
+}
+
+/** Search bar input styles */
+.searchWrapper {
+	display: flex;
+	position: sticky;
+	top: 54px;
+	z-index: 100;
+	padding: var(--space-lg) 0px;
+	padding-bottom: var(--space-xxl); /* Extra space for fade */
+	align-items: center;
+}
+
+.searchWrapper::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
+	mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
+	-webkit-mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
+	/* background: rgba(139, 107, 194, 0.1); TODO: Not decided on this yet... oh well */
+	z-index: -1;
+}
+
+.searchInputWrapper {
+	display: flex;
+	position: relative;
+	flex: 1;
+	border-radius: 999px;
+	margin-inline: var(--space-lg);
+}
+
+.searchInputWrapper::before {
+	content: "";
+	position: absolute;
+	inset: -3px;
+	border-radius: 999px;
+	background: conic-gradient(from var(--gradient-angle), var(--accent-red), var(--accent-blue), var(--accent-red));
+	z-index: -1;
+	opacity: 0;
+	transition: opacity ease-in-out 0.3s;
+	animation: rotate-gradient 2s linear infinite;
+	box-shadow: var(--shadow-focus);
+}
+
+.searchInputWrapper:hover::before,
+.searchInputWrapper:focus-within::before {
+	opacity: 1;
+}
+
+@keyframes rotate-gradient {
+	0% {
+		--gradient-angle: 0deg;
+	}
+	100% {
+		--gradient-angle: 360deg;
+	}
+}
+
+.searchIcon {
+	position: absolute;
+	left: var(--space-lg);
+	top: 50%;
+	transform: translateY(-50%);
+	color: var(--text-muted);
+	pointer-events: none;
+	z-index: 2;
+}
+
+.searchInput {
+	position: relative;
+	z-index: 1;
+	padding: var(--space-lg) var(--space-lg) var(--space-lg) calc(var(--space-xxl) + 12px);
+	border-radius: 999px;
+	background: var(--background-color3);
+	flex: 1;
+	box-shadow: var(--shadow-focus);
+	/* border-color: var(--text-color); TODO: Still not sure on this one... */
+}
+
+.searchInput:focus {
+	outline: none;
+}
+
+.searchInput:is(:hover, :focus-visible) {
+	background: var(--ui-purple-light);
+	box-shadow: var(--shadow-focus);
+	border-color: transparent;
+}
+
+/* ============================================
+   TEAM LIST
+   ============================================ */
+
+/** Section cardback that holds cardgrid */
+.section {
+	margin-inline: var(--space-xl);
+	padding-block: var(--space-xl);
+}
+
+/** List/grid of team cards */
+.cardGrid {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-md);
+}
+
+/** Individual team card */
+.card {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-xs);
+}
+
+/** Team number text */
+.teamNumber {
+	font-family: var(--font-display);
+	font-weight: 600;
+	min-width: 70px;
+}
+
+/** Team name text */
+.teamName {
+	/* color: var(--text-muted); */
+}
+
+.skeletonCard {
+	height: 78px;
+	background: linear-gradient(90deg, rgba(0, 0, 0, 0.09) 25%, rgba(0, 0, 0, 0.06) 50%, rgba(0, 0, 0, 0.09) 75%);
+	background-size: 200% 100%;
+	animation: shimmer 1.5s infinite;
+	border-radius: var(--border-radius);
+}
+
+@keyframes shimmer {
+	0% {
+		background-position: 200% 0;
+	}
+	100% {
+		background-position: -200% 0;
+	}
+}
