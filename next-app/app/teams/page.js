@@ -15,7 +15,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSetPageTitle, useScrollY, useEventRegistered } from "../components/AppWrapper";
+import { useSetPageTitle, useScrollY, useEventRegistered, useRefreshKey } from "../components/AppWrapper";
 import ServerConnector from "../serverConnector";
 import LoadingOverlay from "../components/LoadingOverlay";
 import styles from "./Teams.module.css";
@@ -25,9 +25,17 @@ export default function Teams() {
 	const router = useRouter();
 	const eventRegistered = useEventRegistered();
 	const scrollY = useScrollY();
+	const refreshKey = useRefreshKey();
 	const [teams, setTeams] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
+	const [searchQuery, setSearchQuery] = useState("");
+
+	// Filter teams by number or name (case-insensitive)
+	const filteredTeams = teams.filter((team) => {
+		const query = searchQuery.toLowerCase();
+		return team.Number.toLowerCase().includes(query) || team.TeamName.toLowerCase().includes(query);
+	});
 
 	useEffect(() => {
 		if (!eventRegistered) {
@@ -44,7 +52,6 @@ export default function Teams() {
 	useEffect(() => {
 		const fetchTeams = async () => {
 			const result = await ServerConnector.GetTeamList({});
-			console.log("Teams list response:", result); // <-- Add this
 			if (result.Success) {
 				setTeams(result.Teams);
 			} else {
@@ -53,7 +60,7 @@ export default function Teams() {
 			setLoading(false);
 		};
 		fetchTeams();
-	}, []);
+	}, [refreshKey]);
 
 	return (
 		<main className={`layout-main ${styles.page}`}>
@@ -91,6 +98,8 @@ export default function Teams() {
 							type="text"
 							placeholder="Filter by team number or name..."
 							className={styles.searchInput}
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}
 						/>
 					</div>
 				</div>
@@ -107,11 +116,17 @@ export default function Teams() {
 						</div>
 					</section>
 				)}
-				{error && <p>{error}</p>}
-				{!loading && !error && (
+				{error && <div className="messageSpan">{"Error | " + error}</div>}
+				{!loading && filteredTeams.length === 0 && searchQuery !== "" && (
+					<div className="messageSpan">No results</div>
+				)}
+				{!loading && filteredTeams.length === 0 && searchQuery === "" && (
+					<div className="messageSpan">No team data to display</div>
+				)}
+				{!loading && !error && filteredTeams.length > 0 && (
 					<section className={`cardback bg-transparent ${styles.section}`}>
 						<div className={styles.cardGrid}>
-							{teams.map((team) => (
+							{filteredTeams.map((team) => (
 								<div
 									key={team.ID}
 									className={`card ${styles.card}`}
@@ -124,8 +139,18 @@ export default function Teams() {
 										}
 									}}
 								>
-									<span className={styles.teamNumber}>{team.Number}</span>
+									<div className={styles.topRow}>
+										<span className={styles.teamNumber}>{team.Number}</span>
+									</div>
 									<span className={styles.teamName}>{team.TeamName}</span>
+									<div className={styles.bottomRow}>
+										<span className={styles.rankText}>
+											Rank <span className={styles.rankNumber}>#{team.QualiRank}</span>
+										</span>
+										<span className={styles.recordText}>
+											Record <span className={styles.recordWLT}>{team.EventWLT}</span>
+										</span>
+									</div>
 								</div>
 							))}
 						</div>

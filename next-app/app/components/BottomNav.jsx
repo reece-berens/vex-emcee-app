@@ -20,17 +20,38 @@
 
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useNavTabs } from "./AppWrapper";
+import { useNavTabs, useTriggerRefresh } from "./AppWrapper";
 import styles from "./BottomNav.module.css";
 
 export default function BottomNav() {
 	const pathname = usePathname();
 	const tabs = useNavTabs();
+	const triggerRefresh = useTriggerRefresh();
+	const [lastActiveIndex, setLastActiveIndex] = useState(0);
 
 	// Determine which tab is active based on current URL path
 	const activeIndex = tabs.findIndex((tab) => pathname === tab.href);
+
+	// Remember last valid tab position
+	useEffect(() => {
+		if (activeIndex >= 0) {
+			setLastActiveIndex(activeIndex);
+		}
+	}, [activeIndex]);
+
+	// Use remembered position when on non-nav pages
+	const pillIndex = activeIndex >= 0 ? activeIndex : lastActiveIndex;
+
+	const handleTabClick = (e, isActive) => {
+		if (isActive) {
+			e.preventDefault();
+			document.querySelector(".scroll-wrapper")?.scrollTo({ top: 0, behavior: "smooth" });
+			triggerRefresh();
+		}
+	};
 
 	// Don't render if no tabs configured
 	if (!tabs.length) return null;
@@ -47,7 +68,7 @@ export default function BottomNav() {
 				className={styles.pill}
 				style={{
 					width: `${100 / tabs.length}%`,
-					transform: `translateX(${activeIndex * 100}%)`,
+					transform: `translateX(${pillIndex * 100}%)`,
 				}}
 			/>
 
@@ -67,6 +88,7 @@ export default function BottomNav() {
 					<Link
 						key={tab.name}
 						href={tab.href}
+						onClick={(e) => handleTabClick(e, isActive)}
 						className={`${styles.tab} ${isActive ? styles.active : ""}`}
 					>
 						<span className={styles.icon}>{tab.icon}</span>

@@ -44,7 +44,7 @@ export default function Header({ scrollY }) {
 					display: "flex",
 					alignItems: "center",
 					justifyContent: "center",
-					zIndex: 1000,
+					zIndex: 100,
 					opacity: previewTextOpacity,
 					pointerEvents: "none", // Don't block interactions
 				}}

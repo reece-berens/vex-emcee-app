@@ -58,6 +58,12 @@ const NavContext = createContext({
 	setEventFilters: () => {},
 });
 
+/** Trigger page refresh on command */
+const RefreshContext = createContext({
+	key: 0,
+	trigger: () => {},
+});
+
 // ============================================
 // EXPORTED HOOKS
 // These provide clean access to context values
@@ -87,6 +93,10 @@ export const useEventFilters = () => useContext(NavContext).eventFilters;
 /** Get function to update event filters */
 export const useSetEventFilters = () => useContext(NavContext).setEventFilters;
 
+/** Get current refresh key to trigger current page data refresh (used by navbar) */
+export const useRefreshKey = () => useContext(RefreshContext).key;
+export const useTriggerRefresh = () => useContext(RefreshContext).trigger;
+
 // ============================================
 // MAIN COMPONENT
 // ============================================
@@ -108,6 +118,12 @@ export default function AppWrapper({ children, footer }) {
 	/** Pathname and isHomePage constants to track if we are on the home page or not */
 	const pathname = usePathname();
 	const isHomePage = pathname === "/";
+
+	/** Way for the navbar to tell the current page to "refresh your data" */
+	const [refreshKey, setRefreshKey] = useState(0);
+	const triggerRefresh = () => setRefreshKey((k) => k + 1);
+
+	// Export hook
 
 	/**
 	 * Event filter state - persists across navigation
@@ -234,24 +250,26 @@ export default function AppWrapper({ children, footer }) {
 	}, []);
 
 	return (
-		<ScrollContext.Provider value={scrollY}>
-			<TitleContext.Provider value={{ title: pageTitle, setTitle: setPageTitle }}>
-				<NavContext.Provider
-					value={{ tabs: navTabs, eventRegistered, setEventRegistered, eventFilters, setEventFilters }}
-				>
-					{/* Scrollable content area */}
-					<div
-						ref={scrollContainerRef}
-						className="scroll-wrapper"
+		<RefreshContext.Provider value={{ key: refreshKey, trigger: triggerRefresh }}>
+			<ScrollContext.Provider value={scrollY}>
+				<TitleContext.Provider value={{ title: pageTitle, setTitle: setPageTitle }}>
+					<NavContext.Provider
+						value={{ tabs: navTabs, eventRegistered, setEventRegistered, eventFilters, setEventFilters }}
 					>
-						{!isHomePage && <Header scrollY={scrollY} />}
-						{children}
-					</div>
+						{/* Scrollable content area */}
+						<div
+							ref={scrollContainerRef}
+							className="scroll-wrapper"
+						>
+							{!isHomePage && <Header scrollY={scrollY} />}
+							{children}
+						</div>
 
-					{/* Footer (BottomNav) - outside scroll area so it stays fixed */}
-					{footer}
-				</NavContext.Provider>
-			</TitleContext.Provider>
-		</ScrollContext.Provider>
+						{/* Footer (BottomNav) - outside scroll area so it stays fixed */}
+						{footer}
+					</NavContext.Provider>
+				</TitleContext.Provider>
+			</ScrollContext.Provider>
+		</RefreshContext.Provider>
 	);
 }

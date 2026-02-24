@@ -54,6 +54,8 @@
 	justify-content: center;
 	align-items: center;
 	font-family: var(--font-display);
+	font-size: var(--font-size-sm);
+	color: var(--text-muted);
 }
 
 .statusWrapper {
@@ -114,11 +116,12 @@
 }
 
 .vsText {
-	font-size: var(--font-size);
+	font-size: var(--font-size-sm);
 	font-weight: 500;
+	color: var(--text-muted);
 }
 
-.vsText.redWin {
+/* .vsText.redWin {
 	color: var(--accent-red);
 }
 
@@ -128,7 +131,7 @@
 
 .vsText.tie {
 	color: var(--ui-purple-dark);
-}
+} */
 
 .middleRow {
 	display: flex;
@@ -173,7 +176,7 @@
 
 .score {
 	font-family: var(--font-display);
-	font-size: var(--font-size-lg);
+	font-size: var(--font-size-hero);
 	font-weight: 600;
 	text-align: center;
 	padding-inline: var(--space-xxs);
@@ -190,7 +193,7 @@
    ============================================ */
 
 .skeletonCard {
-	height: 106px;
+	height: 111px;
 	background: linear-gradient(90deg, rgba(0, 0, 0, 0.09) 25%, rgba(0, 0, 0, 0.06) 50%, rgba(0, 0, 0, 0.09) 75%);
 	background-size: 200% 100%;
 	animation: shimmer 1.5s infinite;

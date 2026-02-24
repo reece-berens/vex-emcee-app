@@ -1,0 +1,8 @@
+.page {
+	position: fixed;
+	inset: 0;
+	z-index: 300;
+	background: var(--background-color1);
+	overflow-y: auto;
+	padding: var(--space-lg);
+}

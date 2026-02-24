@@ -84,8 +84,10 @@
 	--font-display: var(--font-space-grotesk), "Space Grotesk", sans-serif;
 	--font-size-hero: 24px; /* Page titles */
 	--font-size-lg: 20px; /* Section headers */
+	--font-size-md: 18px; /* In-between for details page */
 	--font-size: 16px; /* Body text */
 	--font-size-sm: 14px; /* Small text, labels */
+	--font-size-xs: 12px; /* Indiv Match+Team page details */
 
 	/* --------------------------------------------
 	   Border Radius
@@ -198,10 +200,21 @@ p {
 .text-white {
 	color: var(--background-color3);
 }
+/* Only to be used over a lighter background such as a cardback or actual solid background color  */
+.text-error {
+	color: var(--error-color1);
+}
 
 /* Background modifiers */
 .bg-transparent {
 	background: var(--background-very-transparent) !important;
+}
+
+/* Text to be shown instead of a listing when there's an error or no search results */
+.messageSpan {
+	margin: var(--space-xxl) auto;
+	font-size: var(--font-size-sm);
+	font-weight: 400;
 }
 
 /* ============================================
@@ -330,7 +343,7 @@ p {
 	-webkit-backdrop-filter: blur(20px) saturate(200%) brightness(1.1); /* Safari */
 
 	border-bottom: 1px solid var(--primary-color-transparent);
-	z-index: 1001;
+	z-index: 100;
 	overflow: hidden;
 	flex-shrink: 0;
 	clip-path: inset(0 0 0 0);
@@ -382,29 +395,6 @@ p {
 	width: 100%;
 	margin: auto;
 	max-width: 600px;
-}
-
-/* Sidebar layouts (for future desktop use) */
-.layout-sidebar {
-	background: var(--secondary-color);
-	width: 100%;
-	min-width: 0;
-	border-right: none;
-	border-top: 1px solid var(--primary-color);
-	border-bottom: 1px solid var(--secondary-color);
-	box-sizing: border-box;
-	padding: var(--space-sm);
-}
-
-.layout-extra {
-	background: var(--secondary-color);
-	width: 100%;
-	min-width: 0;
-	border-left: none;
-	border-top: 1px solid var(--primary-color);
-	border-bottom: 1px solid var(--secondary-color);
-	box-sizing: border-box;
-	padding: var(--space-sm);
 }
 
 /* ============================================
@@ -594,7 +584,7 @@ input:is(:hover, :focus-visible) {
 	border: 1px solid var(--primary-color);
 	border-radius: var(--border-radius);
 	box-shadow: var(--shadow-hover);
-	z-index: 1001;
+	z-index: 200;
 	max-height: 60vh;
 	overflow-y: auto;
 	margin: 0;
@@ -716,12 +706,6 @@ a.card:focus {
 
 /* Tablet (768px+) */
 @media (min-width: 768px) {
-	.layout-sidebar,
-	.layout-extra {
-		padding: var(--space-lg);
-		display: block;
-	}
-
 	.cardback {
 		padding-inline: var(--space-xl);
 	}
@@ -731,22 +715,6 @@ a.card:focus {
 @media (min-width: 1024px) {
 	.layout-content {
 		max-width: 800px;
-	}
-
-	.layout-sidebar {
-		border-right: 1px solid var(--primary-color);
-		border-top: none;
-		border-bottom: none;
-		width: 200px;
-		min-width: 150px;
-	}
-
-	.layout-extra {
-		border-left: 1px solid var(--secondary-color);
-		border-top: none;
-		border-bottom: none;
-		width: 200px;
-		min-width: 150px;
 	}
 
 	.layout-footer {

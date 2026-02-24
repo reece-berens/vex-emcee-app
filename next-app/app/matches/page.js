@@ -14,7 +14,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSetPageTitle, useScrollY, useEventRegistered } from "../components/AppWrapper";
+import { useSetPageTitle, useScrollY, useEventRegistered, useRefreshKey } from "../components/AppWrapper";
 import ServerConnector from "../serverConnector";
 import styles from "./Matches.module.css";
 
@@ -23,6 +23,7 @@ export default function Matches() {
 	const router = useRouter();
 	const eventRegistered = useEventRegistered();
 	const scrollY = useScrollY();
+	const refreshKey = useRefreshKey();
 	const [matches, setMatches] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
@@ -50,7 +51,7 @@ export default function Matches() {
 			setLoading(false);
 		};
 		fetchMatches();
-	}, []);
+	}, [refreshKey]);
 
 	return (
 		<main className={`layout-main ${styles.page}`}>
@@ -76,8 +77,9 @@ export default function Matches() {
 						</div>
 					</section>
 				)}
-				{error && <p>{error}</p>}
-				{!loading && !error && (
+				{error && <div className="messageSpan">{"Error | " + error}</div>}
+				{!loading && matches.length === 0 && <div className="messageSpan">No match data to display</div>}
+				{!loading && !error && matches.length > 0 && (
 					<section className={`cardback bg-transparent ${styles.section}`}>
 						<div className={styles.cardGrid}>
 							{matches.map((match) => (
@@ -153,7 +155,7 @@ export default function Matches() {
 											</div>
 										</div>
 										<div className={styles.vsWrapper}>
-											{match.RedWin && (
+											{/* {match.RedWin && (
 												<>
 													<svg
 														data-slot="icon"
@@ -199,8 +201,9 @@ export default function Matches() {
 											)}
 											{match.Tie && (
 												<span className={[styles.vsText, styles.tie].join(" ")}>TIE</span>
-											)}
-											{!match.Scored && <span className={styles.vsText}>VS</span>}
+											)} 
+											{!match.Scored && <span className={styles.vsText}>VS</span>}*/}
+											<span className={styles.vsText}>VS</span>
 										</div>
 										<div className={styles.bottomRow}>
 											<span
