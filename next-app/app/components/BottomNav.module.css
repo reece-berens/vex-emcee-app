@@ -55,7 +55,7 @@
 }
 
 .tab:hover:not(.disabled) {
-	color: var(--ui-purple-dark);
+	/* color: var(--ui-purple-dark); */
 }
 
 /* Hover ghost effect - fades in behind the tab on hover */
@@ -67,7 +67,7 @@
 	left: 10%;
 	right: 10%;
 
-	background: var(--ui-purple-light);
+	background: var(--background-color3);
 	border-radius: var(--border-radius-big);
 	box-shadow: var(--shadow-inset);
 
@@ -77,8 +77,9 @@
 }
 
 /* Show ghost on hover (but not on active or disabled tabs) */
-.tab:hover:not(.disabled):not(.active)::before {
-	opacity: 0.4;
+.tab:hover:not(.disabled):not(.active)::before,
+.tab:focus-visible:not(.disabled):not(.active)::before {
+	opacity: 0.3;
 }
 
 .tab.active {
@@ -101,8 +102,14 @@
 .label {
 	/* position: relative; */
 	bottom: 1px; /* Fine-tune vertical alignment */
-	font-size: var(--font-size-sm);
-	font-weight: 500;
+	font-size: var(--font-size-xs);
+}
+
+/* Tablet (768px+) */
+@media (min-width: 768px) {
+	.label {
+		font-size: var(--font-size-sm);
+	}
 }
 
 /* ============================================
@@ -130,7 +137,7 @@
 	left: 10%;
 	right: 10%;
 
-	background: var(--ui-purple-light);
+	background: var(--background-color3);
 	border-radius: var(--border-radius-big);
 	box-shadow: var(--shadow-inset);
 }

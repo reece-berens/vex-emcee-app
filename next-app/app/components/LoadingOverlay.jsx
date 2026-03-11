@@ -141,7 +141,7 @@ export default function LoadingOverlay({ isOpen }) {
 				</div>
 
 				{/* Loading text */}
-				<span className={styles.text}>Loading...</span>
+				<span className={styles.text}>Registering Event...</span>
 			</div>
 		</div>
 	);

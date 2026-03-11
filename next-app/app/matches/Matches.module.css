@@ -37,16 +37,23 @@
 .topRow {
 	height: 24px;
 	display: grid;
-	grid-template-columns: 1fr 1fr 1fr;
 	align-items: center;
+	grid-template-columns: 1fr 1fr;
 	padding: var(--space-xs) var(--space-md);
 	border-bottom: 1px solid var(--primary-color-transparent);
 	background-color: var(--background-color3);
 }
 
+.topRow.timeIncluded {
+	grid-template-columns: 1fr 1fr 1fr;
+}
+
 .matchName {
 	font-family: var(--font-display);
 	font-weight: 600;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 .scheduled {

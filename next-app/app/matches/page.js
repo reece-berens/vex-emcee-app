@@ -34,8 +34,6 @@ export default function Matches() {
 		}
 	}, [eventRegistered, router]);
 
-	if (!eventRegistered) return null;
-
 	useEffect(() => {
 		setPageTitle("Matches");
 	}, []);
@@ -52,6 +50,8 @@ export default function Matches() {
 		};
 		fetchMatches();
 	}, [refreshKey]);
+
+	if (!eventRegistered) return null;
 
 	return (
 		<main className={`layout-main ${styles.page}`}>
@@ -95,15 +95,17 @@ export default function Matches() {
 										}
 									}}
 								>
-									<div className={styles.topRow}>
+									<div className={`${styles.topRow} ${match.Scheduled && styles.timeIncluded}`}>
 										<span className={styles.matchName}>{match.MatchName}</span>
-										<span className={styles.scheduled}>
-											{new Date(match.Scheduled).toLocaleTimeString("en-US", {
-												hour: "numeric",
-												minute: "2-digit",
-												hour12: true,
-											})}
-										</span>
+										{match.Scheduled && (
+											<span className={styles.scheduled}>
+												{new Date(match.Scheduled).toLocaleTimeString("en-US", {
+													hour: "numeric",
+													minute: "2-digit",
+													hour12: true,
+												})}
+											</span>
+										)}
 
 										<div className={styles.statusWrapper}>
 											{/* COMPLETED status */}
@@ -207,15 +209,17 @@ export default function Matches() {
 										</div>
 										<div className={styles.bottomRow}>
 											<span
-												className={`${styles.score} + " " + ${match.RedWin || match.Tie ? styles.win : ""}`}
+												className={`${styles.score} + " " + ${match.Scored && (match.RedWin || match.Tie) ? styles.win : ""}`}
 											>
-												{match.Started ? match.Red.Score : "-"}
+												{/* {match.Started ? match.Red.Score : "-"} */}
+												{match.Red.Score}
 											</span>
 
 											<span
-												className={`${styles.score} + " " + ${match.BlueWin || match.Tie ? styles.win : ""}`}
+												className={`${styles.score} + " " + ${match.Scored && (match.BlueWin || match.Tie) ? styles.win : ""}`}
 											>
-												{match.Started ? match.Blue.Score : "-"}
+												{/* {match.Started ? match.Blue.Score : "-"} */}
+												{match.Blue.Score}
 											</span>
 										</div>
 									</div>

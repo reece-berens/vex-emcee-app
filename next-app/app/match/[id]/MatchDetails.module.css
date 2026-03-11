@@ -1,0 +1,495 @@
+/**
+ * Match Detail Page Styles (MatchDetails.module.css)
+ *
+ * Full-screen overlay for match details with:
+ * - Sticky top bar with blur backdrop for back button
+ * - Score display with ratio bar
+ * - Red/blue alliance sections with team cards
+ * - Max-width content area for tablet/desktop
+ */
+
+.page {
+	position: fixed;
+	inset: 0;
+	z-index: 300;
+	background: var(--background-color1);
+	overflow-y: auto;
+}
+
+/* ============================================
+   STICKY TOP BAR (with blur backdrop)
+   ============================================ */
+
+.topBar {
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	padding: var(--space-lg);
+	padding-bottom: var(--space-xl);
+}
+
+.topBar::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+	mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
+	-webkit-mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
+	z-index: -1;
+}
+
+.backButton {
+	border-radius: var(--border-radius-pill);
+	padding: var(--space-sm);
+	aspect-ratio: 1;
+	box-shadow: var(--shadow-focus);
+}
+
+.backIcon {
+	position: relative;
+	left: -1px;
+}
+
+/* ============================================
+   SCROLLABLE CONTENT
+   ============================================ */
+
+.content {
+	max-width: 600px;
+	margin-inline: auto;
+	margin-bottom: var(--space-xl);
+}
+
+@media (min-width: 768px) {
+	.content {
+		max-width: 900px;
+	}
+}
+
+@media (min-width: 1024px) {
+	.content {
+		max-width: 1100px;
+	}
+}
+
+/* ============================================
+   MATCH HEADER
+   ============================================ */
+
+.matchHeader {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-sm);
+	margin-bottom: var(--space-lg);
+	padding-inline: var(--space-lg);
+}
+
+.matchTitle {
+	font-family: var(--font-display);
+	font-size: var(--font-size-lg);
+	font-weight: 600;
+	color: var(--text-color);
+}
+
+/* ============================================
+   SCORE SECTION
+   ============================================ */
+
+.scoreSection {
+	margin-bottom: var(--space-xl);
+	padding-inline: var(--space-lg);
+}
+
+.scoreRow {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-lg);
+	margin-bottom: var(--space-md);
+}
+
+.scoreBox {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 80px;
+	height: 75px;
+	border-radius: var(--border-radius);
+	background: var(--background-color2);
+}
+
+.scoreBox.blue {
+	border: 2px solid var(--accent-blue);
+}
+
+.scoreBox.red {
+	border: 2px solid var(--accent-red);
+}
+
+.scoreBox.winner {
+	box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+}
+
+.scoreBox.blue.winner {
+	background: rgba(10, 132, 255, 0.15);
+}
+
+.scoreBox.red.winner {
+	background: rgba(255, 0, 53, 0.15);
+}
+
+.allianceLabel {
+	font-size: var(--font-size-xs);
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.scoreBox.blue .allianceLabel {
+	color: var(--accent-blue);
+}
+
+.scoreBox.red .allianceLabel {
+	color: var(--accent-red);
+}
+
+.scoreValue {
+	font-family: var(--font-display);
+	font-size: var(--font-size-hero);
+	font-weight: 700;
+	color: var(--text-color);
+}
+
+.vs {
+	font-size: var(--font-size-sm);
+	color: var(--text-muted);
+}
+
+/* Score Bar */
+.scoreBar {
+	display: flex;
+	height: 8px;
+	border-radius: var(--border-radius-pill);
+	overflow: hidden;
+	background: var(--background-color2);
+}
+
+.scoreBarBlue {
+	background: var(--accent-blue);
+	transition: width 0.3s ease;
+}
+
+.scoreBarRed {
+	background: var(--accent-red);
+	transition: width 0.3s ease;
+}
+
+/* ============================================
+   ALLIANCE SECTIONS
+   ============================================ */
+
+.alliancesContainer {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-xl);
+}
+
+@media (min-width: 768px) {
+	.alliancesContainer {
+		flex-direction: row;
+		align-items: flex-start;
+		gap: 0;
+	}
+}
+
+.allianceSection {
+	flex: 1;
+	padding-inline: var(--space-lg);
+}
+
+.allianceHeader {
+	display: flex;
+	align-items: center;
+	gap: var(--space-sm);
+	margin-bottom: var(--space-lg);
+	padding-bottom: var(--space-sm);
+	border-bottom: 2px solid;
+	min-height: 20px;
+}
+
+.collapseButton {
+	margin-left: auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	background: none;
+	border: none;
+	cursor: pointer;
+	transition: opacity var(--transition);
+}
+
+.collapseButton:hover {
+	opacity: 0.7;
+}
+
+.allianceHeader.red .collapseButton {
+	color: var(--accent-red);
+}
+
+.allianceHeader.blue .collapseButton {
+	color: var(--accent-blue);
+}
+
+.allianceHeader.blue {
+	border-color: var(--accent-blue);
+}
+
+.allianceHeader.red {
+	border-color: var(--accent-red);
+}
+
+.allianceTitle {
+	font-size: var(--font-size-sm);
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.allianceHeader.blue .allianceTitle {
+	color: var(--accent-blue);
+}
+
+.allianceHeader.red .allianceTitle {
+	color: var(--accent-red);
+}
+
+.winnerBadge {
+	font-family: var(--font-display);
+	font-size: var(--font-size-xs);
+	font-weight: 600;
+	padding: var(--space-xxs) var(--space-sm);
+	border-radius: var(--border-radius-label);
+	background: var(--ui-green);
+	color: var(--background-color3);
+}
+
+.tieBadge {
+	font-family: var(--font-display);
+	font-size: var(--font-size-xs);
+	font-weight: 600;
+	padding: var(--space-xxs) var(--space-sm);
+	border-radius: var(--border-radius-label);
+	background: var(--ui-purple-dark);
+	color: var(--background-color3);
+}
+
+/* ============================================
+   TEAM CARDS
+   ============================================ */
+
+.teamCard {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-md);
+	background: var(--background-color2);
+	border-radius: var(--border-radius-big);
+	padding-top: var(--space-lg);
+	margin-bottom: var(--space-lg);
+	border-left: 4px solid;
+}
+
+.teamCard.blueBorder {
+	border-left-color: var(--accent-blue);
+}
+
+.teamCard.redBorder {
+	border-left-color: var(--accent-red);
+}
+
+.teamCardHeader {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-xs);
+	padding-inline: var(--space-lg);
+}
+
+.teamCardHeaderMain {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.teamCardHeaderDetails {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: var(--space-xs);
+	flex-wrap: wrap;
+}
+
+.teamNumber {
+	font-family: var(--font-display);
+	font-size: var(--font-size-md);
+	font-weight: 600;
+	color: var(--text-color);
+}
+
+.teamLink {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--space-xs);
+	background: var(--background-color3);
+	border: 1px solid transparent;
+	border-radius: var(--border-radius);
+	color: var(--text-color);
+	cursor: pointer;
+	transition: all var(--transition);
+}
+
+.teamLink:is(:hover, :focus-visible) {
+	border-color: var(--primary-color);
+	background: var(--ui-purple-light);
+	transform: translateY(-2px);
+}
+
+.teamName {
+	font-size: var(--font-size-sm);
+	color: var(--primary-color);
+	font-weight: 500;
+	display: block;
+}
+
+.teamLocation {
+	font-size: var(--font-size-xs);
+	color: var(--primary-color);
+	display: block;
+}
+
+/* ============================================
+   SUMMARY STATS ROW
+   ============================================ */
+
+.summaryRow {
+	display: flex;
+	gap: var(--space-md);
+	padding-inline: var(--space-lg);
+}
+
+.summaryBox {
+	flex: 1;
+	background: var(--background-color3);
+	border-radius: var(--border-radius);
+	padding: var(--space-sm) var(--space-md);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
+}
+
+.summaryValue {
+	font-family: var(--font-display);
+	font-size: var(--font-size-md);
+	font-weight: 600;
+	color: var(--text-color);
+}
+
+.summaryLabel {
+	font-size: var(--font-size-xs);
+	color: var(--text-muted);
+}
+
+/* ============================================
+   STAT CONTENT (inside accordion)
+   ============================================ */
+
+.statContent {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-md);
+}
+
+.subheader {
+	font-size: var(--font-size-xs);
+	font-weight: 600;
+	color: var(--text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	margin-top: var(--space-sm);
+	margin-bottom: var(--space-sm);
+}
+
+.subheader:first-child {
+	margin-top: 0;
+}
+
+.subheaderRed {
+	color: var(--accent-red);
+}
+
+.subheaderBlue {
+	color: var(--accent-blue);
+}
+
+.statRow {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: var(--space-md);
+}
+
+.statCard {
+	background: var(--background-color3);
+	border-radius: var(--border-radius);
+	padding: var(--space-md);
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.statLabel {
+	font-size: var(--font-size-xs);
+	color: var(--text-muted);
+}
+
+.statPrimary {
+	font-family: var(--font-display);
+	font-size: var(--font-size-lg);
+	font-weight: 600;
+	color: var(--text-color);
+}
+
+.statSecondary {
+	font-size: var(--font-size-sm);
+	color: var(--text-muted);
+}
+
+/* ============================================
+   CUSTOM ACCORDION STYLES
+   ============================================ */
+
+.accordionStack {
+	display: flex;
+	flex-direction: column;
+}
+
+.accordionTop {
+	margin-bottom: 0 !important;
+	border-radius: 0 !important;
+}
+
+.accordionTop:hover {
+	background: rgba(0, 0, 0, 0.02);
+}
+
+.accordionBottom {
+	margin-bottom: 0 !important;
+	border-radius: 0 0 var(--border-radius-big) var(--border-radius-big) !important;
+}
+
+.accordionBottom:hover {
+	background: rgba(0, 0, 0, 0.02);
+}

@@ -53,7 +53,7 @@ export default function Teams() {
 		const fetchTeams = async () => {
 			const result = await ServerConnector.GetTeamList({});
 			if (result.Success) {
-				setTeams(result.Teams);
+				setTeams([...result.Teams].sort((a, b) => a.NumberSortOrder - b.NumberSortOrder));
 			} else {
 				setError(result.ErrorMessage);
 			}
@@ -145,7 +145,10 @@ export default function Teams() {
 									<span className={styles.teamName}>{team.TeamName}</span>
 									<div className={styles.bottomRow}>
 										<span className={styles.rankText}>
-											Rank <span className={styles.rankNumber}>#{team.QualiRank}</span>
+											Rank{" "}
+											<span className={styles.rankNumber}>
+												{team.QualiRank ? "#" + team.QualiRank : "N/A"}
+											</span>
 										</span>
 										<span className={styles.recordText}>
 											Record <span className={styles.recordWLT}>{team.EventWLT}</span>

@@ -132,7 +132,7 @@
 
 /** Section cardback that holds cardgrid */
 .section {
-	margin-inline: var(--space-xl);
+	margin-inline: var(--space-xxl);
 	padding-block: var(--space-xl);
 }
 

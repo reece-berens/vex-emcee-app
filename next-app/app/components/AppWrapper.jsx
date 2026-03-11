@@ -109,9 +109,22 @@ export default function AppWrapper({ children, footer }) {
 	const [scrollY, setScrollY] = useState(0);
 	const [pageTitle, setPageTitle] = useState("VEX Emcee");
 
-	// TEMP: Set to true for mock data testing - change back to false for real API
-	const [eventRegistered, setEventRegistered] = useState(true);
-	// const [eventRegistered, setEventRegistered] = useState(false);
+	// Start false for SSR, then hydrate from sessionStorage
+	const [eventRegistered, setEventRegisteredState] = useState(false);
+
+	// Hydrate from sessionStorage on mount
+	useEffect(() => {
+		const stored = sessionStorage.getItem("eventRegistered");
+		if (stored === "true") {
+			setEventRegisteredState(true);
+		}
+	}, []);
+
+	// Wrapper to persist to sessionStorage
+	const setEventRegistered = (value) => {
+		setEventRegisteredState(value);
+		sessionStorage.setItem("eventRegistered", String(value));
+	};
 
 	const scrollContainerRef = useRef(null);
 

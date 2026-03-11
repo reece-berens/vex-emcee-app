@@ -1,0 +1,235 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+.page {
+    padding: var(--space-xl);
+    padding-bottom: 100px;
+    background: var(--background-color1);
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+}
+
+.pageTitle {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: var(--space-xl);
+    color: var(--text-color);
+}
+
+.fontSection {
+    margin-bottom: var(--space-xxl);
+}
+
+.sectionLabel {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: var(--space-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.explanation {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: var(--space-sm);
+}
+
+.explanation strong {
+    color: var(--accent-blue);
+}
+
+/* Navigation Preview */
+.navPreview {
+    display: flex;
+    gap: var(--space-lg);
+    background: var(--background-color3);
+    padding: var(--space-md);
+    border-radius: var(--border-radius);
+}
+
+.navItem {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.navActive {
+    color: var(--accent-blue);
+    font-weight: 600;
+}
+
+/* Match Card */
+.matchCard {
+    background: var(--background-color3);
+    border-radius: var(--border-radius);
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-default);
+}
+
+.matchHeader {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+}
+
+.matchName {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.matchTime {
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.liveBadge {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--ui-purple);
+    color: white;
+    padding: 2px var(--space-sm);
+    border-radius: var(--border-radius-label);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    margin-left: auto;
+}
+
+.matchBody {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.alliance {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.teamBadges {
+    display: flex;
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+}
+
+.badgeRed, .badgeBlue {
+    font-family: 'Space Grotesk', sans-serif;
+    padding: 2px var(--space-sm);
+    border-radius: var(--border-radius-label);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: white;
+}
+
+.badgeRed { background: var(--accent-red); }
+.badgeBlue { background: var(--accent-blue); }
+
+.score {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.winning {
+    color: var(--ui-green);
+}
+
+.vs {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+}
+
+/* Team Card */
+.teamCard {
+    background: var(--background-color3);
+    border-radius: var(--border-radius);
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-default);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.teamNumber {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 1.125rem;
+}
+
+.teamName {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.teamStats {
+    display: flex;
+    gap: var(--space-lg);
+    margin-top: var(--space-xs);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.teamStats strong {
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+/* Search */
+.searchWrapper {
+    background: var(--background-color3);
+    border-radius: var(--border-radius);
+    padding: var(--space-sm);
+}
+
+.searchInput {
+    width: 100%;
+    background: var(--background-color2);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: var(--space-sm) var(--space-md);
+    color: var(--text-color);
+    font-family: 'Inter', sans-serif;
+}
+
+.searchInput::placeholder {
+    color: var(--text-muted);
+}
+
+/* Stats Grid */
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+}
+
+.statBox {
+    background: var(--background-color3);
+    border-radius: var(--border-radius);
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.statLabel {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.statValue {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* Body Text */
+.bodyText {
+    background: var(--background-color3);
+    border-radius: var(--border-radius);
+    padding: var(--space-lg);
+    color: var(--text-muted);
+    line-height: 1.6;
+}

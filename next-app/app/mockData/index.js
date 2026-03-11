@@ -8,7 +8,7 @@
  * To disable: set USE_MOCK_DATA = false
  */
 
-export const USE_MOCK_DATA = true;
+export const USE_MOCK_DATA = false;
 
 // ============================================
 // MOCK TEAMS

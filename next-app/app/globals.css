@@ -49,6 +49,10 @@
 	--background-color2: #d9d4cc; /* Warmer divider instead of #cccccc */
 	--background-color3: #faf8f5; /* Warmer white instead of #f7f6f4 */
 
+	/* --background-color1: #f5f2ea;
+	--background-color2: #e6e3db; or #d8d5cd
+	--background-color3: #ffffff; */
+
 	/* --------------------------------------------
 	   Semantic Colors
 	   -------------------------------------------- */
@@ -119,8 +123,13 @@
 	   Shadows
 	   -------------------------------------------- */
 	/* Inset shadow for "pressed" elements (nav pills, inputs on focus) */
-	--shadow-inset:
+	--shadow-inset-purple:
 		inset 0 2px 4px rgba(107, 75, 155, 0.35), inset 0 4px 8px rgba(107, 75, 155, 0.25),
+		inset 0 -1px 2px rgba(255, 255, 255, 0.3);
+
+	/* Non-purple version */
+	--shadow-inset:
+		inset 0 2px 4px rgba(0, 0, 0, 0.15), inset 0 4px 8px rgba(0, 0, 0, 0.1),
 		inset 0 -1px 2px rgba(255, 255, 255, 0.3);
 
 	/* Elevation shadows for cards/buttons */
@@ -203,6 +212,9 @@ p {
 /* Only to be used over a lighter background such as a cardback or actual solid background color  */
 .text-error {
 	color: var(--error-color1);
+}
+.text-display {
+	font-family: var(--font-space-grotesk);
 }
 
 /* Background modifiers */
@@ -583,7 +595,7 @@ input:is(:hover, :focus-visible) {
 	background: var(--background-color3);
 	border: 1px solid var(--primary-color);
 	border-radius: var(--border-radius);
-	box-shadow: var(--shadow-hover);
+	box-shadow: var(--shadow-focus);
 	z-index: 200;
 	max-height: 60vh;
 	overflow-y: auto;
@@ -658,11 +670,14 @@ input:is(:hover, :focus-visible) {
  */
 .cardback {
 	background: var(--background-color2);
-	box-shadow: var(--shadow-inset);
 	border-radius: var(--border-radius-big);
 	padding: var(--space-lg);
 	margin-bottom: var(--space-xl);
 	position: relative;
+}
+
+.cardback.bg-transparent {
+	box-shadow: var(--shadow-inset-purple);
 }
 
 /**

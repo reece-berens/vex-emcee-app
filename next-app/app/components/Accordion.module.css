@@ -1,0 +1,65 @@
+/**
+ * Accordion Component Styles
+ */
+
+.accordion {
+	margin-bottom: var(--space-lg);
+	border: 1px solid transparent;
+	transition: border-color var(--transition);
+}
+
+.accordion:not(.noHoverBorder):has(.header:is(:hover, :focus-visible)) {
+	border-color: var(--primary-color);
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	gap: var(--space-xs);
+	width: calc(100% + 2 * var(--space-md));
+	padding: var(--space-md);
+	margin: calc(-1 * var(--space-md));
+	background: none;
+	border: none;
+	cursor: pointer;
+	text-align: left;
+	transition: 0.3s ease;
+}
+
+.header.open {
+	padding: var(--space-lg) var(--space-md) var(--space-xl) var(--space-md);
+	transition: 0.3s ease;
+}
+
+.chevron {
+	color: var(--text-color);
+	transition: transform 0.3s ease;
+	transform: rotate(-90deg);
+	flex-shrink: 0;
+}
+
+.chevron.open {
+	transform: rotate(0deg);
+}
+
+.title {
+	font-family: var(--font-family);
+	font-size: var(--font-size);
+	font-weight: 600;
+	color: var(--text-color);
+}
+
+.content {
+	display: grid;
+	grid-template-rows: 0fr;
+	transition: grid-template-rows 0.3s ease;
+}
+
+.content.open {
+	grid-template-rows: 1fr;
+}
+
+.content > * {
+	overflow: hidden;
+	transition: transform 0.3s ease;
+}
