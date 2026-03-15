@@ -21,6 +21,15 @@
 	padding-block: var(--space-xl);
 }
 
+.messageSection {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-xs);
+	justify-content: center;
+	align-items: center;
+	height: 250px;
+}
+
 .cardGrid {
 	display: flex;
 	flex-direction: column;

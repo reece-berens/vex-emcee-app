@@ -32,10 +32,10 @@
 	content: "";
 	position: absolute;
 	inset: 0;
-	backdrop-filter: blur(4px);
 	-webkit-backdrop-filter: blur(4px);
-	mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
+	backdrop-filter: blur(4px);
 	-webkit-mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
+	mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
 	z-index: -1;
 }
 

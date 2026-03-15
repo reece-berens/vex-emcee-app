@@ -62,7 +62,7 @@
 	   Purple UI Palette
 	   Used for interactive elements (buttons, links, focus states)
 	   -------------------------------------------- */
-	--ui-purple-light: #f8f6fb; /* Hover backgrounds, subtle highlights */
+	--ui-purple-light: #f8f6fb; /* Hover backgrounds, subtle highlightss */
 	--ui-purple: #8b6bc2; /* Primary accent - buttons, links */
 	--ui-purple-dark: #7356b3; /* Strong emphasis - active states */
 	--ui-purple-disabled: #a8a4c9; /* Disabled button state */
@@ -224,7 +224,7 @@ p {
 
 /* Text to be shown instead of a listing when there's an error or no search results */
 .messageSpan {
-	margin: var(--space-xxl) auto;
+	margin: var(--space-md) auto;
 	font-size: var(--font-size-sm);
 	font-weight: 400;
 }
@@ -351,8 +351,8 @@ p {
 
 	/* Frosted glass effect */
 	background: var(--background-color1-transparent);
+	-webkit-backdrop-filter: blur(20px) saturate(200%) brightness(1.1);
 	backdrop-filter: blur(20px) saturate(200%) brightness(1.1);
-	-webkit-backdrop-filter: blur(20px) saturate(200%) brightness(1.1); /* Safari */
 
 	border-bottom: 1px solid var(--primary-color-transparent);
 	z-index: 100;
@@ -369,8 +369,8 @@ p {
 	color: var(--text-color);
 	transition: background var(--transition);
 	background: var(--background-color1-transparent);
-	backdrop-filter: blur(20px) saturate(200%) brightness(1.1);
 	-webkit-backdrop-filter: blur(20px) saturate(200%) brightness(1.1);
+	backdrop-filter: blur(20px) saturate(200%) brightness(1.1);
 	border-top: 1px solid var(--primary-color-transparent);
 }
 

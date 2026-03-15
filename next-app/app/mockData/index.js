@@ -364,20 +364,97 @@ export const MOCK_MATCHES = [
 // ============================================
 
 const createMatchTeam = (teamNumber) => {
-	const team = MOCK_TEAMS.find((t) => t.Number === teamNumber) || { ID: 0, TeamName: "Unknown" };
+	const team = MOCK_TEAMS.find((t) => t.Number === teamNumber) || { ID: 0, TeamName: "Unknown", QualiRank: 12 };
+	
+	// Parse WLT from team data
+	const wltMatch = team.EventWLT?.match(/(\d+)-(\d+)-(\d+)/);
+	const wins = wltMatch ? parseInt(wltMatch[1]) : 3;
+	const losses = wltMatch ? parseInt(wltMatch[2]) : 3;
+	const ties = wltMatch ? parseInt(wltMatch[3]) : 0;
+	const totalMatches = wins + losses + ties;
+	const winRate = totalMatches > 0 ? ((wins / totalMatches) * 100).toFixed(1) : "0.0";
+	
+	// Generate random but realistic stats
+	const driverSkills = Math.floor(Math.random() * 40) + 15;
+	const progSkills = Math.floor(Math.random() * 30) + 10;
+	const driverAttempts = Math.floor(Math.random() * 3) + 1;
+	const progAttempts = Math.floor(Math.random() * 3) + 1;
+	const totalPoints = Math.floor(Math.random() * 200) + 150;
+	const avgPoints = (totalPoints / Math.max(totalMatches, 1)).toFixed(1);
+	const wp = wins * 2 + ties;
+	const sp = Math.floor(Math.random() * 150) + 50;
+	const ap = Math.floor(Math.random() * 80) + 20;
+	const awards = Math.floor(Math.random() * 3);
+	
+	// Season stats (larger numbers)
+	const seasonWins = wins + Math.floor(Math.random() * 30) + 10;
+	const seasonLosses = losses + Math.floor(Math.random() * 15) + 5;
+	const seasonTies = Math.floor(Math.random() * 2);
+	const seasonTotal = seasonWins + seasonLosses + seasonTies;
+	const seasonWinRate = ((seasonWins / seasonTotal) * 100).toFixed(1);
+	const qualWins = Math.floor(seasonWins * 0.7);
+	const qualLosses = Math.floor(seasonLosses * 0.7);
+	const qualTotal = qualWins + qualLosses;
+	const qualWinRate = qualTotal > 0 ? ((qualWins / qualTotal) * 100).toFixed(1) : "0.0";
+	const elimWins = seasonWins - qualWins;
+	const elimLosses = seasonLosses - qualLosses;
+	const elimTotal = elimWins + elimLosses;
+	const elimWinRate = elimTotal > 0 ? ((elimWins / elimTotal) * 100).toFixed(1) : "0.0";
+	
 	return {
 		ID: team.ID,
 		SimpleStat: team.EventWLT,
-		TeamLocator: "Field 1",
+		TeamLocator: "Kansas, USA",
 		TeamName: team.TeamName,
 		TeamNumber: teamNumber,
 		Stats: [
 			{
-				Name: "Match Stats",
+				Name: "This Event",
 				Order: 1,
 				Display: [
-					{ SectionLabel: "Auto Points", SectionData: [String(Math.floor(Math.random() * 20))] },
-					{ SectionLabel: "Driver Points", SectionData: [String(Math.floor(Math.random() * 40))] },
+					{ 
+						SectionLabel: "Overall WLT (Qualification + Elim.)", 
+						SectionData: [`${wins}-${losses}-${ties}`, `${winRate}% win rate`] 
+					},
+					{ 
+						SectionLabel: "Qualifications Ranking", 
+						SectionData: [`#${team.QualiRank}`] 
+					},
+					{ 
+						SectionLabel: "Ranking Points", 
+						SectionData: [`${wp} WP - ${sp} SP - ${ap} AP`] 
+					},
+					{ 
+						SectionLabel: "Skills", 
+						SectionData: [
+							`Driver: ${driverAttempts} attempts, ${driverSkills} high score`,
+							`Programming: ${progAttempts} attempts, ${progSkills} high score`
+						] 
+					},
+					{ 
+						SectionLabel: "Points Scored", 
+						SectionData: [`Total: ${totalPoints} points`, `Average per match: ${avgPoints} points`] 
+					},
+				],
+			},
+			{
+				Name: "Season Stats Entering This Tournament",
+				Order: 2,
+				Display: [
+					{ 
+						SectionLabel: "WLT", 
+						SectionData: [
+							`All Matches: ${seasonWins}-${seasonLosses}-${seasonTies} - ${seasonWinRate}%`,
+							`Qualification Matches: ${qualWins}-${qualLosses}-0 - ${qualWinRate}%`,
+							`Elimination Matches: ${elimWins}-${elimLosses}-0 - ${elimWinRate}%`
+						] 
+					},
+					{ 
+						SectionLabel: "Awards", 
+						SectionData: awards > 0 
+							? [`${awards} Total`, `${Math.min(awards, 1)} Judged Award${awards === 1 ? "" : "s"}`] 
+							: ["0 Total"] 
+					},
 				],
 			},
 		],

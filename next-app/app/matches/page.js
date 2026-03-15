@@ -77,8 +77,28 @@ export default function Matches() {
 						</div>
 					</section>
 				)}
-				{error && <div className="messageSpan">{"Error | " + error}</div>}
-				{!loading && matches.length === 0 && <div className="messageSpan">No match data to display</div>}
+				{error && (
+					<section className={`cardback bg-transparent ${styles.messageSection}`}>
+						<svg
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="1.5"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+						>
+							<path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+						</svg>
+						<div className="messageSpan">{"Error | " + error}</div>
+					</section>
+				)}
+				{!loading && !error && matches.length === 0 && (
+					<section className={`cardback bg-transparent ${styles.messageSection}`}>
+						<div className="messageSpan">No match data to display</div>
+					</section>
+				)}
 				{!loading && !error && matches.length > 0 && (
 					<section className={`cardback bg-transparent ${styles.section}`}>
 						<div className={styles.cardGrid}>

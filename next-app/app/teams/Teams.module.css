@@ -48,10 +48,10 @@
 	content: "";
 	position: absolute;
 	inset: 0;
-	backdrop-filter: blur(6px);
 	-webkit-backdrop-filter: blur(6px);
-	mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
+	backdrop-filter: blur(6px);
 	-webkit-mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
+	mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
 	/* background: rgba(139, 107, 194, 0.1); TODO: Not decided on this yet... oh well */
 	z-index: -1;
 }
@@ -134,6 +134,16 @@
 .section {
 	margin-inline: var(--space-xxl);
 	padding-block: var(--space-xl);
+}
+
+.messageSection {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-xs);
+	justify-content: center;
+	align-items: center;
+	height: 250px;
+	margin-inline: var(--space-xxl);
 }
 
 /** List/grid of team cards */

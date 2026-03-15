@@ -6,6 +6,131 @@ import Accordion from "../../components/Accordion";
 import styles from "./MatchDetails.module.css";
 
 /**
+ * Stat extractors - each returns { label, value } or null if not available/meaningful
+ * These pull "highlightsable" stats from team data for the emcee
+ */
+const statExtractors = [
+	// Win rate from This Event
+	(team) => {
+		const thisEvent = team.Stats?.find((s) => s.Name === "This Event");
+		const wlt = thisEvent?.Display?.find((d) => d.SectionLabel.includes("Overall WLT"));
+		const pctMatch = wlt?.SectionData?.[1]?.match(/([\d.]+)%/);
+		if (!pctMatch || parseFloat(pctMatch[1]) === 0) return null;
+		return { label: "Win Rate", value: `${pctMatch[1]}%` };
+	},
+	// Qualifications Ranking
+	(team) => {
+		const thisEvent = team.Stats?.find((s) => s.Name === "This Event");
+		const rank = thisEvent?.Display?.find((d) => d.SectionLabel.includes("Ranking"));
+		const rankMatch = rank?.SectionData?.[0]?.match(/#(\d+)/);
+		if (!rankMatch) return null;
+		return { label: "Qual Rank", value: `#${rankMatch[1]}` };
+	},
+	// Driver Skills high score
+	(team) => {
+		const thisEvent = team.Stats?.find((s) => s.Name === "This Event");
+		const skills = thisEvent?.Display?.find((d) => d.SectionLabel === "Skills");
+		const driverMatch = skills?.SectionData?.[0]?.match(/Driver:.*?(\d+)\s*high score/i);
+		if (!driverMatch || parseInt(driverMatch[1]) === 0) return null;
+		return { label: "Driver Skills", value: driverMatch[1] };
+	},
+	// Programming Skills high score
+	(team) => {
+		const thisEvent = team.Stats?.find((s) => s.Name === "This Event");
+		const skills = thisEvent?.Display?.find((d) => d.SectionLabel === "Skills");
+		const progMatch = skills?.SectionData?.[1]?.match(/Programming:.*?(\d+)\s*high score/i);
+		if (!progMatch || parseInt(progMatch[1]) === 0) return null;
+		return { label: "Prog Skills", value: progMatch[1] };
+	},
+	// Average points per match
+	(team) => {
+		const thisEvent = team.Stats?.find((s) => s.Name === "This Event");
+		const points = thisEvent?.Display?.find((d) => d.SectionLabel === "Points Scored");
+		const avgMatch = points?.SectionData?.[1]?.match(/([\d.]+)\s*points/i);
+		if (!avgMatch || parseFloat(avgMatch[1]) === 0) return null;
+		return { label: "Avg Points", value: avgMatch[1] };
+	},
+	// Total points scored
+	(team) => {
+		const thisEvent = team.Stats?.find((s) => s.Name === "This Event");
+		const points = thisEvent?.Display?.find((d) => d.SectionLabel === "Points Scored");
+		const totalMatch = points?.SectionData?.[0]?.match(/([\d.]+)\s*points/i);
+		if (!totalMatch || parseFloat(totalMatch[1]) === 0) return null;
+		return { label: "Total Points", value: totalMatch[1] };
+	},
+	// Season win rate
+	(team) => {
+		const season = team.Stats?.find((s) => s.Name === "Season Stats Entering This Tournament");
+		const wlt = season?.Display?.find((d) => d.SectionLabel === "WLT");
+		const allMatch = wlt?.SectionData?.[0]?.match(/All Matches:.*?([\d.]+)%/);
+		if (!allMatch || parseFloat(allMatch[1]) === 0) return null;
+		return { label: "Season Win%", value: `${allMatch[1]}%` };
+	},
+	// Season awards
+	(team) => {
+		const season = team.Stats?.find((s) => s.Name === "Season Stats Entering This Tournament");
+		const awards = season?.Display?.find((d) => d.SectionLabel === "Awards");
+		const totalMatch = awards?.SectionData?.[0]?.match(/(\d+)\s*Total/i);
+		if (!totalMatch || parseInt(totalMatch[1]) === 0) return null;
+		const count = totalMatch[1];
+		return { label: "Awards", value: `${count}` };
+	},
+	// Elimination record from season
+	(team) => {
+		const season = team.Stats?.find((s) => s.Name === "Season Stats Entering This Tournament");
+		const wlt = season?.Display?.find((d) => d.SectionLabel === "WLT");
+		const elimMatch = wlt?.SectionData?.[2]?.match(/Elimination.*?(\d+-\d+-\d+)/);
+		if (!elimMatch) return null;
+		const [w] = elimMatch[1].split("-").map(Number);
+		if (w === 0) return null;
+		return { label: "Elim Record", value: elimMatch[1] };
+	},
+];
+
+/**
+ * Pick random stats for a team
+ * Returns array of 2 stat objects { label, value }
+ */
+function getRandomStats(team, count = 2) {
+	// Handle missing data
+	if (!team || !team.Stats) {
+		return [
+			{ label: "Record", value: "—" },
+			{ label: "Avg Pts", value: "—" },
+		];
+	}
+
+	// Get all available stats for this team
+	const available = statExtractors
+		.map((extractor) => {
+			try {
+				return extractor(team);
+			} catch {
+				return null;
+			}
+		})
+		.filter((stat) => stat !== null);
+
+	if (available.length === 0) {
+		return [
+			{ label: "Record", value: "—" },
+			{ label: "Avg Pts", value: "—" },
+		];
+	}
+
+	// Shuffle and pick
+	const shuffled = [...available].sort(() => Math.random() - 0.5);
+	const picked = shuffled.slice(0, Math.min(count, shuffled.length));
+
+	// Pad with placeholder if we only got 1
+	while (picked.length < count) {
+		picked.push({ label: "—", value: "—" });
+	}
+
+	return picked;
+}
+
+/**
  * Extract summary stats from team's "This Event" data
  */
 function getTeamSummary(team) {
@@ -76,7 +201,7 @@ function StatCard({ label, primary, secondary }) {
 
 /**
  * Render stat sections with smart parsing
- * @param {string} allianceColor - "red" or "blue" for highlighting alliance-specific stats
+ * @param {string} allianceColor - "red" or "blue" for highlightsing alliance-specific stats
  */
 function renderStatSections(displayItems, summaryRecord, allianceColor) {
 	return displayItems.map((item, idx) => {
@@ -225,6 +350,10 @@ export default function MatchDetail() {
 	const router = useRouter();
 	const [match, setMatch] = useState(null);
 	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
+
+	// Store random stats per team (keyed by team ID) so they don't change on re-render
+	const [teamRandomStats, setTeamRandomStats] = useState({});
 
 	// Track accordion open states per alliance: { teamId: { thisEvent: bool, seasonStats: bool } }
 	const [redAccordions, setRedAccordions] = useState({});
@@ -267,6 +396,16 @@ export default function MatchDetail() {
 			const result = await ServerConnector.GetMatchInfo({ MatchKey: id });
 			if (result.Success) {
 				setMatch(result.MatchInfo);
+
+				// Generate random stats for each team (once, on load)
+				const allTeams = [...result.MatchInfo.Red.Teams, ...result.MatchInfo.Blue.Teams];
+				const statsMap = {};
+				allTeams.forEach((team) => {
+					statsMap[team.ID] = getRandomStats(team, 2);
+				});
+				setTeamRandomStats(statsMap);
+			} else {
+				setError(result.ErrorMessage || "Failed to load match");
 			}
 			setLoading(false);
 		};
@@ -314,27 +453,102 @@ export default function MatchDetail() {
 
 			{/* Scrollable content area */}
 			<div className={styles.content}>
-				{loading && <p>Loading...</p>}
+				{loading && (
+					<>
+						{/* Skeleton Match Header */}
+						<div className={styles.matchHeader}>
+							<div className={`${styles.skeleton} ${styles.skeletonMatchTitle}`} />
+						</div>
+
+						{/* Skeleton Score Section */}
+						<div className={styles.scoreSection}>
+							<div className={styles.scoreRow}>
+								<div className={`${styles.skeleton} ${styles.skeletonScoreBox}`} />
+								<div className={`${styles.skeleton} ${styles.skeletonVs}`} />
+								<div className={`${styles.skeleton} ${styles.skeletonScoreBox}`} />
+							</div>
+							<div className={`${styles.skeleton} ${styles.skeletonScoreBar}`} />
+						</div>
+
+						{/* Skeleton Alliance Sections */}
+						<div className={styles.alliancesContainer}>
+							{/* Red Alliance Skeleton */}
+							<div className={styles.allianceSection}>
+								<div className={styles.skeletonAllianceHeader}>
+									<div className={`${styles.skeleton} ${styles.skeletonAllianceTitle}`} />
+								</div>
+								{[1, 2].map((i) => (
+									<div
+										key={i}
+										className={styles.skeletonTeamCard}
+									>
+										<div className={styles.teamCardHeader}>
+											<div className={`${styles.skeleton} ${styles.skeletonTeamNumber}`} />
+											<div className={`${styles.skeleton} ${styles.skeletonTeamName}`} />
+										</div>
+										<div className={styles.skeletonHighlightsSection}>
+											<div className={`${styles.skeleton} ${styles.skeletonHighlightsHeader}`} />
+											<div className={styles.summaryRow}>
+												<div className={`${styles.skeleton} ${styles.skeletonSummaryBox}`} />
+												<div className={`${styles.skeleton} ${styles.skeletonSummaryBox}`} />
+											</div>
+										</div>
+									</div>
+								))}
+							</div>
+
+							{/* Blue Alliance Skeleton */}
+							<div className={styles.allianceSection}>
+								<div className={styles.skeletonAllianceHeader}>
+									<div className={`${styles.skeleton} ${styles.skeletonAllianceTitle}`} />
+								</div>
+								{[1, 2].map((i) => (
+									<div
+										key={i}
+										className={styles.skeletonTeamCard}
+									>
+										<div className={styles.teamCardHeader}>
+											<div className={`${styles.skeleton} ${styles.skeletonTeamNumber}`} />
+											<div className={`${styles.skeleton} ${styles.skeletonTeamName}`} />
+										</div>
+										<div className={styles.skeletonHighlightsSection}>
+											<div className={`${styles.skeleton} ${styles.skeletonHighlightsHeader}`} />
+											<div className={styles.summaryRow}>
+												<div className={`${styles.skeleton} ${styles.skeletonSummaryBox}`} />
+												<div className={`${styles.skeleton} ${styles.skeletonSummaryBox}`} />
+											</div>
+										</div>
+									</div>
+								))}
+							</div>
+						</div>
+					</>
+				)}
+				{error && (
+					<div className="messageSpan" style={{ textAlign: "center", marginTop: "var(--space-xl)" }}>
+						{error}
+					</div>
+				)}
 				{match && (
 					<>
 						{/* Match Header */}
 						<div className={styles.matchHeader}>
 							<span className={styles.matchTitle}>Qualification {match.MatchNumber}</span>
-							{match.Tie && <span className={styles.tieBadge}>TIE</span>}
+							{match.Scored && match.Tie && <span className={styles.tieBadge}>TIE</span>}
 						</div>
 
 						{/* Score Display */}
 						<div className={styles.scoreSection}>
 							<div className={styles.scoreRow}>
 								<div
-									className={`${styles.scoreBox} ${styles.red} ${match.RedWin ? styles.winner : ""}`}
+									className={`${styles.scoreBox} ${styles.red} ${match.Scored && match.RedWin ? styles.winner : ""}`}
 								>
 									<span className={styles.allianceLabel}>RED</span>
 									<span className={styles.scoreValue}>{match.Red.Score}</span>
 								</div>
 								<span className={styles.vs}>vs</span>
 								<div
-									className={`${styles.scoreBox} ${styles.blue} ${match.BlueWin ? styles.winner : ""}`}
+									className={`${styles.scoreBox} ${styles.blue} ${match.Scored && match.BlueWin ? styles.winner : ""}`}
 								>
 									<span className={styles.allianceLabel}>BLUE</span>
 									<span className={styles.scoreValue}>{match.Blue.Score}</span>
@@ -359,7 +573,7 @@ export default function MatchDetail() {
 							<div className={styles.allianceSection}>
 								<div className={`${styles.allianceHeader} ${styles.red}`}>
 									<span className={styles.allianceTitle}>Red Alliance</span>
-									{match.RedWin && <span className={styles.winnerBadge}>WINNER</span>}
+									{match.Scored && match.RedWin && <span className={styles.winnerBadge}>WINNER</span>}
 									{hasAnyOpen(redAccordions) && (
 										<button
 											className={styles.collapseButton}
@@ -385,6 +599,7 @@ export default function MatchDetail() {
 								</div>
 								{match.Red.Teams.map((team) => {
 									const summary = getTeamSummary(team);
+									const randomStats = teamRandomStats[team.ID] || [];
 									return (
 										<div
 											key={team.ID}
@@ -421,15 +636,35 @@ export default function MatchDetail() {
 												</div>
 											</div>
 
-											{/* Summary Stats */}
-											<div className={styles.summaryRow}>
-												<div className={styles.summaryBox}>
-													<span className={styles.summaryValue}>{summary.record}</span>
-													<span className={styles.summaryLabel}>Record</span>
+											{/* Highlights Stats */}
+											<div className={styles.highlightsSection}>
+												<div className={styles.highlightsHeader}>
+													<span className={styles.highlightsText}>Highlights</span>
+													<svg
+														fill="currentColor"
+														viewBox="0 0 24 24"
+														xmlns="http://www.w3.org/2000/svg"
+														aria-hidden="true"
+														width="14"
+														height="14"
+													>
+														<path
+															clipRule="evenodd"
+															fillRule="evenodd"
+															d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
+														/>
+													</svg>
 												</div>
-												<div className={styles.summaryBox}>
-													<span className={styles.summaryValue}>{summary.avgPoints}</span>
-													<span className={styles.summaryLabel}>Avg Pts</span>
+												<div className={styles.summaryRow}>
+													{randomStats.map((stat, idx) => (
+														<div
+															key={idx}
+															className={styles.summaryBox}
+														>
+															<span className={styles.summaryValue}>{stat.value}</span>
+															<span className={styles.summaryLabel}>{stat.label}</span>
+														</div>
+													))}
 												</div>
 											</div>
 
@@ -443,7 +678,12 @@ export default function MatchDetail() {
 														noHoverBorder={true}
 														isOpen={getAccordionState(redAccordions, team.ID, "thisEvent")}
 														onToggle={(open) =>
-															setAccordionState(setRedAccordions, team.ID, "thisEvent", open)
+															setAccordionState(
+																setRedAccordions,
+																team.ID,
+																"thisEvent",
+																open,
+															)
 														}
 													>
 														<div className={styles.statContent}>
@@ -460,9 +700,18 @@ export default function MatchDetail() {
 														title="Season Stats"
 														className={styles.accordionBottom}
 														noHoverBorder={true}
-														isOpen={getAccordionState(redAccordions, team.ID, "seasonStats")}
+														isOpen={getAccordionState(
+															redAccordions,
+															team.ID,
+															"seasonStats",
+														)}
 														onToggle={(open) =>
-															setAccordionState(setRedAccordions, team.ID, "seasonStats", open)
+															setAccordionState(
+																setRedAccordions,
+																team.ID,
+																"seasonStats",
+																open,
+															)
 														}
 													>
 														<div className={styles.statContent}>
@@ -480,7 +729,9 @@ export default function MatchDetail() {
 							<div className={styles.allianceSection}>
 								<div className={`${styles.allianceHeader} ${styles.blue}`}>
 									<span className={styles.allianceTitle}>Blue Alliance</span>
-									{match.BlueWin && <span className={styles.winnerBadge}>WINNER</span>}
+									{match.Scored && match.BlueWin && (
+										<span className={styles.winnerBadge}>WINNER</span>
+									)}
 									{hasAnyOpen(blueAccordions) && (
 										<button
 											className={styles.collapseButton}
@@ -506,6 +757,7 @@ export default function MatchDetail() {
 								</div>
 								{match.Blue.Teams.map((team) => {
 									const summary = getTeamSummary(team);
+									const randomStats = teamRandomStats[team.ID] || [];
 									return (
 										<div
 											key={team.ID}
@@ -541,15 +793,35 @@ export default function MatchDetail() {
 													<span className={styles.teamLocation}>{team.TeamLocator}</span>
 												</div>
 											</div>
-											{/* Summary Stats */}
-											<div className={styles.summaryRow}>
-												<div className={styles.summaryBox}>
-													<span className={styles.summaryValue}>{summary.record}</span>
-													<span className={styles.summaryLabel}>Record</span>
+											{/* highlights Stats */}
+											<div className={styles.highlightsSection}>
+												<div className={styles.highlightsHeader}>
+													<span className={styles.highlightsText}>Highlights</span>
+													<svg
+														fill="currentColor"
+														viewBox="0 0 24 24"
+														xmlns="http://www.w3.org/2000/svg"
+														aria-hidden="true"
+														width="12"
+														height="12"
+													>
+														<path
+															clipRule="evenodd"
+															fillRule="evenodd"
+															d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
+														/>
+													</svg>
 												</div>
-												<div className={styles.summaryBox}>
-													<span className={styles.summaryValue}>{summary.avgPoints}</span>
-													<span className={styles.summaryLabel}>Avg Pts</span>
+												<div className={styles.summaryRow}>
+													{randomStats.map((stat, idx) => (
+														<div
+															key={idx}
+															className={styles.summaryBox}
+														>
+															<span className={styles.summaryValue}>{stat.value}</span>
+															<span className={styles.summaryLabel}>{stat.label}</span>
+														</div>
+													))}
 												</div>
 											</div>
 
@@ -563,7 +835,12 @@ export default function MatchDetail() {
 														noHoverBorder={true}
 														isOpen={getAccordionState(blueAccordions, team.ID, "thisEvent")}
 														onToggle={(open) =>
-															setAccordionState(setBlueAccordions, team.ID, "thisEvent", open)
+															setAccordionState(
+																setBlueAccordions,
+																team.ID,
+																"thisEvent",
+																open,
+															)
 														}
 													>
 														<div className={styles.statContent}>
@@ -580,9 +857,18 @@ export default function MatchDetail() {
 														title="Season Stats"
 														className={styles.accordionBottom}
 														noHoverBorder={true}
-														isOpen={getAccordionState(blueAccordions, team.ID, "seasonStats")}
+														isOpen={getAccordionState(
+															blueAccordions,
+															team.ID,
+															"seasonStats",
+														)}
 														onToggle={(open) =>
-															setAccordionState(setBlueAccordions, team.ID, "seasonStats", open)
+															setAccordionState(
+																setBlueAccordions,
+																team.ID,
+																"seasonStats",
+																open,
+															)
 														}
 													>
 														<div className={styles.statContent}>
@@ -598,12 +884,12 @@ export default function MatchDetail() {
 						</div>
 
 						{/* Debug: Raw JSON */}
-						<details style={{ marginTop: "var(--space-xl)" }}>
+						{/* <details style={{ marginTop: "var(--space-xl)" }}>
 							<summary style={{ cursor: "pointer", color: "var(--text-muted)" }}>Raw Data</summary>
 							<pre style={{ whiteSpace: "pre-wrap", fontSize: "12px", marginTop: "var(--space-md)" }}>
 								{JSON.stringify(match, null, 2)}
 							</pre>
-						</details>
+						</details> */}
 					</>
 				)}
 			</div>

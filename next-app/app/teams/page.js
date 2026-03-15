@@ -43,11 +43,9 @@ export default function Teams() {
 		}
 	}, [eventRegistered, router]);
 
-	if (!eventRegistered) return null;
-
 	useEffect(() => {
 		setPageTitle("Teams");
-	}, []);
+	}, [setPageTitle]);
 
 	useEffect(() => {
 		const fetchTeams = async () => {
@@ -61,6 +59,8 @@ export default function Teams() {
 		};
 		fetchTeams();
 	}, [refreshKey]);
+
+	if (!eventRegistered) return null;
 
 	return (
 		<main className={`layout-main ${styles.page}`}>
@@ -116,12 +116,32 @@ export default function Teams() {
 						</div>
 					</section>
 				)}
-				{error && <div className="messageSpan">{"Error | " + error}</div>}
-				{!loading && filteredTeams.length === 0 && searchQuery !== "" && (
-					<div className="messageSpan">No results</div>
+				{error && (
+					<section className={`cardback bg-transparent ${styles.messageSection}`}>
+						<svg
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="1.5"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+						>
+							<path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+						</svg>
+						<div className="messageSpan">{"Error | " + error}</div>
+					</section>
 				)}
-				{!loading && filteredTeams.length === 0 && searchQuery === "" && (
-					<div className="messageSpan">No team data to display</div>
+				{!loading && !error && filteredTeams.length === 0 && searchQuery !== "" && (
+					<section className={`cardback bg-transparent ${styles.messageSection}`}>
+						<div className="messageSpan">No results</div>
+					</section>
+				)}
+				{!loading && !error && filteredTeams.length === 0 && searchQuery === "" && (
+					<section className={`cardback bg-transparent ${styles.messageSection}`}>
+						<div className="messageSpan">No team data to display</div>
+					</section>
 				)}
 				{!loading && !error && filteredTeams.length > 0 && (
 					<section className={`cardback bg-transparent ${styles.section}`}>

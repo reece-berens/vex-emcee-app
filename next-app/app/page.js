@@ -17,7 +17,7 @@
 "use client";
 
 import styles from "./Home.module.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import ApiDropdown from "./components/ApiDropdown";
 import LoadingOverlay from "./components/LoadingOverlay";
 import { useSetPageTitle, useSetEventRegistered, useEventFilters, useSetEventFilters } from "./components/AppWrapper";
@@ -37,9 +37,9 @@ export default function Home() {
 	const setFilters = useSetEventFilters();
 
 	// Helper to update a single filter field
-	const updateFilter = (field, value) => {
+	const updateFilter = useCallback((field, value) => {
 		setFilters((prev) => ({ ...prev, [field]: value }));
-	};
+	}, [setFilters]);
 
 	// Loading state for registration API call (local - only needed on this page)
 	const [isRegistering, setIsRegistering] = useState(false);

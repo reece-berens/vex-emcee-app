@@ -56,6 +56,8 @@ export default function TeamDetail() {
 			const result = await ServerConnector.GetTeamInfo({ TeamID: Number(id) });
 			if (result.Success) {
 				setTeam(result.TeamInfo);
+			} else {
+				setError(result.ErrorMessage || "Failed to load team");
 			}
 			setLoading(false);
 		};
@@ -320,6 +322,12 @@ export default function TeamDetail() {
 						</div>
 						<div className={styles.skeletonAccordion} />
 					</>
+				)}
+
+				{error && (
+					<div className="messageSpan" style={{ textAlign: "center", marginTop: "var(--space-xl)" }}>
+						{error}
+					</div>
 				)}
 
 				{team && (
