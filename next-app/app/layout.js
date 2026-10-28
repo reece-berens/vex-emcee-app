@@ -36,7 +36,8 @@ export const metadata = {
 };
 
 /**
- * @param {React.ReactNode} children - Page content (from page.js files)
+ * @param {{ children: import("react").ReactNode }} props
+ * @param props.children - Page content (from page.js files)
  */
 export default function RootLayout({ children }) {
 	return (

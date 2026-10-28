@@ -36,7 +36,7 @@ export default function Matches() {
 
 	useEffect(() => {
 		setPageTitle("Matches");
-	}, []);
+	}, [setPageTitle]);
 
 	useEffect(() => {
 		const fetchMatches = async () => {

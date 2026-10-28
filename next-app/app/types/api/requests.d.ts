@@ -2,7 +2,7 @@ namespace VEXEmcee {
     namespace API {
         namespace Requests {
             interface BaseRequest {
-                Session: string;
+                Session?: string;
             }
 
             interface GetMatchInfoRequest extends BaseRequest {

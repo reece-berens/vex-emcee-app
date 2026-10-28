@@ -29,7 +29,7 @@ export default function Settings() {
 
 	useEffect(() => {
 		setPageTitle("Settings");
-	}, []);
+	}, [setPageTitle]);
 
 	return (
 		<main className={`layout-main ${styles.page}`}>

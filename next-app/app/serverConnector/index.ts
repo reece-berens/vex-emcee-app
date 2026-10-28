@@ -19,8 +19,12 @@ import {
 const MOCK_DELAY_MS = 2000;
 const mockDelay = () => new Promise(resolve => setTimeout(resolve, MOCK_DELAY_MS));
 
-// Wrap API functions to use mock data when enabled
-const GetTeamList = async (request) => {
+// Wrap API functions to use mock data when enabled.
+// Each wrapper takes and returns the same types as the real connector it wraps,
+// so pages get the same shape whether the data is mock or real.
+const GetTeamList = async (
+	request: VEXEmcee.API.Requests.GetTeamListRequest = {},
+): Promise<VEXEmcee.API.Responses.GetTeamListResponse> => {
 	if (USE_MOCK_DATA) {
 		await mockDelay();
 		return getMockTeamListResponse();
@@ -28,7 +32,9 @@ const GetTeamList = async (request) => {
 	return GetTeamListReal(request);
 };
 
-const GetTeamInfo = async (request) => {
+const GetTeamInfo = async (
+	request: VEXEmcee.API.Requests.GetTeamInfoRequest,
+): Promise<VEXEmcee.API.Responses.GetTeamInfoResponse> => {
 	if (USE_MOCK_DATA) {
 		await mockDelay();
 		return getMockTeamInfoResponse(request.TeamID);
@@ -36,7 +42,9 @@ const GetTeamInfo = async (request) => {
 	return GetTeamInfoReal(request);
 };
 
-const GetMatchList = async (request) => {
+const GetMatchList = async (
+	request: VEXEmcee.API.Requests.GetMatchListRequest = {},
+): Promise<VEXEmcee.API.Responses.GetMatchListResponse> => {
 	if (USE_MOCK_DATA) {
 		await mockDelay();
 		return getMockMatchListResponse();
@@ -44,7 +52,9 @@ const GetMatchList = async (request) => {
 	return GetMatchListReal(request);
 };
 
-const GetMatchInfo = async (request) => {
+const GetMatchInfo = async (
+	request: VEXEmcee.API.Requests.GetMatchInfoRequest,
+): Promise<VEXEmcee.API.Responses.GetMatchInfoResponse> => {
 	if (USE_MOCK_DATA) {
 		await mockDelay();
 		return getMockMatchInfoResponse(request.MatchKey);
@@ -52,7 +62,9 @@ const GetMatchInfo = async (request) => {
 	return GetMatchInfoReal(request);
 };
 
-export default {
+// Named before exporting, so stack traces and React DevTools show a real name
+// (this is what the import/no-anonymous-default-export lint rule asks for)
+const ServerConnector = {
 	GetEventList,
 	GetMatchInfo,
 	GetMatchList,
@@ -62,3 +74,5 @@ export default {
 	GetTeamInfo,
 	GetTeamList,
 };
+
+export default ServerConnector;

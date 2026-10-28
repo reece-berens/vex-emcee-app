@@ -58,12 +58,12 @@ export default function Home() {
 		} else if (!selectedEventData) {
 			updateFilter("division", "");
 		}
-	}, [selectedEventData]);
+	}, [selectedEventData, updateFilter]);
 
 	// Set page title on mount
 	useEffect(() => {
 		setPageTitle("Find Your VEX Tournament");
-	}, []);
+	}, [setPageTitle]);
 
 	/**
 	 * Apply filters button handler
