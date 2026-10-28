@@ -36,5 +36,7 @@ namespace VEXEmcee.Objects.Data.Stats
 		public double APAvg { get; set; }
 		[JsonPropertyName("SA")]
 		public double SPAvg { get; set; }
+		[JsonPropertyName("HS")]
+		public int HighScore { get; set; }
 	}
 }

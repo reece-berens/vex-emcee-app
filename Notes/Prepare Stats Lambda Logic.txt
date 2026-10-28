@@ -1,0 +1,42 @@
+Steps for building the stats for an event (partially taken from old app)
+
+Lambda will receive an Event ID and if it's a requested event (requested meaning some user has started a session with this event, not coming from the recursive call below)
+Ensure Event ID is loaded into the Event table and StatsRequested is true
+If Event doesn't exist:
+	Load event from RE, save to table with StatsRequested true and StatsReady false
+If Event.StatsReady is false:
+	Get list of skills runs
+	Get list of awards
+	Get list of teams for Teams_denorm
+	For each division:
+		Get list of teams, save to DivisionTeams and Teams_denorm
+		Get list of matches
+		Get list of rankings
+		If Event.Finalized is true:
+			Save match list to ArchiveMatch table
+			Save match/ranking information to season table
+		Else:
+			Save match list to LiveMatch table
+	For each team in Teams_denorm:
+		Save this event's skills to team-specific data
+		Save this event's awards to team-specific data
+		Get list of events the team has participated in from RE
+		For each event:
+			If event exists in the table and Event.StatsRequested is true:
+				Do nothing, this event is already loading (or has loaded)
+			Else:
+				Save event if needed
+				Set StatsRequested to true
+				Start at the top of this method and pass in the EventID of the current event
+					Don't want to make a recursive lambda call in case TeamStats_Season doesn't load right for two teams that have an event here
+	Wait until all teams' events are loaded (may need an exponential backoff of some kind here)
+	For each team in Teams_denorm:
+		If the team is in TeamStats_Season table:
+			If TeamStats_Season.EventsIncluded includes this event ID:
+				Do nothing
+			Else:
+				Add to the TeamStats_Season.Stats object with info from this event
+				Add this event ID to TeamStats_Season.EventsIncluded
+		If this is a requested event and the team is not in TeamStats_CurrentEvent:
+			Add team to TeamStats_CurrentEvent, populating CompiledStats and EventStats object
+	Set Event.StatsReady = true

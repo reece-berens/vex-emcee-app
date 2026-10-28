@@ -34,9 +34,9 @@ namespace VEXEmcee.API.Lambda
 			}
 			else
 			{
-				if (apiRequest.QueryStringParameters.TryGetValue("matchID", out string matchParam) && int.TryParse(matchParam, out int matchInt))
+				if (apiRequest.QueryStringParameters.TryGetValue("matchKey", out string matchParam))
 				{
-					vexEmceeRequest.MatchID = matchInt;
+					vexEmceeRequest.MatchKey = matchParam;
 				}
 
 				vexEmceeResponse = await PublicMethods.GetMatchInfo(vexEmceeRequest);

@@ -10,7 +10,7 @@ namespace VEXEmcee.DB.Dynamo.Definitions
 	public class LiveMatch
 	{
 		[DynamoDBHashKey]
-		public int ID { get; set; }
+		public string CompositeKey { get; set; }
 		[DynamoDBRangeKey]
 		public int EventID { get; set; }
 		public int DivisionID { get; set; }
@@ -20,8 +20,6 @@ namespace VEXEmcee.DB.Dynamo.Definitions
 		public string RoundString { get; set; }
 		public int Instance { get; set; }
 		public int MatchNumber { get; set; }
-		public DateTime? Scheduled { get; set; }
-		public DateTime? Started { get; set; }
 		public string Field { get; set; }
 		public bool ScoreFinalized { get; set; }
 		public string Name { get; set; }

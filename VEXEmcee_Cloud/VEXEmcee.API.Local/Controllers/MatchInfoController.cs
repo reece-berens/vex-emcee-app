@@ -10,11 +10,11 @@ namespace VEXEmcee.API.Local.Controllers
 	public class MatchInfoController : ControllerBase
 	{
 		[HttpGet("getmatchinfo")]
-		public async Task<IActionResult> GetMatchInfo([FromQuery] string sessionID, [FromQuery] int matchID)
+		public async Task<IActionResult> GetMatchInfo([FromQuery] string sessionID, [FromQuery] string matchKey)
 		{
 			GetMatchInfoRequest request = new()
 			{
-				MatchID = matchID,
+				MatchKey = matchKey,
 				Session = sessionID
 			};
 

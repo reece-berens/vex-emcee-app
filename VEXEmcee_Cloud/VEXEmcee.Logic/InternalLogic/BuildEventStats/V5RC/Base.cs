@@ -174,6 +174,7 @@ namespace VEXEmcee.Logic.InternalLogic.BuildEventStats.V5RC
 					List<DenormData> dataToUpdate = [teamEventStats.EventStats.DenormData, teamEventStats.CompiledStats.DenormData];
 					foreach (DenormData data in dataToUpdate)
 					{
+						data.AllMatches.MatchCount = data.QualiMatches.MatchCount + data.ElimMatches.MatchCount;
 						data.AllMatches.WinPercentage = (data.AllMatches.Win + (0.5 * data.AllMatches.Tie)) / ((double)Math.Max(1, data.AllMatches.MatchCount));
 						data.AllMatches.PointsForAvg = data.AllMatches.PointsForTotal / (double)Math.Max(1, data.AllMatches.MatchCount);
 						data.AllMatches.PointsAgainstAvg = data.AllMatches.PointsAgainstTotal / (double)Math.Max(1, data.AllMatches.MatchCount);

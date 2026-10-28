@@ -28,7 +28,7 @@ namespace RE.API
 
 			try
 			{
-				await Task.Delay(Random.Shared.Next(1250, 2000)); //being a good steward of the API and not hitting it too fast
+				await Task.Delay(Random.Shared.Next(1250, 3000)); //being a good steward of the API and not hitting it too fast
 				HttpRequestMessage request = new()
 				{
 					Method = HttpMethod.Get,

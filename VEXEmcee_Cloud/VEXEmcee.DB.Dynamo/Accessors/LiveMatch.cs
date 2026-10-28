@@ -1,4 +1,5 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
+using RE.Objects;
 using System.Reflection;
 using VEXEmcee.Objects.Exceptions;
 
@@ -62,12 +63,12 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 			}
 		}
 
-		public static async Task<Definitions.LiveMatch> GetByMatchID(int matchID, int eventID)
+		public static async Task<Definitions.LiveMatch> GetByMatchID(string matchKey, int eventID)
 		{
 			try
 			{
 				await Common.ValidateTable<Definitions.Team>();
-				Definitions.LiveMatch match = await Dynamo.Context.LoadAsync<Definitions.LiveMatch>(matchID, eventID);
+				Definitions.LiveMatch match = await Dynamo.Context.LoadAsync<Definitions.LiveMatch>(matchKey, eventID);
 				if (match != null)
 				{
 					//manually populate the Round
@@ -106,6 +107,7 @@ namespace VEXEmcee.DB.Dynamo.Accessors
 				await Common.ValidateTable<Definitions.LiveMatch>();
 				//ensure the RoundString property is set correctly
 				team.RoundString = team.Round.ToString();
+				team.CompositeKey = $"{team.EventID}~{team.DivisionID}~{team.RoundString}~{team.Instance}~{team.MatchNumber}";
 				//update the LastUpdated property
 				team.LastUpdated = DateTime.UtcNow;
 				await Dynamo.Context.SaveAsync(team);

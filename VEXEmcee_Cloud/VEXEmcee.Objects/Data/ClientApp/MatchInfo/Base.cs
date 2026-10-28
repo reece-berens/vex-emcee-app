@@ -22,7 +22,7 @@ namespace VEXEmcee.Objects.Data.ClientApp.MatchInfo
 		public int MatchRound { get; set; }
 		
 		public bool Scored { get; set; }
-		public int? NextMatchID { get; set; }
-		public int? PreviousMatchID { get; set; }
+		public string NextMatchKey { get; set; }
+		public string PreviousMatchKey { get; set; }
 	}
 }
