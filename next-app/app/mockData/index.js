@@ -3,8 +3,6 @@
  *
  * Provides fake teams and matches data for development/testing
  * when real API events are unavailable.
- *
- * Used by serverConnector/demo.ts when NEXT_PUBLIC_DATA_SOURCE is "demo" (the default).
  */
 
 // ============================================

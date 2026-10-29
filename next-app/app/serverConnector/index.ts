@@ -14,7 +14,7 @@ const source = DATA_SOURCE === "live" ? live : demo;
 // Named before exporting, so stack traces and React DevTools show a real name
 // (this is what the import/no-anonymous-default-export lint rule asks for)
 const ServerConnector = {
-	// The home page imports these two directly; step 2.3 gives them demo versions
+	// The home page imports these two directly
 	GetEventList,
 	RegisterEventDivision,
 	// GetProgramList,

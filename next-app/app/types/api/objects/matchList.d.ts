@@ -7,6 +7,9 @@ namespace VEXEmcee {
                     MatchName: string;
                     SortOrder: number;
                     Scored: boolean;
+                    // Optional ISO date-times. The sample data sets them and the matches page shows the time when present
+                    Scheduled?: string;
+                    Started?: string;
                 }
 
                 interface V5RC extends Base {
