@@ -14,6 +14,9 @@
 	z-index: 300;
 	background: var(--background-color1);
 	overflow-y: auto;
+	scrollbar-gutter: stable both-edges;
+	scrollbar-width: thin;
+	scrollbar-color: var(--ui-purple) transparent;
 }
 
 /* ============================================
@@ -24,6 +27,9 @@
 	position: sticky;
 	top: 0;
 	z-index: 10;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 	padding: var(--space-lg);
 	padding-bottom: var(--space-xl);
 }

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import ServerConnector from "../../serverConnector";
 import Accordion from "../../components/Accordion";
+import SampleDataNotice from "../../components/SampleDataNotice";
 import styles from "./MatchDetails.module.css";
 
 /**
@@ -449,6 +450,7 @@ export default function MatchDetail() {
 						/>
 					</svg>
 				</button>
+				<SampleDataNotice placement="inline" />
 			</div>
 
 			{/* Scrollable content area */}

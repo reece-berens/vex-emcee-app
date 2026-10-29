@@ -384,6 +384,13 @@ p {
 	flex: 1 1 0;
 	min-width: 0;
 	overflow-y: auto;
+
+	/* Space for the scrollbar is always reserved on both sides, so content
+	   never shifts when it appears and the content column stays centered.
+	   Phones use overlay scrollbars, which take no space. */
+	scrollbar-gutter: stable both-edges;
+	scrollbar-width: thin;
+	scrollbar-color: var(--ui-purple-light) transparent;
 }
 
 /**

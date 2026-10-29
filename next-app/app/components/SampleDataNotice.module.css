@@ -1,0 +1,54 @@
+/**
+ * SampleDataNotice Styles
+ *
+ * Solid light background with the main text color (about 12:1 contrast),
+ * so the small text stays readable over the gradient behind it.
+ */
+
+/**
+ * Page placement: a sticky row the height of the scroll header (54px),
+ * pulled back out of the layout with a matching negative margin so it takes no space.
+ * Sticky positions inside the scroll box, so the right edge stops at the scrollbar.
+ * z-index 150: above the scroll header (100).
+ */
+.anchor {
+	position: sticky;
+	top: 0;
+	z-index: 150;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	height: 54px;
+	flex-shrink: 0; /* The scroll area is a flex column, so without this a long page squashes the row */
+	margin-bottom: -54px;
+	padding-inline: var(--space-lg);
+	pointer-events: none; /* A label only, so it never blocks taps on what's underneath */
+}
+
+.notice {
+	margin: 0;
+	padding: var(--space-xs) var(--space-md);
+	font-size: var(--font-size-xs);
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	white-space: nowrap;
+	color: var(--text-color);
+	background: var(--background-color3);
+	border: 1px solid var(--primary-color-transparent);
+	border-radius: var(--border-radius-pill);
+	box-shadow: var(--shadow-default);
+	pointer-events: none;
+}
+
+/**
+ * ", made-up teams" only fits beside the centered header title on wider screens.
+ */
+.detail {
+	display: none;
+}
+
+@media (min-width: 600px) {
+	.detail {
+		display: inline;
+	}
+}

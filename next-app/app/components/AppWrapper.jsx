@@ -35,6 +35,7 @@
 import { useRef, useState, useEffect, createContext, useContext } from "react";
 import { usePathname } from "next/navigation";
 import Header from "./Header";
+import SampleDataNotice from "./SampleDataNotice";
 
 // ============================================
 // CONTEXT DEFINITIONS
@@ -131,6 +132,8 @@ export default function AppWrapper({ children, footer }) {
 	/** Pathname and isHomePage constants to track if we are on the home page or not */
 	const pathname = usePathname();
 	const isHomePage = pathname === "/";
+	/** Match and team screens cover the page and show the sample data pill in their own top bar */
+	const isDetailPage = pathname.startsWith("/match/") || pathname.startsWith("/team/");
 
 	/** Way for the navbar to tell the current page to "refresh your data" */
 	const [refreshKey, setRefreshKey] = useState(0);
@@ -274,6 +277,7 @@ export default function AppWrapper({ children, footer }) {
 							ref={scrollContainerRef}
 							className="scroll-wrapper"
 						>
+							{!isDetailPage && <SampleDataNotice />}
 							{!isHomePage && <Header scrollY={scrollY} />}
 							{children}
 						</div>

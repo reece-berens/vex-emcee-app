@@ -21,6 +21,14 @@
 	padding-top: var(--space-lg);
 }
 
+/** Short note under the title when running on sample data */
+.demoNote {
+	margin: 0 0 var(--space-lg);
+	font-size: var(--font-size);
+	font-weight: 500;
+	line-height: 1.4;
+}
+
 /* ============================================
    FORM FIELDS
    ============================================ */

@@ -23,6 +23,7 @@ import LoadingOverlay from "./components/LoadingOverlay";
 import { useSetPageTitle, useSetEventRegistered, useEventFilters, useSetEventFilters } from "./components/AppWrapper";
 import { useRouter } from "next/navigation";
 import ServerConnector from "./serverConnector";
+import { DATA_SOURCE } from "./serverConnector/dataSource";
 
 export default function Home() {
 	// Global state from AppWrapper
@@ -104,6 +105,12 @@ export default function Home() {
 					<h1 className={`text-hero heading-primary text-white ${styles.heroText}`}>
 						Find Your VEX Tournament
 					</h1>
+					{DATA_SOURCE === "demo" && (
+						<p className={`text-white ${styles.demoNote}`}>
+							This demo uses a made-up tournament: choose V5RC to find it. At a real event, the app shows
+							live results.
+						</p>
+					)}
 
 					<section className="cardback bg-transparent">
 						<div

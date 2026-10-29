@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import ServerConnector from "../../serverConnector";
 import Accordion from "../../components/Accordion";
+import SampleDataNotice from "../../components/SampleDataNotice";
 import styles from "./TeamDetails.module.css";
 
 /**
@@ -229,6 +230,7 @@ export default function TeamDetail() {
 						/>
 					</svg>
 				</button>
+				<SampleDataNotice placement="inline" />
 			</div>
 
 			{/* Scrollable content area */}
