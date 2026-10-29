@@ -4,11 +4,8 @@
  * Provides fake teams and matches data for development/testing
  * when real API events are unavailable.
  *
- * To enable: set USE_MOCK_DATA = true
- * To disable: set USE_MOCK_DATA = false
+ * Used by serverConnector/demo.ts when NEXT_PUBLIC_DATA_SOURCE is "demo" (the default).
  */
-
-export const USE_MOCK_DATA = false;
 
 // ============================================
 // MOCK TEAMS
