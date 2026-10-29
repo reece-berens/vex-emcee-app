@@ -1,8 +1,11 @@
 /**
  * Live data source: the real VEX Emcee API connectors, grouped in one object.
  */
+import GetEventListReal from "./eventList";
 import GetMatchInfoReal from "./matchInfo";
 import GetMatchListReal from "./matchList";
+import { getPrograms } from "./programs";
+import RegisterEventDivisionReal from "./registerEventDivision";
 import GetTeamInfoReal from "./teamInfo";
 import GetTeamListReal from "./teamList";
 import type { DataSourceFunctions } from "./types";
@@ -27,10 +30,20 @@ const requireBaseUrl = <Req, Res extends VEXEmcee.API.Responses.BaseResponse>(
 };
 
 const live: DataSourceFunctions = {
+	GetEventList: requireBaseUrl(GetEventListReal),
 	GetMatchInfo: requireBaseUrl(GetMatchInfoReal),
 	GetMatchList: requireBaseUrl(GetMatchListReal),
+	// getPrograms reports errors as { success, error }, which is what the program dropdown reads
+	GetPrograms: async () => {
+		if (!hasBaseUrl) {
+			console.error(MISSING_URL_MESSAGE);
+			return { success: false, error: MISSING_URL_MESSAGE };
+		}
+		return getPrograms();
+	},
 	GetTeamInfo: requireBaseUrl(GetTeamInfoReal),
 	GetTeamList: requireBaseUrl(GetTeamListReal),
+	RegisterEventDivision: requireBaseUrl(RegisterEventDivisionReal),
 };
 
 export default live;

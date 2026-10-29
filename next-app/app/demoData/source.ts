@@ -51,7 +51,12 @@ export interface DemoMatch {
 }
 
 export const EVENT_ID = 99001;
+export const EVENT_NAME = "Kansas V5RC Tournament";
+export const EVENT_SKU = "RE-V5RC-26-9901";
+export const EVENT_REGION = "Kansas";
 export const DIVISION_ID = 1;
+export const DIVISION_NAME = "Division 1";
+export const PROGRAM_ID = 1;
 export const PROGRAM_ABBREVIATION = "V5RC";
 
 /** The match that has started but isn't scored yet */

@@ -22,9 +22,7 @@ import ApiDropdown from "./components/ApiDropdown";
 import LoadingOverlay from "./components/LoadingOverlay";
 import { useSetPageTitle, useSetEventRegistered, useEventFilters, useSetEventFilters } from "./components/AppWrapper";
 import { useRouter } from "next/navigation";
-import { getPrograms } from "./serverConnector/programs";
-import GetEventList from "./serverConnector/eventList";
-import RegisterEventDivision from "./serverConnector/registerEventDivision";
+import ServerConnector from "./serverConnector";
 
 export default function Home() {
 	// Global state from AppWrapper
@@ -82,7 +80,7 @@ export default function Home() {
 	const handleContinue = async () => {
 		setIsRegistering(true);
 
-		const result = await RegisterEventDivision({
+		const result = await ServerConnector.RegisterEventDivision({
 			EventID: filters.event,
 			DivisionID: filters.division,
 		});
@@ -121,7 +119,7 @@ export default function Home() {
 
 								{/* Program dropdown - fetches from API */}
 								<ApiDropdown
-									fetchFunction={getPrograms}
+									fetchFunction={ServerConnector.GetPrograms}
 									dataField="programs"
 									placeholder="Select Program..."
 									value={filters.program}
@@ -182,7 +180,7 @@ export default function Home() {
 									key={filters.fetchKey}
 									enabled={filters.fetchKey > 0}
 									fetchFunction={() =>
-										GetEventList({
+										ServerConnector.GetEventList({
 											ProgramID: filters.program || undefined,
 											Region: filters.region || undefined,
 										})

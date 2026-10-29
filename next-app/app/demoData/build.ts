@@ -12,11 +12,16 @@ import {
 	DEMO_MATCHES,
 	DEMO_TEAMS,
 	DIVISION_ID,
+	DIVISION_NAME,
 	EVENT_ID,
+	EVENT_NAME,
+	EVENT_REGION,
+	EVENT_SKU,
 	FIRST_MATCH_HOUR,
 	IN_PROGRESS_MATCH,
 	MINUTES_BETWEEN_MATCHES,
 	PROGRAM_ABBREVIATION,
+	PROGRAM_ID,
 } from "./source";
 import type { AllianceColor, DemoMatch, DemoTeam, WinLossTie } from "./source";
 
@@ -352,6 +357,58 @@ const matchTeam = (teamNumber: string, color: AllianceColor): VEXEmcee.API.Objec
 // ============================================
 
 const success = { Success: true, ErrorMessage: null, EventStatsLoading: false, ProgramAbbreviation: PROGRAM_ABBREVIATION };
+
+/** Same shape as serverConnector/programs.ts returns */
+export const buildPrograms = () => ({
+	success: true,
+	programs: [{ ID: PROGRAM_ID, Name: PROGRAM_ABBREVIATION }],
+});
+
+/** Today's date as YYYY-MM-DD, in local time to match the match schedule */
+const todayDate = (): string => {
+	const today = new Date();
+	const month = String(today.getMonth() + 1).padStart(2, "0");
+	const day = String(today.getDate()).padStart(2, "0");
+	return `${today.getFullYear()}-${month}-${day}`;
+};
+
+/** The one sample event, shown when the filters would match it */
+export const buildEventList = (
+	request: VEXEmcee.API.Requests.GetREEventListRequest,
+): VEXEmcee.API.Responses.GetREEventListResponse => {
+	const programMatches = !request.ProgramID || Number(request.ProgramID) === PROGRAM_ID;
+	const regionMatches = !request.Region || request.Region.toLowerCase() === EVENT_REGION.toLowerCase();
+	const skuMatches = !request.SKU || request.SKU === EVENT_SKU;
+	const events: VEXEmcee.API.Objects.REEvent[] =
+		programMatches && regionMatches && skuMatches
+			? [
+					{
+						ID: EVENT_ID,
+						Name: EVENT_NAME,
+						SKU: EVENT_SKU,
+						StartDate: todayDate(),
+						Divisions: [{ ID: DIVISION_ID, Name: DIVISION_NAME }],
+					},
+				]
+			: [];
+
+	return {
+		Success: true,
+		ErrorMessage: null,
+		Events: events,
+		PageSize: request.PageSize ?? events.length,
+		TotalCount: events.length,
+	};
+};
+
+export const buildRegisterEventDivision = (
+	request: VEXEmcee.API.Requests.RegisterSessionEventDivisionRequest,
+): VEXEmcee.API.Responses.RegisterSessionEventDivisionResponse => {
+	if (Number(request.EventID) === EVENT_ID && Number(request.DivisionID) === DIVISION_ID) {
+		return { Success: true, ErrorMessage: null };
+	}
+	return { Success: false, ErrorMessage: "The specified event or division does not exist." };
+};
 
 export const buildTeamList = (): VEXEmcee.API.Responses.GetTeamListResponse<VEXEmcee.API.Objects.TeamList.V5RC> => ({
 	...success,

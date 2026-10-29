@@ -1,6 +1,3 @@
-import GetEventList from "./eventList";
-// import GetProgramList from "./programs"
-import RegisterEventDivision from "./registerEventDivision";
 // import RegisterNewSession from "./session"
 
 import { DATA_SOURCE } from "./dataSource";
@@ -14,13 +11,12 @@ const source = DATA_SOURCE === "live" ? live : demo;
 // Named before exporting, so stack traces and React DevTools show a real name
 // (this is what the import/no-anonymous-default-export lint rule asks for)
 const ServerConnector = {
-	// The home page imports these two directly
-	GetEventList,
-	RegisterEventDivision,
-	// GetProgramList,
-	// RegisterNewSession,
+	GetEventList: source.GetEventList,
 	GetMatchInfo: source.GetMatchInfo,
 	GetMatchList: source.GetMatchList,
+	GetPrograms: source.GetPrograms,
+	// RegisterNewSession,
+	RegisterEventDivision: source.RegisterEventDivision,
 	GetTeamInfo: source.GetTeamInfo,
 	GetTeamList: source.GetTeamList,
 };
