@@ -4,132 +4,8 @@ import { useRouter, useParams } from "next/navigation";
 import ServerConnector from "../../serverConnector";
 import Accordion from "../../components/Accordion";
 import SampleDataNotice from "../../components/SampleDataNotice";
+import { pickHighlights } from "../../lib/highlights";
 import styles from "./MatchDetails.module.css";
-
-/**
- * Stat extractors - each returns { label, value } or null if not available/meaningful
- * These pull "highlightsable" stats from team data for the emcee
- */
-const statExtractors = [
-	// Win rate from This Event
-	(team) => {
-		const thisEvent = team.Stats?.find((s) => s.Name === "This Event");
-		const wlt = thisEvent?.Display?.find((d) => d.SectionLabel.includes("Overall WLT"));
-		const pctMatch = wlt?.SectionData?.[1]?.match(/([\d.]+)%/);
-		if (!pctMatch || parseFloat(pctMatch[1]) === 0) return null;
-		return { label: "Win Rate", value: `${pctMatch[1]}%` };
-	},
-	// Qualifications Ranking
-	(team) => {
-		const thisEvent = team.Stats?.find((s) => s.Name === "This Event");
-		const rank = thisEvent?.Display?.find((d) => d.SectionLabel.includes("Ranking"));
-		const rankMatch = rank?.SectionData?.[0]?.match(/#(\d+)/);
-		if (!rankMatch) return null;
-		return { label: "Qual Rank", value: `#${rankMatch[1]}` };
-	},
-	// Driver Skills high score
-	(team) => {
-		const thisEvent = team.Stats?.find((s) => s.Name === "This Event");
-		const skills = thisEvent?.Display?.find((d) => d.SectionLabel === "Skills");
-		const driverMatch = skills?.SectionData?.[0]?.match(/Driver:.*?(\d+)\s*high score/i);
-		if (!driverMatch || parseInt(driverMatch[1]) === 0) return null;
-		return { label: "Driver Skills", value: driverMatch[1] };
-	},
-	// Programming Skills high score
-	(team) => {
-		const thisEvent = team.Stats?.find((s) => s.Name === "This Event");
-		const skills = thisEvent?.Display?.find((d) => d.SectionLabel === "Skills");
-		const progMatch = skills?.SectionData?.[1]?.match(/Programming:.*?(\d+)\s*high score/i);
-		if (!progMatch || parseInt(progMatch[1]) === 0) return null;
-		return { label: "Prog Skills", value: progMatch[1] };
-	},
-	// Average points per match
-	(team) => {
-		const thisEvent = team.Stats?.find((s) => s.Name === "This Event");
-		const points = thisEvent?.Display?.find((d) => d.SectionLabel === "Points Scored");
-		const avgMatch = points?.SectionData?.[1]?.match(/([\d.]+)\s*points/i);
-		if (!avgMatch || parseFloat(avgMatch[1]) === 0) return null;
-		return { label: "Avg Points", value: avgMatch[1] };
-	},
-	// Total points scored
-	(team) => {
-		const thisEvent = team.Stats?.find((s) => s.Name === "This Event");
-		const points = thisEvent?.Display?.find((d) => d.SectionLabel === "Points Scored");
-		const totalMatch = points?.SectionData?.[0]?.match(/([\d.]+)\s*points/i);
-		if (!totalMatch || parseFloat(totalMatch[1]) === 0) return null;
-		return { label: "Total Points", value: totalMatch[1] };
-	},
-	// Season win rate
-	(team) => {
-		const season = team.Stats?.find((s) => s.Name === "Season Stats Entering This Tournament");
-		const wlt = season?.Display?.find((d) => d.SectionLabel === "WLT");
-		const allMatch = wlt?.SectionData?.[0]?.match(/All Matches:.*?([\d.]+)%/);
-		if (!allMatch || parseFloat(allMatch[1]) === 0) return null;
-		return { label: "Season Win%", value: `${allMatch[1]}%` };
-	},
-	// Season awards
-	(team) => {
-		const season = team.Stats?.find((s) => s.Name === "Season Stats Entering This Tournament");
-		const awards = season?.Display?.find((d) => d.SectionLabel === "Awards");
-		const totalMatch = awards?.SectionData?.[0]?.match(/(\d+)\s*Total/i);
-		if (!totalMatch || parseInt(totalMatch[1]) === 0) return null;
-		const count = totalMatch[1];
-		return { label: "Awards", value: `${count}` };
-	},
-	// Elimination record from season
-	(team) => {
-		const season = team.Stats?.find((s) => s.Name === "Season Stats Entering This Tournament");
-		const wlt = season?.Display?.find((d) => d.SectionLabel === "WLT");
-		const elimMatch = wlt?.SectionData?.[2]?.match(/Elimination.*?(\d+-\d+-\d+)/);
-		if (!elimMatch) return null;
-		const [w] = elimMatch[1].split("-").map(Number);
-		if (w === 0) return null;
-		return { label: "Elim Record", value: elimMatch[1] };
-	},
-];
-
-/**
- * Pick random stats for a team
- * Returns array of 2 stat objects { label, value }
- */
-function getRandomStats(team, count = 2) {
-	// Handle missing data
-	if (!team || !team.Stats) {
-		return [
-			{ label: "Record", value: "—" },
-			{ label: "Avg Pts", value: "—" },
-		];
-	}
-
-	// Get all available stats for this team
-	const available = statExtractors
-		.map((extractor) => {
-			try {
-				return extractor(team);
-			} catch {
-				return null;
-			}
-		})
-		.filter((stat) => stat !== null);
-
-	if (available.length === 0) {
-		return [
-			{ label: "Record", value: "—" },
-			{ label: "Avg Pts", value: "—" },
-		];
-	}
-
-	// Shuffle and pick
-	const shuffled = [...available].sort(() => Math.random() - 0.5);
-	const picked = shuffled.slice(0, Math.min(count, shuffled.length));
-
-	// Pad with placeholder if we only got 1
-	while (picked.length < count) {
-		picked.push({ label: "—", value: "—" });
-	}
-
-	return picked;
-}
 
 /**
  * Extract summary stats from team's "This Event" data
@@ -402,7 +278,7 @@ export default function MatchDetail() {
 				const allTeams = [...result.MatchInfo.Red.Teams, ...result.MatchInfo.Blue.Teams];
 				const statsMap = {};
 				allTeams.forEach((team) => {
-					statsMap[team.ID] = getRandomStats(team, 2);
+					statsMap[team.ID] = pickHighlights(team);
 				});
 				setTeamRandomStats(statsMap);
 			} else {
