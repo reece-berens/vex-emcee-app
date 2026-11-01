@@ -5,6 +5,7 @@ import ServerConnector from "../../serverConnector";
 import Accordion from "../../components/Accordion";
 import SampleDataNotice from "../../components/SampleDataNotice";
 import { pickHighlights } from "../../lib/highlights";
+import { parsePercent, parsePoints, parseRecord } from "../../lib/statText";
 import styles from "./MatchDetails.module.css";
 
 /**
@@ -19,41 +20,14 @@ function getTeamSummary(team) {
 
 	for (const item of thisEvent.Display) {
 		if (item.SectionLabel.includes("Overall WLT")) {
-			const match = item.SectionData[0]?.match(/(\d+-\d+-\d+)/);
-			if (match) record = match[1];
+			record = parseRecord(item.SectionData[0]) ?? record;
 		}
 		if (item.SectionLabel === "Points Scored") {
-			const avgMatch = item.SectionData[1]?.match(/([\d.]+)\s*points/);
-			if (avgMatch) avgPoints = avgMatch[1];
+			avgPoints = parsePoints(item.SectionData[1]) ?? avgPoints;
 		}
 	}
 
 	return { record, avgPoints };
-}
-
-/**
- * Parse W-L-T record string like "6-3-0" or "3-2-0 - 5 Total"
- */
-function parseRecord(str) {
-	const match = str?.match(/^(\d+)-(\d+)-(\d+)/);
-	if (!match) return null;
-	return `${match[1]}-${match[2]}-${match[3]}`;
-}
-
-/**
- * Parse win percentage like "66.7% Win Pct." or "66.7% Win Rate"
- */
-function parseWinPct(str) {
-	const match = str?.match(/([\d.]+)%/);
-	return match ? `${match[1]}%` : null;
-}
-
-/**
- * Parse points string like "Total: 386 points" or "Average per match: 42.9 points"
- */
-function parsePoints(str) {
-	const match = str?.match(/([\d.]+)\s*points?/i);
-	return match ? match[1] : null;
 }
 
 /**
@@ -132,7 +106,7 @@ function renderStatSections(displayItems, summaryRecord, allianceColor) {
 			}
 
 			const record = parseRecord(first);
-			const winPct = parseWinPct(second);
+			const winPct = parsePercent(second);
 
 			// Skip if identical to summary record and no extra info
 			if (label.includes("Overall") && record === summaryRecord && !winPct) {
@@ -143,7 +117,7 @@ function renderStatSections(displayItems, summaryRecord, allianceColor) {
 			const matchCount = first.match(/(\d+)\s*Total/i);
 			const secondaryParts = [];
 			if (matchCount) secondaryParts.push(`${matchCount[1]} matches`);
-			if (winPct) secondaryParts.push(`${winPct} win rate`);
+			if (winPct) secondaryParts.push(`${winPct}% win rate`);
 
 			const subheaderClass = isAllianceStat
 				? `${styles.subheader} ${allianceColor === "red" ? styles.subheaderRed : styles.subheaderBlue}`

@@ -9,6 +9,8 @@
  * the same order every run. The page uses the default, Math.random.
  */
 
+import { parsePercent, parsePoints, parseRecord } from "./statText";
+
 type Team = VEXEmcee.API.Objects.MatchInfo.V5RCTeam;
 type Section = VEXEmcee.API.Objects.Display.SectionHeader;
 type SectionDisplay = VEXEmcee.API.Objects.Display.SectionDisplay;
@@ -35,46 +37,52 @@ const findSection = (team: Team, name: string): Section | undefined => team.Stat
 const findDisplay = (section: Section | undefined, isMatch: (label: string) => boolean): SectionDisplay | undefined =>
 	section?.Display?.find((display) => isMatch(display.SectionLabel));
 
-/** Runs a regex on one line of a display and returns the first captured group */
-const capture = (display: SectionDisplay | undefined, line: number, pattern: RegExp): string | undefined =>
-	display?.SectionData?.[line]?.match(pattern)?.[1];
+/** One line of a display's SectionData, if it's there */
+const lineOf = (display: SectionDisplay | undefined, index: number): string | undefined => display?.SectionData?.[index];
+
+/** The line only counts when it starts with the expected label, like "All Matches:" */
+const lineStartingWith = (display: SectionDisplay | undefined, index: number, prefix: string): string | undefined => {
+	const line = lineOf(display, index);
+	return line?.startsWith(prefix) ? line : undefined;
+};
 
 /** Treats a missing or zero number as nothing to say */
-const nonZero = (value: string | undefined): value is string => value !== undefined && parseFloat(value) !== 0;
+const nonZero = (value: string | null | undefined): value is string =>
+	value !== null && value !== undefined && parseFloat(value) !== 0;
 
 const winRate: Extractor = (team) => {
 	const wlt = findDisplay(findSection(team, THIS_EVENT), (label) => label.includes("Overall WLT"));
-	const percent = capture(wlt, 1, /([\d.]+)%/);
+	const percent = parsePercent(lineOf(wlt, 1));
 	return nonZero(percent) ? { label: "Win Rate", value: `${percent}%` } : null;
 };
 
 const averagePoints: Extractor = (team) => {
 	const points = findDisplay(findSection(team, THIS_EVENT), (label) => label === "Points Scored");
-	const average = capture(points, 1, /([\d.]+)\s*points/i);
+	const average = parsePoints(lineOf(points, 1));
 	return nonZero(average) ? { label: "Avg Points", value: average } : null;
 };
 
 const totalPoints: Extractor = (team) => {
 	const points = findDisplay(findSection(team, THIS_EVENT), (label) => label === "Points Scored");
-	const total = capture(points, 0, /([\d.]+)\s*points/i);
+	const total = parsePoints(lineOf(points, 0));
 	return nonZero(total) ? { label: "Total Points", value: total } : null;
 };
 
 const seasonWinRate: Extractor = (team) => {
 	const wlt = findDisplay(findSection(team, SEASON), (label) => label === "WLT");
-	const percent = capture(wlt, 0, /All Matches:.*?([\d.]+)%/);
+	const percent = parsePercent(lineStartingWith(wlt, 0, "All Matches:"));
 	return nonZero(percent) ? { label: "Season Win%", value: `${percent}%` } : null;
 };
 
 const seasonAwards: Extractor = (team) => {
 	const awards = findDisplay(findSection(team, SEASON), (label) => label === "Awards");
-	const count = capture(awards, 0, /(\d+)\s*Total/i);
+	const count = lineOf(awards, 0)?.match(/(\d+)\s*Total/i)?.[1];
 	return nonZero(count) ? { label: "Awards", value: count } : null;
 };
 
 const eliminationRecord: Extractor = (team) => {
 	const wlt = findDisplay(findSection(team, SEASON), (label) => label === "WLT");
-	const record = capture(wlt, 2, /Elimination.*?(\d+-\d+-\d+)/);
+	const record = parseRecord(lineStartingWith(wlt, 2, "Elimination"));
 	if (!record) return null;
 	const wins = Number(record.split("-")[0]);
 	return wins === 0 ? null : { label: "Elim Record", value: record };

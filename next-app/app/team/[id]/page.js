@@ -4,26 +4,8 @@ import { useRouter, useParams, useSearchParams } from "next/navigation";
 import ServerConnector from "../../serverConnector";
 import Accordion from "../../components/Accordion";
 import SampleDataNotice from "../../components/SampleDataNotice";
+import { parsePercent, parsePoints, parseRecord } from "../../lib/statText";
 import styles from "./TeamDetails.module.css";
-
-/**
- * Parse a stat value like "4-2-0" or "21-11-1" into W/L/T parts
- * Returns null if not a W-L-T format
- */
-function parseWLT(value) {
-	const match = value.match(/^(\d+)-(\d+)-(\d+)$/);
-	if (!match) return null;
-	return { wins: match[1], losses: match[2], ties: match[3] };
-}
-
-/**
- * Parse percentage like "66.7% Win Rate" into number and label
- */
-function parsePercentage(value) {
-	const match = value.match(/^([\d.]+)%\s*(.*)$/);
-	if (!match) return null;
-	return { percent: match[1], label: match[2] };
-}
 
 /**
  * Parse "Total: X WP - Y SP - Z AP" or "Average per match: X WP..." format
@@ -80,23 +62,21 @@ export default function TeamDetail() {
 		if (!firstValue.trim()) return null;
 
 		// Check if it's a W-L-T with percentage
-		const wlt = parseWLT(firstValue);
-		const pct = parsePercentage(secondValue);
+		const record = parseRecord(firstValue);
+		const percent = parsePercent(secondValue);
 
-		if (wlt && pct) {
+		if (record && percent) {
 			return (
 				<div key={item.SectionLabel}>
 					<div className={styles.subheader}>Record</div>
 					<div className={styles.statRow}>
 						<div className={styles.statCard}>
 							<span className={styles.statLabel}>W-L-T</span>
-							<span className={styles.statPrimary}>
-								{wlt.wins}-{wlt.losses}-{wlt.ties}
-							</span>
+							<span className={styles.statPrimary}>{record}</span>
 						</div>
 						<div className={styles.statCard}>
 							<span className={styles.statLabel}>Win Rate</span>
-							<span className={styles.statPrimary}>{pct.percent}%</span>
+							<span className={styles.statPrimary}>{percent}%</span>
 						</div>
 					</div>
 				</div>
@@ -156,10 +136,8 @@ export default function TeamDetail() {
 
 		// Check if it's Points Scored - parse out just the numbers
 		if (item.SectionLabel === "Points Scored") {
-			const totalMatch = firstValue.match(/([\d.]+)\s*points?/i);
-			const avgMatch = secondValue?.match(/([\d.]+)\s*points?/i);
-			const total = totalMatch ? totalMatch[1] : firstValue;
-			const avg = avgMatch ? avgMatch[1] : null;
+			const total = parsePoints(firstValue) ?? firstValue;
+			const avg = parsePoints(secondValue);
 
 			return (
 				<div key={item.SectionLabel}>
