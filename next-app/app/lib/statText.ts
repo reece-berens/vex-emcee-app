@@ -32,3 +32,25 @@ export function parsePercent(text: StatText): string | null {
 export function parsePoints(text: StatText): string | null {
 	return text?.match(/([\d.]+)\s*points?/i)?.[1] ?? null;
 }
+
+export type RankingPoints = { wp: string; sp: string; ap: string };
+
+/**
+ * Win, autonomous and strength points from a team info line.
+ * "Total: 4 WP - 159 SP - 24 AP" -> { wp: "4", sp: "159", ap: "24" }
+ */
+export function parseRankingPoints(text: StatText): RankingPoints | null {
+	const match = text?.match(/([\d.]+)\s*WP\s*-\s*([\d.]+)\s*SP\s*-\s*([\d.]+)\s*AP/);
+	return match ? { wp: match[1], sp: match[2], ap: match[3] } : null;
+}
+
+export type SkillsRun = { type: string; attempts: string; highScore: string };
+
+/**
+ * One kind of skills run from team info. Teams only get a line for the kinds they've done.
+ * "Driver: 3 attempts, 38 high score" -> { type: "Driver", attempts: "3", highScore: "38" }
+ */
+export function parseSkill(text: StatText): SkillsRun | null {
+	const match = text?.match(/^(Driver|Programming):\s*(\d+)\s*attempts?,\s*(\d+)\s*high score$/i);
+	return match ? { type: match[1], attempts: match[2], highScore: match[3] } : null;
+}

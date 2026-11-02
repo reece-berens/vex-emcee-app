@@ -4,26 +4,8 @@ import { useRouter, useParams, useSearchParams } from "next/navigation";
 import ServerConnector from "../../serverConnector";
 import Accordion from "../../components/Accordion";
 import SampleDataNotice from "../../components/SampleDataNotice";
-import { parsePercent, parsePoints, parseRecord } from "../../lib/statText";
+import { parsePercent, parsePoints, parseRankingPoints, parseRecord, parseSkill } from "../../lib/statText";
 import styles from "./TeamDetails.module.css";
-
-/**
- * Parse "Total: X WP - Y SP - Z AP" or "Average per match: X WP..." format
- */
-function parseWPSPAP(value) {
-	const match = value.match(/([\d.]+)\s*WP\s*-\s*([\d.]+)\s*SP\s*-\s*([\d.]+)\s*AP/);
-	if (!match) return null;
-	return { wp: match[1], sp: match[2], ap: match[3] };
-}
-
-/**
- * Parse skills data like "Driver: 3 attempts, 75 high score"
- */
-function parseSkill(value) {
-	const match = value.match(/^(Driver|Programming):\s*(\d+)\s*attempts?,\s*(\d+)\s*high score$/i);
-	if (!match) return null;
-	return { type: match[1], attempts: match[2], highScore: match[3] };
-}
 
 export default function TeamDetail() {
 	const { id } = useParams();
@@ -84,9 +66,9 @@ export default function TeamDetail() {
 		}
 
 		// Check if it's WP-SP-AP format (render as 3-col grid)
-		const wpspap = parseWPSPAP(firstValue);
+		const wpspap = parseRankingPoints(firstValue);
 		if (wpspap) {
-			const avgWpspap = item.SectionData[1] ? parseWPSPAP(item.SectionData[1]) : null;
+			const avgWpspap = item.SectionData[1] ? parseRankingPoints(item.SectionData[1]) : null;
 			return (
 				<div key={item.SectionLabel}>
 					<div className={styles.subheader}>Ranking Points</div>
@@ -111,24 +93,25 @@ export default function TeamDetail() {
 			);
 		}
 
-		// Check if it's Skills Results (Driver + Programming)
-		const skill1 = parseSkill(firstValue);
-		const skill2 = parseSkill(secondValue);
-		if (skill1 && skill2) {
+		// Check if it's Skills Results (Driver, Programming, or both)
+		const skills = item.SectionData.map((line) => parseSkill(line));
+		if (skills.every(Boolean)) {
 			return (
 				<div key={item.SectionLabel}>
 					<div className={styles.subheader}>Skills</div>
 					<div className={styles.statRow}>
-						<div className={styles.statCard}>
-							<span className={styles.statLabel}>{skill1.type}</span>
-							<span className={styles.statPrimary}>{skill1.highScore}</span>
-							<span className={styles.statSecondary}>{skill1.attempts} attempts</span>
-						</div>
-						<div className={styles.statCard}>
-							<span className={styles.statLabel}>{skill2.type}</span>
-							<span className={styles.statPrimary}>{skill2.highScore}</span>
-							<span className={styles.statSecondary}>{skill2.attempts} attempts</span>
-						</div>
+						{skills.map((skill) => (
+							<div
+								key={skill.type}
+								className={styles.statCard}
+							>
+								<span className={styles.statLabel}>{skill.type}</span>
+								<span className={styles.statPrimary}>{skill.highScore}</span>
+								<span className={styles.statSecondary}>
+									{skill.attempts} {skill.attempts === "1" ? "attempt" : "attempts"}
+								</span>
+							</div>
+						))}
 					</div>
 				</div>
 			);

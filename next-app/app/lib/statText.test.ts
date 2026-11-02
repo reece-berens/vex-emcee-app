@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { parsePercent, parsePoints, parseRecord } from "./statText";
+import { buildMatchInfo, buildTeamInfo, matchKey } from "../demoData/build";
+import { DEMO_MATCHES, DEMO_TEAMS } from "../demoData/source";
+import { parsePercent, parsePoints, parseRankingPoints, parseRecord, parseSkill } from "./statText";
 
 // Every input below is in the exact format master's C# sends (see demoData/build.ts)
 
@@ -65,5 +67,107 @@ describe("parsePoints", () => {
 		expect(parsePoints("Total: 4 WP - 159 SP - 24 AP")).toBeNull();
 		expect(parsePoints("")).toBeNull();
 		expect(parsePoints(undefined)).toBeNull();
+	});
+});
+
+describe("parseRankingPoints", () => {
+	it("reads the total and the average lines", () => {
+		expect(parseRankingPoints("Total: 4 WP - 159 SP - 24 AP")).toEqual({ wp: "4", sp: "159", ap: "24" });
+		expect(parseRankingPoints("Average per match: 1.3 WP - 53.0 SP - 8.0 AP")).toEqual({
+			wp: "1.3",
+			sp: "53.0",
+			ap: "8.0",
+		});
+	});
+
+	it("returns null for other lines", () => {
+		expect(parseRankingPoints("Total: 218 points")).toBeNull();
+		expect(parseRankingPoints(undefined)).toBeNull();
+	});
+});
+
+describe("parseSkill", () => {
+	it("reads both kinds of run", () => {
+		expect(parseSkill("Driver: 3 attempts, 38 high score")).toEqual({ type: "Driver", attempts: "3", highScore: "38" });
+		expect(parseSkill("Programming: 2 attempts, 24 high score")).toEqual({
+			type: "Programming",
+			attempts: "2",
+			highScore: "24",
+		});
+	});
+
+	it("reads one attempt, with or without the s", () => {
+		// The backend always writes "attempts"
+		expect(parseSkill("Driver: 1 attempts, 13 high score")?.attempts).toBe("1");
+		expect(parseSkill("Driver: 1 attempt, 13 high score")?.attempts).toBe("1");
+	});
+
+	it("returns null for other lines", () => {
+		expect(parseSkill("Total: 4 WP - 159 SP - 24 AP")).toBeNull();
+		expect(parseSkill("Autonomous: 2 attempts, 10 high score")).toBeNull();
+		expect(parseSkill(undefined)).toBeNull();
+	});
+});
+
+// Every line in the demo data, through the parser its page uses for that label
+type Sections = VEXEmcee.API.Objects.Display.SectionHeader[];
+type Rule = ((data: string[]) => boolean) | null;
+
+const recordAndPercent = (data: string[]) => parseRecord(data[0]) !== null && parsePercent(data[1]) !== null;
+const everyLine = (parse: (line: string) => unknown) => (data: string[]) => data.every((line) => parse(line) !== null);
+
+// null: shown as it comes, or read with its own regex in the page
+const TEAM_INFO_RULES: Record<string, Rule> = {
+	"Qualification W-L-T": recordAndPercent,
+	"W-L-T": recordAndPercent,
+	"Qualifications Ranking": null,
+	"WP-SP-AP": everyLine(parseRankingPoints),
+	"Skills Results": everyLine(parseSkill),
+	"Points Scored": everyLine(parsePoints),
+};
+
+const MATCH_INFO_RULES: Record<string, Rule> = {
+	"Overall WLT (Qualification + Elim.)": recordAndPercent,
+	"Qualification WLT": recordAndPercent,
+	"As Red Alliance WLT": recordAndPercent,
+	"As Blue Alliance WLT": recordAndPercent,
+	WLT: everyLine((line) => parseRecord(line) && parsePercent(line)),
+	"Points Scored": everyLine(parsePoints),
+	Awards: null,
+};
+
+/** One message per line that doesn't parse, or label with no rule */
+const findProblems = (owner: string, sections: Sections, rules: Record<string, Rule>): string[] =>
+	sections.flatMap((section) =>
+		section.Display.flatMap((display) => {
+			const rule = rules[display.SectionLabel];
+			if (rule === undefined) return [`${owner}: no rule for "${display.SectionLabel}"`];
+			if (rule === null || rule(display.SectionData)) return [];
+			return [`${owner}, ${display.SectionLabel}: ${JSON.stringify(display.SectionData)}`];
+		}),
+	);
+
+describe("every line in the demo data", () => {
+	it("parses on the team page", () => {
+		const problems = DEMO_TEAMS.flatMap((team) =>
+			findProblems(team.Number, buildTeamInfo(team.ID).TeamInfo.Sections, TEAM_INFO_RULES),
+		);
+		expect(problems).toEqual([]);
+	});
+
+	it("parses on the match page", () => {
+		const problems = DEMO_MATCHES.flatMap((match) => {
+			const info = buildMatchInfo(matchKey(match)).MatchInfo;
+			return [...info.Red.Teams, ...info.Blue.Teams].flatMap((team) =>
+				findProblems(`Q${match.MatchNumber} ${team.TeamNumber}`, team.Stats, MATCH_INFO_RULES),
+			);
+		});
+		expect(problems).toEqual([]);
+	});
+
+	it("still has a team with only one kind of skills run", () => {
+		const sections = buildTeamInfo(140101).TeamInfo.Sections; // 418R
+		const skills = sections[0].Display.find((display) => display.SectionLabel === "Skills Results");
+		expect(skills.SectionData).toEqual(["Driver: 3 attempts, 19 high score"]);
 	});
 });
