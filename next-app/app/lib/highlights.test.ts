@@ -29,6 +29,11 @@ const sequence = (...values: number[]): RandomFn => {
 };
 
 describe("availableHighlights with demo data", () => {
+	// 31170C in source.ts:
+	// - Q3 94-11 (win), Q12 70-42 (win), Q16 54-54 (tie): 2-0-1, win rate (2 + 0.5) / 3 = 83.3%
+	// - 94 + 70 + 54 = 218 points, 218 / 3 = 72.7 a match
+	// - season: quals 19-8-0 plus elims 6-4-0 = 25-12-0, 25 / 37 = 67.6%
+	// - 2 awards listed
 	it("reads every highlight for a team that has all of them", () => {
 		expect(availableHighlights(ironMeadowlarks)).toEqual([
 			{ label: "Win Rate", value: "83.3%" },
