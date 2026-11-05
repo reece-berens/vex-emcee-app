@@ -21,6 +21,7 @@ import { useState, useEffect, useCallback } from "react";
 import ApiDropdown from "./components/ApiDropdown";
 import LoadingOverlay from "./components/LoadingOverlay";
 import { useSetPageTitle, useSetEventRegistered, useEventFilters, useSetEventFilters } from "./components/AppWrapper";
+import type { EventFilters } from "./components/AppWrapper";
 import { useRouter } from "next/navigation";
 import ServerConnector from "./serverConnector";
 import { DATA_SOURCE } from "./serverConnector/dataSource";
@@ -36,9 +37,12 @@ export default function Home() {
 	const setFilters = useSetEventFilters();
 
 	// Helper to update a single filter field
-	const updateFilter = useCallback((field, value) => {
-		setFilters((prev) => ({ ...prev, [field]: value }));
-	}, [setFilters]);
+	const updateFilter = useCallback(
+		<K extends keyof EventFilters>(field: K, value: EventFilters[K]) => {
+			setFilters((prev) => ({ ...prev, [field]: value }));
+		},
+		[setFilters],
+	);
 
 	// Loading state for registration API call (local - only needed on this page)
 	const [isRegistering, setIsRegistering] = useState(false);
@@ -79,6 +83,9 @@ export default function Home() {
 	 * Shows loading overlay during API call
 	 */
 	const handleContinue = async () => {
+		// The button is disabled until both are picked
+		if (filters.event === "" || filters.division === "") return;
+
 		setIsRegistering(true);
 
 		const result = await ServerConnector.RegisterEventDivision({
@@ -88,7 +95,7 @@ export default function Home() {
 
 		setIsRegistering(false);
 
-		if (result.Success || result.success) {
+		if (result.Success) {
 			setEventRegistered(true);
 			router.push("/matches");
 		}
@@ -198,7 +205,7 @@ export default function Home() {
 									value={filters.event}
 									onChange={(val) => updateFilter("event", val)}
 									onDataLoaded={(data) => {
-										updateFilter("events", data);
+										updateFilter("events", data as VEXEmcee.API.Objects.REEvent[]);
 									}}
 									aria-label="Event selection"
 									displayField="Name"
@@ -207,7 +214,7 @@ export default function Home() {
 								/>
 
 								{/* Division dropdown - only shown if event has multiple divisions */}
-								{selectedEventData?.Divisions?.length > 1 && (
+								{(selectedEventData?.Divisions?.length ?? 0) > 1 && (
 									<ApiDropdown
 										staticOptions={selectedEventData.Divisions}
 										placeholder="Select Division..."
