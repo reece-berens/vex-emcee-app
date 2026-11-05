@@ -18,15 +18,17 @@ import { useSetPageTitle, useScrollY, useEventRegistered, useRefreshKey } from "
 import ServerConnector from "../serverConnector";
 import styles from "./Matches.module.css";
 
+type Match = VEXEmcee.API.Objects.MatchList.V5RC;
+
 export default function Matches() {
 	const setPageTitle = useSetPageTitle();
 	const router = useRouter();
 	const eventRegistered = useEventRegistered();
 	const scrollY = useScrollY();
 	const refreshKey = useRefreshKey();
-	const [matches, setMatches] = useState([]);
+	const [matches, setMatches] = useState<Match[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
+	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (!eventRegistered) {
@@ -42,7 +44,8 @@ export default function Matches() {
 		const fetchMatches = async () => {
 			const result = await ServerConnector.GetMatchList({});
 			if (result.Success) {
-				setMatches(result.Matches);
+				// This list only shows V5RC matches (red and blue alliances)
+				setMatches(result.Matches as Match[]);
 			} else {
 				setError(result.ErrorMessage);
 			}
