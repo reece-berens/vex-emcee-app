@@ -9,7 +9,19 @@
 
 "use client";
 import { useState } from "react";
+import type { ReactNode } from "react";
 import styles from "./Accordion.module.css";
+
+type AccordionProps = {
+	title: ReactNode;
+	children: ReactNode;
+	defaultOpen?: boolean;
+	className?: string;
+	noHoverBorder?: boolean;
+	/** Pass both isOpen and onToggle to control it from outside */
+	isOpen?: boolean;
+	onToggle?: (isOpen: boolean) => void;
+};
 
 export default function Accordion({
 	title,
@@ -19,7 +31,7 @@ export default function Accordion({
 	noHoverBorder = false,
 	isOpen: controlledIsOpen,
 	onToggle,
-}) {
+}: AccordionProps) {
 	const [internalIsOpen, setInternalIsOpen] = useState(defaultOpen);
 
 	// Use controlled state if provided, otherwise internal
