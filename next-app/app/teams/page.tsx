@@ -20,15 +20,17 @@ import ServerConnector from "../serverConnector";
 import LoadingOverlay from "../components/LoadingOverlay";
 import styles from "./Teams.module.css";
 
+type Team = VEXEmcee.API.Objects.TeamList.V5RC;
+
 export default function Teams() {
 	const setPageTitle = useSetPageTitle();
 	const router = useRouter();
 	const eventRegistered = useEventRegistered();
 	const scrollY = useScrollY();
 	const refreshKey = useRefreshKey();
-	const [teams, setTeams] = useState([]);
+	const [teams, setTeams] = useState<Team[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
+	const [error, setError] = useState<string | null>(null);
 	const [searchQuery, setSearchQuery] = useState("");
 
 	// Filter teams by number or name (case-insensitive)
@@ -51,7 +53,9 @@ export default function Teams() {
 		const fetchTeams = async () => {
 			const result = await ServerConnector.GetTeamList({});
 			if (result.Success) {
-				setTeams([...result.Teams].sort((a, b) => a.NumberSortOrder - b.NumberSortOrder));
+				// This list only shows V5RC teams (rank and event record)
+				const list = result.Teams as Team[];
+				setTeams([...list].sort((a, b) => a.NumberSortOrder - b.NumberSortOrder));
 			} else {
 				setError(result.ErrorMessage);
 			}
