@@ -52,7 +52,26 @@
 
 import { useState, useEffect, useRef } from "react";
 
-export default function ApiDropdown({
+// Options come from different APIs and are read by field name
+type Option = Record<string, any>;
+
+type ApiDropdownProps<V extends string | number> = {
+	endpoint?: string;
+	fetchFunction?: () => Promise<any>; // each API answers with its own response shape
+	staticOptions?: object[];
+	enabled?: boolean;
+	emptyMessage?: string;
+	dataField?: string;
+	placeholder: string;
+	value: V | "";
+	onChange: (value: V) => void;
+	onDataLoaded?: (data: Option[]) => void;
+	displayField: string;
+	valueField: string;
+	className?: string;
+};
+
+export default function ApiDropdown<V extends string | number>({
 	endpoint,
 	fetchFunction,
 	staticOptions,
@@ -66,19 +85,19 @@ export default function ApiDropdown({
 	displayField,
 	valueField,
 	className,
-}) {
+}: ApiDropdownProps<V>) {
 	// ============================================
 	// STATE
 	// ============================================
 
-	const [options, setOptions] = useState([]); // Available dropdown options
+	const [options, setOptions] = useState<Option[]>([]); // Available dropdown options
 	const [loading, setLoading] = useState(true); // True while fetching data
-	const [error, setError] = useState(null); // Error message if fetch failed
+	const [error, setError] = useState<string | null>(null); // Error message if fetch failed
 	const [isOpen, setIsOpen] = useState(false); // Whether dropdown list is visible
 	const [focusedIndex, setFocusedIndex] = useState(-1); // Keyboard navigation: currently focused option
 
 	// Ref for click-outside detection
-	const dropdownRef = useRef(null);
+	const dropdownRef = useRef<HTMLDivElement>(null);
 
 	// ============================================
 	// EFFECTS
@@ -89,8 +108,8 @@ export default function ApiDropdown({
 	 * Only attaches listener when dropdown is open
 	 */
 	useEffect(() => {
-		const handleClickOutside = (event) => {
-			if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
 				setIsOpen(false);
 				setFocusedIndex(-1);
 			}
@@ -113,7 +132,7 @@ export default function ApiDropdown({
 	useEffect(() => {
 		// Mode 1: Static options - use directly
 		if (staticOptions) {
-			setOptions(staticOptions);
+			setOptions(staticOptions as Option[]);
 			setLoading(false);
 			return;
 		}
@@ -162,7 +181,7 @@ export default function ApiDropdown({
 					setOptions([]);
 				}
 			} catch (err) {
-				setError(err.message);
+				setError(err instanceof Error ? err.message : String(err));
 				setOptions([]);
 			} finally {
 				setLoading(false);
