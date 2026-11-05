@@ -4,28 +4,33 @@ import { useRouter, useParams } from "next/navigation";
 import ServerConnector from "../../serverConnector";
 import SampleDataNotice from "../../components/SampleDataNotice";
 import { pickHighlights } from "../../lib/highlights";
+import type { Highlight } from "../../lib/highlights";
 import AllianceColumn from "./AllianceColumn";
 import styles from "./MatchDetails.module.css";
 
+type Match = VEXEmcee.API.Objects.MatchInfo.V5RC;
+
 export default function MatchDetail() {
-	const { id } = useParams();
+	const { id } = useParams<{ id: string }>();
 	const router = useRouter();
-	const [match, setMatch] = useState(null);
+	const [match, setMatch] = useState<Match | null>(null);
 	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
+	const [error, setError] = useState<string | null>(null);
 
 	// Store random stats per team (keyed by team ID) so they don't change on re-render
-	const [teamRandomStats, setTeamRandomStats] = useState({});
+	const [teamRandomStats, setTeamRandomStats] = useState<Record<number, Highlight[]>>({});
 
 	useEffect(() => {
 		const fetchMatch = async () => {
 			const result = await ServerConnector.GetMatchInfo({ MatchKey: id });
 			if (result.Success) {
-				setMatch(result.MatchInfo);
+				// This screen only shows V5RC matches (red and blue alliances)
+				const info = result.MatchInfo as Match;
+				setMatch(info);
 
 				// Generate random stats for each team (once, on load)
-				const allTeams = [...result.MatchInfo.Red.Teams, ...result.MatchInfo.Blue.Teams];
-				const statsMap = {};
+				const allTeams = [...info.Red.Teams, ...info.Blue.Teams];
+				const statsMap: Record<number, Highlight[]> = {};
 				allTeams.forEach((team) => {
 					statsMap[team.ID] = pickHighlights(team);
 				});
