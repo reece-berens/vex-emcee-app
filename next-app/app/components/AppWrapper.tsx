@@ -33,9 +33,40 @@
 
 "use client";
 import { useRef, useState, useEffect, createContext, useContext } from "react";
+import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { usePathname } from "next/navigation";
 import Header from "./Header";
 import SampleDataNotice from "./SampleDataNotice";
+
+// ============================================
+// TYPES
+// ============================================
+
+export type NavTab = {
+	name: string;
+	href: string;
+	icon: ReactNode;
+	disabled?: boolean;
+};
+
+/** Home page selections. An empty string means nothing is picked yet */
+export type EventFilters = {
+	program: number | "";
+	region: string;
+	event: number | "";
+	division: number | "";
+	events: VEXEmcee.API.Objects.REEvent[];
+	fetchKey: number;
+};
+
+const DEFAULT_FILTERS: EventFilters = {
+	program: "", // Selected program ID
+	region: "", // Selected region
+	event: "", // Selected event ID
+	division: "", // Selected division ID
+	events: [], // Fetched events array (for division lookup)
+	fetchKey: 0, // Incremented to trigger event list re-fetch
+};
 
 // ============================================
 // CONTEXT DEFINITIONS
@@ -45,17 +76,23 @@ import SampleDataNotice from "./SampleDataNotice";
 const ScrollContext = createContext(0);
 
 /** Page title state and setter */
-const TitleContext = createContext({
+const TitleContext = createContext<{ title: string; setTitle: (title: string) => void }>({
 	title: "VEX Emcee",
 	setTitle: () => {},
 });
 
 /** Navigation tabs and event registration state */
-const NavContext = createContext({
+const NavContext = createContext<{
+	tabs: NavTab[];
+	eventRegistered: boolean;
+	setEventRegistered: (value: boolean) => void;
+	eventFilters: EventFilters;
+	setEventFilters: Dispatch<SetStateAction<EventFilters>>;
+}>({
 	tabs: [],
 	eventRegistered: false,
 	setEventRegistered: () => {},
-	eventFilters: {},
+	eventFilters: DEFAULT_FILTERS,
 	setEventFilters: () => {},
 });
 
@@ -106,7 +143,7 @@ export const useTriggerRefresh = () => useContext(RefreshContext).trigger;
  * @param {React.ReactNode} children - Page content to render
  * @param {React.ReactNode} footer - Footer component (BottomNav), rendered outside scroll area
  */
-export default function AppWrapper({ children, footer }) {
+export default function AppWrapper({ children, footer }: { children: ReactNode; footer: ReactNode }) {
 	const [scrollY, setScrollY] = useState(0);
 	const [pageTitle, setPageTitle] = useState("VEX Emcee");
 
@@ -122,12 +159,12 @@ export default function AppWrapper({ children, footer }) {
 	}, []);
 
 	// Wrapper to persist to sessionStorage
-	const setEventRegistered = (value) => {
+	const setEventRegistered = (value: boolean) => {
 		setEventRegisteredState(value);
 		sessionStorage.setItem("eventRegistered", String(value));
 	};
 
-	const scrollContainerRef = useRef(null);
+	const scrollContainerRef = useRef<HTMLDivElement>(null);
 
 	/** Pathname and isHomePage constants to track if we are on the home page or not */
 	const pathname = usePathname();
@@ -145,14 +182,7 @@ export default function AppWrapper({ children, footer }) {
 	 * Event filter state - persists across navigation
 	 * Stored here so Home page selections aren't lost when switching tabs
 	 */
-	const [eventFilters, setEventFilters] = useState({
-		program: "", // Selected program ID
-		region: "", // Selected region
-		event: "", // Selected event ID
-		division: "", // Selected division ID
-		events: [], // Fetched events array (for division lookup)
-		fetchKey: 0, // Incremented to trigger event list re-fetch
-	});
+	const [eventFilters, setEventFilters] = useState<EventFilters>(DEFAULT_FILTERS);
 
 	/**
 	 * Navigation tabs configuration
@@ -160,7 +190,7 @@ export default function AppWrapper({ children, footer }) {
 	 * - Other tabs are disabled until eventRegistered becomes true
 	 * - Each tab has: name, href, icon (SVG), and optional disabled flag
 	 */
-	const navTabs = [
+	const navTabs: NavTab[] = [
 		{
 			name: "Home",
 			href: "/",
