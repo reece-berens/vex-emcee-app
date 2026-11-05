@@ -5,14 +5,18 @@ import ServerConnector from "../../serverConnector";
 import Accordion from "../../components/Accordion";
 import SampleDataNotice from "../../components/SampleDataNotice";
 import { parsePercent, parsePoints, parseRankingPoints, parseRecord, parseSkill } from "../../lib/statText";
+import type { SkillsRun } from "../../lib/statText";
 import styles from "./TeamDetails.module.css";
 
+type Team = VEXEmcee.API.Objects.TeamInfo;
+type StatItem = VEXEmcee.API.Objects.Display.SectionDisplay;
+
 export default function TeamDetail() {
-	const { id } = useParams();
+	const { id } = useParams<{ id: string }>();
 	const router = useRouter();
-	const [team, setTeam] = useState(null);
+	const [team, setTeam] = useState<Team | null>(null);
 	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
+	const [error, setError] = useState<string | null>(null);
 	const searchParams = useSearchParams();
 	const fromRoute = searchParams.get("from"); // returns "/match/abc" or null
 
@@ -33,7 +37,7 @@ export default function TeamDetail() {
 	 * Render a stat item with smart formatting based on data type
 	 * Returns null for empty/missing data
 	 */
-	const renderStatItem = (item) => {
+	const renderStatItem = (item: StatItem) => {
 		// Skip if no data
 		if (!item.SectionData || item.SectionData.length === 0) return null;
 
@@ -95,7 +99,7 @@ export default function TeamDetail() {
 
 		// Check if it's Skills Results (Driver, Programming, or both)
 		const skills = item.SectionData.map((line) => parseSkill(line));
-		if (skills.every(Boolean)) {
+		if (skills.every((skill): skill is SkillsRun => skill !== null)) {
 			return (
 				<div key={item.SectionLabel}>
 					<div className={styles.subheader}>Skills</div>
