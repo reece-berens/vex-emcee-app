@@ -21,6 +21,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import type { MouseEvent } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useNavTabs, useTriggerRefresh } from "./AppWrapper";
@@ -45,7 +46,7 @@ export default function BottomNav() {
 	// Use remembered position when on non-nav pages
 	const pillIndex = activeIndex >= 0 ? activeIndex : lastActiveIndex;
 
-	const handleTabClick = (e, isActive) => {
+	const handleTabClick = (e: MouseEvent<HTMLAnchorElement>, isActive: boolean) => {
 		if (isActive) {
 			e.preventDefault();
 			document.querySelector(".scroll-wrapper")?.scrollTo({ top: 0, behavior: "smooth" });

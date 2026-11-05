@@ -21,7 +21,7 @@
 
 import { usePageTitle } from "./AppWrapper";
 
-export default function Header({ scrollY }) {
+export default function Header({ scrollY }: { scrollY: number }) {
 	// Get dynamic page title from context
 	const title = usePageTitle();
 

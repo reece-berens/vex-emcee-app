@@ -17,16 +17,27 @@
 
 "use client";
 import { useState } from "react";
+import type { Highlight } from "../../lib/highlights";
 import TeamCard from "./TeamCard";
+import type { OpenSections, StatSection } from "./TeamCard";
+import type { AllianceColor } from "./statSections";
 import styles from "./MatchDetails.module.css";
 
-export default function AllianceColumn({ color, teams, won, highlights, matchId }) {
+type AllianceColumnProps = {
+	color: AllianceColor;
+	teams: VEXEmcee.API.Objects.MatchInfo.V5RCTeam[];
+	won: boolean;
+	highlights: Record<number, Highlight[]>;
+	matchId: string;
+};
+
+export default function AllianceColumn({ color, teams, won, highlights, matchId }: AllianceColumnProps) {
 	// Track accordion open states: { teamId: { thisEvent: bool, seasonStats: bool } }
-	const [accordions, setAccordions] = useState({});
+	const [accordions, setAccordions] = useState<Record<number, OpenSections>>({});
 
 	const hasAnyOpen = Object.values(accordions).some((team) => team.thisEvent || team.seasonStats);
 
-	const setAccordion = (teamId, type, isOpen) => {
+	const setAccordion = (teamId: number, type: StatSection, isOpen: boolean) => {
 		setAccordions((prev) => ({
 			...prev,
 			[teamId]: {

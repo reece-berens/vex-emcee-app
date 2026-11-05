@@ -2,7 +2,7 @@
  * Root Layout
  *
  * The top-level layout component that wraps all pages in the app.
- * This is a Next.js App Router convention - layout.js in the app directory
+ * This is a Next.js App Router convention - layout.tsx in the app directory
  * wraps all pages and nested layouts.
  *
  * Structure:
@@ -15,6 +15,8 @@
  */
 
 import "./globals.css";
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import BottomNav from "./components/BottomNav";
 import AppWrapper from "./components/AppWrapper";
 import { Inter, Space_Grotesk } from "next/font/google";
@@ -30,16 +32,15 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 /** Next.js metadata - used for <title> and <meta> tags */
-export const metadata = {
+export const metadata: Metadata = {
 	title: "VEX Emcee",
 	description: "Description in progress.",
 };
 
 /**
- * @param {{ children: import("react").ReactNode }} props
- * @param props.children - Page content (from page.js files)
+ * @param props.children - Page content (from page.tsx files)
  */
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
 	return (
 		<html
 			lang="en"

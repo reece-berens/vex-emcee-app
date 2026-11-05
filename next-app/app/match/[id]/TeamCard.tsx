@@ -18,10 +18,24 @@
 "use client";
 import { useRouter } from "next/navigation";
 import Accordion from "../../components/Accordion";
+import type { Highlight } from "../../lib/highlights";
 import { getTeamSummary, renderStatSections } from "./statSections";
+import type { AllianceColor } from "./statSections";
 import styles from "./MatchDetails.module.css";
 
-export default function TeamCard({ team, color, highlights, accordions = {}, onToggle, matchId }) {
+export type StatSection = "thisEvent" | "seasonStats";
+export type OpenSections = Partial<Record<StatSection, boolean>>;
+
+type TeamCardProps = {
+	team: VEXEmcee.API.Objects.MatchInfo.V5RCTeam;
+	color: AllianceColor;
+	highlights: Highlight[];
+	accordions?: OpenSections;
+	onToggle: (section: StatSection, isOpen: boolean) => void;
+	matchId: string;
+};
+
+export default function TeamCard({ team, color, highlights, accordions = {}, onToggle, matchId }: TeamCardProps) {
 	const router = useRouter();
 	const summary = getTeamSummary(team);
 

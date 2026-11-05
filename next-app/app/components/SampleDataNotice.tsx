@@ -13,7 +13,7 @@
 import { DATA_SOURCE } from "../serverConnector/dataSource";
 import styles from "./SampleDataNotice.module.css";
 
-export default function SampleDataNotice({ placement = "page" }) {
+export default function SampleDataNotice({ placement = "page" }: { placement?: "page" | "inline" }) {
 	if (DATA_SOURCE !== "demo") return null;
 
 	const pill = (

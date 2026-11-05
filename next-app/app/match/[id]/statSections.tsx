@@ -5,13 +5,18 @@
  * into stat cards, picking a layout from each section's label.
  */
 
+import type { ReactNode } from "react";
 import { parsePercent, parsePoints, parseRecord } from "../../lib/statText";
 import styles from "./MatchDetails.module.css";
+
+export type AllianceColor = "red" | "blue";
+type Team = VEXEmcee.API.Objects.MatchInfo.V5RCTeam;
+type StatItem = VEXEmcee.API.Objects.Display.SectionDisplay;
 
 /**
  * Extract summary stats from team's "This Event" data
  */
-export function getTeamSummary(team) {
+export function getTeamSummary(team: Team) {
 	const thisEvent = team.Stats.find((s) => s.Name === "This Event");
 	if (!thisEvent) return { record: "—", avgPoints: "—" };
 
@@ -33,14 +38,14 @@ export function getTeamSummary(team) {
 /**
  * Convert string to title case (e.g., "OVERALL WLT" -> "Overall WLT")
  */
-function toTitleCase(str) {
+function toTitleCase(str: string) {
 	return str.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 /**
  * Render a single stat card
  */
-function StatCard({ label, primary, secondary }) {
+function StatCard({ label, primary, secondary }: { label?: string; primary: string; secondary?: string | null }) {
 	return (
 		<div className={styles.statCard}>
 			{label && <span className={styles.statLabel}>{label}</span>}
@@ -54,7 +59,7 @@ function StatCard({ label, primary, secondary }) {
  * Render stat sections with smart parsing
  * @param {string} allianceColor - "red" or "blue" for highlightsing alliance-specific stats
  */
-export function renderStatSections(displayItems, summaryRecord, allianceColor) {
+export function renderStatSections(displayItems: StatItem[], summaryRecord: string | null, allianceColor: AllianceColor) {
 	return displayItems.map((item, idx) => {
 		const label = item.SectionLabel;
 		const data = item.SectionData || [];
@@ -73,8 +78,8 @@ export function renderStatSections(displayItems, summaryRecord, allianceColor) {
 			const seasonMatch = first.match(/^(.+?):\s*(\d+-\d+-\d+)\s*-\s*([\d.]+%)/);
 			if (seasonMatch) {
 				// Separate All Matches from Qual/Elim
-				const allMatches = [];
-				const qualElim = [];
+				const allMatches: ReactNode[] = [];
+				const qualElim: ReactNode[] = [];
 
 				data.forEach((line, i) => {
 					const m = line.match(/^(.+?):\s*(\d+-\d+-\d+)\s*-\s*([\d.]+%)/);

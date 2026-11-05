@@ -49,7 +49,7 @@ const FRAMES = generateFrames();
  * @returns {number[][]} Array of frames, each frame is array of pixel colors (0=off, 1=red, 2=blue)
  */
 function generateFrames() {
-	const frames = [];
+	const frames: number[][] = [];
 
 	// Define the four blocks that make up the shape
 	// Positioned to create a 2x2 grid with gap in center
@@ -75,7 +75,7 @@ function generateFrames() {
 		const cos = Math.cos(rad);
 		const sin = Math.sin(rad);
 
-		const pixels = [];
+		const pixels: number[] = [];
 
 		// For each pixel in the grid...
 		for (let y = 0; y < GRID_SIZE; y++) {
@@ -107,7 +107,7 @@ function generateFrames() {
 // COMPONENT
 // ============================================
 
-export default function LoadingOverlay({ isOpen }) {
+export default function LoadingOverlay({ isOpen }: { isOpen: boolean }) {
 	const [frame, setFrame] = useState(0);
 
 	// Animate through frames when overlay is open
