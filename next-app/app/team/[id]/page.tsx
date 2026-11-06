@@ -23,7 +23,7 @@ export default function TeamDetail() {
 	useEffect(() => {
 		const fetchTeam = async () => {
 			const result = await ServerConnector.GetTeamInfo({ TeamID: Number(id) });
-			if (result.Success) {
+			if (result.Success && result.TeamInfo) {
 				setTeam(result.TeamInfo);
 			} else {
 				setError(result.ErrorMessage || "Failed to load team");

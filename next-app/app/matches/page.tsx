@@ -45,7 +45,7 @@ export default function Matches() {
 			const result = await ServerConnector.GetMatchList({});
 			if (result.Success) {
 				// This list only shows V5RC matches (red and blue alliances)
-				setMatches(result.Matches as Match[]);
+				setMatches((result.Matches ?? []) as Match[]);
 			} else {
 				setError(result.ErrorMessage);
 			}

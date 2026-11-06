@@ -54,7 +54,7 @@ export default function Teams() {
 			const result = await ServerConnector.GetTeamList({});
 			if (result.Success) {
 				// This list only shows V5RC teams (rank and event record)
-				const list = result.Teams as Team[];
+				const list = (result.Teams ?? []) as Team[];
 				setTeams([...list].sort((a, b) => a.NumberSortOrder - b.NumberSortOrder));
 			} else {
 				setError(result.ErrorMessage);

@@ -12,7 +12,7 @@ namespace VEXEmcee {
 
                 interface V5RC extends Base {
                     EventWLT: string;
-                    QualiRank: number;
+                    QualiRank: number | null;
                 }
             }
         }

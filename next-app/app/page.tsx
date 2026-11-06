@@ -215,7 +215,7 @@ export default function Home() {
 								/>
 
 								{/* Division dropdown - only shown if event has multiple divisions */}
-								{(selectedEventData?.Divisions?.length ?? 0) > 1 && (
+								{selectedEventData && (selectedEventData.Divisions?.length ?? 0) > 1 && (
 									<ApiDropdown
 										staticOptions={selectedEventData.Divisions}
 										placeholder="Select Division..."

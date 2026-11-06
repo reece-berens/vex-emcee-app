@@ -23,7 +23,7 @@ export default function MatchDetail() {
 	useEffect(() => {
 		const fetchMatch = async () => {
 			const result = await ServerConnector.GetMatchInfo({ MatchKey: id });
-			if (result.Success) {
+			if (result.Success && result.MatchInfo) {
 				// This screen only shows V5RC matches (red and blue alliances)
 				const info = result.MatchInfo as Match;
 				setMatch(info);

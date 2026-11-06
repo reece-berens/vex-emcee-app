@@ -2,7 +2,7 @@ namespace VEXEmcee {
     namespace API {
         namespace Responses {
             interface BaseResponse {
-                ErrorMessage: string;
+                ErrorMessage: string | null;
                 Success: boolean;
             }
 

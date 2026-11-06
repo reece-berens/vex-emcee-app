@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildMatchInfo, buildTeamInfo, matchKey } from "../demoData/build";
 import { DEMO_MATCHES, DEMO_TEAMS } from "../demoData/source";
+import type { DemoMatch } from "../demoData/source";
 import { parsePercent, parsePoints, parseRankingPoints, parseRecord, parseSkill } from "./statText";
 
 // Every input below is in the exact format master's C# sends (see demoData/build.ts)
@@ -148,26 +149,35 @@ const findProblems = (owner: string, sections: Sections, rules: Record<string, R
 	);
 
 describe("every line in the demo data", () => {
+	const teamSections = (teamId: number) => {
+		const info = buildTeamInfo(teamId).TeamInfo;
+		if (!info) throw new Error(`The demo has no team info for team ${teamId}`);
+		return info.Sections;
+	};
+
+	const matchTeams = (match: DemoMatch) => {
+		const info = buildMatchInfo(matchKey(match)).MatchInfo;
+		if (!info) throw new Error(`The demo has no match info for Q${match.MatchNumber}`);
+		return [...info.Red.Teams, ...info.Blue.Teams];
+	};
+
 	it("parses on the team page", () => {
-		const problems = DEMO_TEAMS.flatMap((team) =>
-			findProblems(team.Number, buildTeamInfo(team.ID).TeamInfo.Sections, TEAM_INFO_RULES),
-		);
+		const problems = DEMO_TEAMS.flatMap((team) => findProblems(team.Number, teamSections(team.ID), TEAM_INFO_RULES));
 		expect(problems).toEqual([]);
 	});
 
 	it("parses on the match page", () => {
-		const problems = DEMO_MATCHES.flatMap((match) => {
-			const info = buildMatchInfo(matchKey(match)).MatchInfo;
-			return [...info.Red.Teams, ...info.Blue.Teams].flatMap((team) =>
+		const problems = DEMO_MATCHES.flatMap((match) =>
+			matchTeams(match).flatMap((team) =>
 				findProblems(`Q${match.MatchNumber} ${team.TeamNumber}`, team.Stats, MATCH_INFO_RULES),
-			);
-		});
+			),
+		);
 		expect(problems).toEqual([]);
 	});
 
 	it("still has a team with only one kind of skills run", () => {
-		const sections = buildTeamInfo(140101).TeamInfo.Sections; // 418R
+		const sections = teamSections(140101); // 418R
 		const skills = sections[0].Display.find((display) => display.SectionLabel === "Skills Results");
-		expect(skills.SectionData).toEqual(["Driver: 3 attempts, 19 high score"]);
+		expect(skills?.SectionData).toEqual(["Driver: 3 attempts, 19 high score"]);
 	});
 });
