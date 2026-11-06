@@ -48,9 +48,10 @@
  * @param {string} displayField - Object property to display as option text
  * @param {string} valueField - Object property to use as option value
  * @param {string} className - CSS class for styling
+ * @param {string} aria-label - Name screen readers announce for the dropdown
  */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useId } from "react";
 
 // Options come from different APIs and are read by field name
 type Option = Record<string, any>;
@@ -69,6 +70,7 @@ type ApiDropdownProps<V extends string | number> = {
 	displayField: string;
 	valueField: string;
 	className?: string;
+	"aria-label"?: string;
 };
 
 export default function ApiDropdown<V extends string | number>({
@@ -85,7 +87,11 @@ export default function ApiDropdown<V extends string | number>({
 	displayField,
 	valueField,
 	className,
+	"aria-label": ariaLabel,
 }: ApiDropdownProps<V>) {
+	// Links the dropdown to its options list for screen readers
+	const listId = useId();
+
 	// ============================================
 	// STATE
 	// ============================================
@@ -189,7 +195,10 @@ export default function ApiDropdown<V extends string | number>({
 		};
 
 		fetchOptions();
-	}, [staticOptions]); // Only re-run if staticOptions changes
+		// Fetches once per mount. The event dropdown is remounted (key) when the filters are applied,
+		// and its fetchFunction is a new function every render, so listing it here would fetch in a loop
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [staticOptions]);
 
 	// ============================================
 	// RENDER: LOADING STATE
@@ -260,6 +269,10 @@ export default function ApiDropdown<V extends string | number>({
 				tabIndex={error || isEmpty ? -1 : 0}
 				role="combobox"
 				aria-expanded={isOpen}
+				aria-controls={listId}
+				aria-haspopup="listbox"
+				aria-label={ariaLabel}
+				aria-activedescendant={isOpen && focusedIndex >= 0 ? `${listId}-${focusedIndex}` : undefined}
 			>
 				{/* Selected value display (or placeholder) */}
 				<span className="dropdown-text">
@@ -305,10 +318,17 @@ export default function ApiDropdown<V extends string | number>({
 
 				{/* Dropdown options list (only rendered when open) */}
 				{isOpen && (
-					<ul className="dropdown-list">
+					<ul
+						id={listId}
+						className="dropdown-list"
+						role="listbox"
+					>
 						{options.map((option, index) => (
 							<li
 								key={option[valueField]}
+								id={`${listId}-${index}`}
+								role="option"
+								aria-selected={value === option[valueField]}
 								className={`dropdown-item ${focusedIndex === index ? "focused" : ""} ${value === option[valueField] ? "selected" : ""}`}
 								onClick={(e) => {
 									e.stopPropagation(); // Prevent triggering parent onClick

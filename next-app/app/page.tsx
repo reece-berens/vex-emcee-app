@@ -139,7 +139,7 @@ export default function Home() {
 									value={filters.program}
 									onChange={(val) => updateFilter("program", val)}
 									enabled={!isRegistering}
-									aria-label="Program search"
+									aria-label="Program"
 									displayField="Name"
 									valueField="ID"
 									className={styles.searchField}
@@ -154,6 +154,7 @@ export default function Home() {
 									placeholder="Select Region..."
 									value={filters.region}
 									onChange={(val) => updateFilter("region", val)}
+									aria-label="Region"
 									displayField="Name"
 									valueField="ID"
 									className={styles.searchField}
@@ -207,7 +208,7 @@ export default function Home() {
 									onDataLoaded={(data) => {
 										updateFilter("events", data as VEXEmcee.API.Objects.REEvent[]);
 									}}
-									aria-label="Event selection"
+									aria-label="Event"
 									displayField="Name"
 									valueField="ID"
 									className={styles.eventDropdown}
@@ -220,6 +221,7 @@ export default function Home() {
 										placeholder="Select Division..."
 										value={filters.division}
 										onChange={(val) => updateFilter("division", val)}
+										aria-label="Division"
 										displayField="Name"
 										valueField="ID"
 										className={styles.searchField}
