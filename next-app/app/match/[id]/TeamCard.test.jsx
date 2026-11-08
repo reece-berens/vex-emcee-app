@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { buildMatchInfo } from "../../demoData/build";
 import { DIVISION_ID, EVENT_ID } from "../../demoData/source";
 import TeamCard from "./TeamCard";
+import { getTeamSummary } from "./statSections";
 
 // There's no Next app around the card in a test, so useRouter gets a stand-in
 const push = vi.hoisted(() => vi.fn());
@@ -70,5 +71,22 @@ describe("TeamCard", () => {
 		renderCard({ accordions: { seasonStats: true } });
 		expect(screen.getByRole("button", { name: "Season Stats" }).getAttribute("aria-expanded")).toBe("true");
 		expect(screen.getByRole("button", { name: "This Event" }).getAttribute("aria-expanded")).toBe("false");
+	});
+});
+
+// The backend starts every team with Stats = [] and fills it in once stats exist
+describe("a team with no stats yet", () => {
+	const newTeam = { ...team, Stats: [] };
+
+	it("gets placeholder summary values", () => {
+		expect(getTeamSummary(newTeam)).toEqual({ record: "—", avgPoints: "—" });
+	});
+
+	it("still shows the team, with no stat sections", () => {
+		renderCard({ team: newTeam });
+		expect(screen.getByText("31170C")).toBeTruthy();
+		expect(screen.getByRole("button", { name: /31170C/ })).toBeTruthy();
+		expect(screen.queryByRole("button", { name: "This Event" })).toBeNull();
+		expect(screen.queryByRole("button", { name: "Season Stats" })).toBeNull();
 	});
 });
