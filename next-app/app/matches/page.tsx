@@ -1,11 +1,10 @@
 /**
- * Matches Page (Placeholder)
+ * Matches Page
  *
- * Will display the list of matches for the registered event.
- * Currently a placeholder - to be built out with:
- * - Match list fetched from API
- * - Match cards showing teams, scores, status
- * - Click to view match details
+ * The match list for the registered event, in the server's order: the last few
+ * scored matches, then the upcoming ones, then older ones.
+ * Each card shows the match name and time, both alliances' teams and scores,
+ * and opens the match screen.
  *
  * This page is only accessible after event registration
  * (controlled by eventRegistered state in AppWrapper).

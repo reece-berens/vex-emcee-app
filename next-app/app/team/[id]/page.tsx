@@ -321,9 +321,6 @@ export default function TeamDetail() {
 								</Accordion>
 							))}
 						</div>
-
-						{/* Debug: Raw JSON */}
-						{/* <pre style={{ whiteSpace: "pre-wrap", fontSize: "12px" }}>{JSON.stringify(team, null, 2)}</pre> */}
 					</>
 				)}
 			</div>

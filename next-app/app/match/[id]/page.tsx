@@ -222,14 +222,6 @@ export default function MatchDetail() {
 								matchId={id}
 							/>
 						</div>
-
-						{/* Debug: Raw JSON */}
-						{/* <details style={{ marginTop: "var(--space-xl)" }}>
-							<summary style={{ cursor: "pointer", color: "var(--text-muted)" }}>Raw Data</summary>
-							<pre style={{ whiteSpace: "pre-wrap", fontSize: "12px", marginTop: "var(--space-md)" }}>
-								{JSON.stringify(match, null, 2)}
-							</pre>
-						</details> */}
 					</>
 				)}
 			</div>

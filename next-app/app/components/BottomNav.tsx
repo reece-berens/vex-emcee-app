@@ -11,11 +11,11 @@
  * - Responsive width calculation based on number of tabs
  *
  * Visual structure:
- * ┌──────────────────────────────────────────┐
- * │  [Home]  [Matches]  [Teams]  [Settings]  │
- * │    ▲                                     │
- * │   pill (slides to active tab)            │
- * └──────────────────────────────────────────┘
+ * ┌──────────────────────────────┐
+ * │  [Home]  [Matches]  [Teams]  │
+ * │    ▲                         │
+ * │   pill (slides to active tab)│
+ * └──────────────────────────────┘
  */
 
 "use client";
