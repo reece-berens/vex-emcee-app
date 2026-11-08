@@ -233,7 +233,10 @@ export default function TeamDetail() {
 					)}
 					<button
 						className={`btn ${styles.navButton}`}
-						onClick={() => team?.NextTeamID && router.push(`/team/${team.NextTeamID}`)}
+						onClick={() => 
+                            team?.NextTeamID && 
+                            router.push(`/team/${team.NextTeamID + (fromRoute ? "?from=" + fromRoute : "")}`)
+                        }
 						disabled={loading || !team?.NextTeamID}
 					>
 						Next

@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSetPageTitle, useScrollY, useEventRegistered, useRefreshKey } from "../components/AppWrapper";
 import ServerConnector from "../serverConnector";
+import { matchLabelFromKey } from "../lib/matchLabel";
 import styles from "./Matches.module.css";
 
 type Match = VEXEmcee.API.Objects.MatchList.V5RC;
@@ -119,7 +120,9 @@ export default function Matches() {
 									}}
 								>
 									<div className={`${styles.topRow} ${match.Scheduled && styles.timeIncluded}`}>
-										<span className={styles.matchName}>{match.MatchName}</span>
+										<span className={styles.matchName}>
+											{matchLabelFromKey(match.Key) ?? match.MatchName}
+										</span>
 										{match.Scheduled && (
 											<span className={styles.scheduled}>
 												{new Date(match.Scheduled).toLocaleTimeString("en-US", {

@@ -5,6 +5,7 @@ import ServerConnector from "../../serverConnector";
 import SampleDataNotice from "../../components/SampleDataNotice";
 import { pickHighlights } from "../../lib/highlights";
 import type { Highlight } from "../../lib/highlights";
+import { matchLabel } from "../../lib/matchLabel";
 import AllianceColumn from "./AllianceColumn";
 import styles from "./MatchDetails.module.css";
 
@@ -165,7 +166,9 @@ export default function MatchDetail() {
 					<>
 						{/* Match Header */}
 						<div className={styles.matchHeader}>
-							<span className={styles.matchTitle}>Qualification {match.MatchNumber}</span>
+							<span className={styles.matchTitle}>
+								{matchLabel(match.MatchRound, match.MatchInstance, match.MatchNumber)}
+							</span>
 							{match.Scored && match.Tie && <span className={styles.tieBadge}>TIE</span>}
 						</div>
 
