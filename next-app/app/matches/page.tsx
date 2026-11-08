@@ -235,14 +235,14 @@ export default function Matches() {
 										</div>
 										<div className={styles.bottomRow}>
 											<span
-												className={`${styles.score} + " " + ${match.Scored && (match.RedWin || match.Tie) ? styles.win : ""}`}
+												className={`${styles.score} ${match.Scored && (match.RedWin || match.Tie) ? styles.win : ""}`}
 											>
 												{/* {match.Started ? match.Red.Score : "-"} */}
 												{match.Red.Score}
 											</span>
 
 											<span
-												className={`${styles.score} + " " + ${match.Scored && (match.BlueWin || match.Tie) ? styles.win : ""}`}
+												className={`${styles.score} ${match.Scored && (match.BlueWin || match.Tie) ? styles.win : ""}`}
 											>
 												{/* {match.Started ? match.Blue.Score : "-"} */}
 												{match.Blue.Score}
