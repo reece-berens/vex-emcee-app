@@ -81,6 +81,8 @@ export default function BottomNav() {
 					<span
 						key={tab.name}
 						className={`${styles.tab} ${styles.disabled}`}
+						role="link"
+						aria-disabled="true"
 					>
 						<span className={styles.icon}>{tab.icon}</span>
 						<span className={styles.label}>{tab.name}</span>
@@ -91,6 +93,7 @@ export default function BottomNav() {
 						href={tab.href}
 						onClick={(e) => handleTabClick(e, isActive)}
 						className={`${styles.tab} ${isActive ? styles.active : ""}`}
+						aria-current={isActive ? "page" : undefined}
 					>
 						<span className={styles.icon}>{tab.icon}</span>
 						<span className={styles.label}>{tab.name}</span>

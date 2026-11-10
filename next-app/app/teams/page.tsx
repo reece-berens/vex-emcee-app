@@ -97,6 +97,7 @@ export default function Teams() {
 						<input
 							type="text"
 							placeholder="Filter by team number or name..."
+							aria-label="Filter teams"
 							className={styles.searchInput}
 							value={searchQuery}
 							onChange={(e) => setSearchQuery(e.target.value)}
@@ -105,6 +106,12 @@ export default function Teams() {
 				</div>
 				{loading && (
 					<section className={`cardback bg-transparent ${styles.section}`}>
+						<p
+							className="sr-only"
+							role="status"
+						>
+							Loading teams
+						</p>
 						<div className={styles.cardGrid}>
 							{[...Array(16)].map((_, i) => (
 								<div

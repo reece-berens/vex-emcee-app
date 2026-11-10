@@ -93,7 +93,8 @@ export default function Matches() {
 							fill="var(--ui-green)"
 							viewBox="0 0 24 24"
 							xmlns="http://www.w3.org/2000/svg"
-							aria-hidden="true"
+							role="img"
+							aria-label="Scored"
 							width="24"
 							height="24"
 						>
@@ -210,6 +211,12 @@ export default function Matches() {
 				</h1>
 				{loading && (
 					<section className={`cardback bg-transparent ${styles.section}`}>
+						<p
+							className="sr-only"
+							role="status"
+						>
+							Loading matches
+						</p>
 						<div className={styles.cardGrid}>
 							{[...Array(12)].map((_, i) => (
 								<div

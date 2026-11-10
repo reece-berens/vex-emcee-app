@@ -64,6 +64,7 @@ export default function MatchDetail() {
 				<button
 					className={`btn ${styles.backButton}`}
 					onClick={() => router.push("/matches")}
+					aria-label="Back to matches"
 				>
 					<svg
 						className={styles.backIcon}
@@ -88,6 +89,13 @@ export default function MatchDetail() {
 			<div className={styles.content}>
 				{loading && (
 					<>
+						<p
+							className="sr-only"
+							role="status"
+						>
+							Loading match
+						</p>
+
 						{/* Skeleton Match Header */}
 						<div className={styles.matchHeader}>
 							<div className={`${styles.skeleton} ${styles.skeletonMatchTitle}`} />

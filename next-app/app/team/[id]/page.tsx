@@ -178,6 +178,7 @@ export default function TeamDetail() {
 					onClick={() => {
 						router.push(fromRoute || "/teams"); // fallback to /teams if no param
 					}}
+					aria-label={fromRoute ? "Back to match" : "Back to teams"}
 				>
 					<svg
 						className={styles.backIcon}
@@ -259,6 +260,13 @@ export default function TeamDetail() {
 
 				{loading && (
 					<>
+						<p
+							className="sr-only"
+							role="status"
+						>
+							Loading team
+						</p>
+
 						{/* Skeleton header */}
 						<div className={styles.skeletonHeader}>
 							<div className={`${styles.skeleton} ${styles.skeletonName}`} />

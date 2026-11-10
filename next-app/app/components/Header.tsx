@@ -33,8 +33,9 @@ export default function Header({ scrollY }: { scrollY: number }) {
 
 	return (
 		<>
-			{/* Preview text layer - appears first, no background */}
+			{/* Preview text layer - appears first, no background. A visual copy of the title, so screen readers skip it */}
 			<div
+				aria-hidden="true"
 				style={{
 					position: "fixed",
 					top: 0,
