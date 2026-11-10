@@ -45,12 +45,14 @@ const ROUND_NUMBERS: Record<string, number> = {
 	Unknown: 99,
 };
 
+export type MatchKeyParts = { round: number; instance: number; number: number };
+
 /**
- * The same label, read from a match key: "{EventID}~{DivisionID}~{Round}~{Instance}~{MatchNumber}".
- * "99001~1~Qualification~1~3" -> "Qualification Match 3"
- * Returns null when the key isn't in that shape, so the caller can show something else.
+ * The round, series and game from a match key: "{EventID}~{DivisionID}~{Round}~{Instance}~{MatchNumber}".
+ * "99001~1~Qualification~1~3" -> { round: 2, instance: 1, number: 3 }
+ * Returns null when the key isn't in that shape.
  */
-export function matchLabelFromKey(key: string): string | null {
+export function parseMatchKey(key: string): MatchKeyParts | null {
 	const parts = key.split("~");
 	if (parts.length !== 5) return null;
 
@@ -58,5 +60,15 @@ export function matchLabelFromKey(key: string): string | null {
 	const round = ROUND_NUMBERS[roundName];
 	if (round === undefined || !/^\d+$/.test(instance) || !/^\d+$/.test(number)) return null;
 
-	return matchLabel(round, Number(instance), Number(number));
+	return { round, instance: Number(instance), number: Number(number) };
+}
+
+/**
+ * The same label, read from a match key.
+ * "99001~1~Qualification~1~3" -> "Qualification Match 3"
+ * Returns null when the key isn't in that shape, so the caller can show something else.
+ */
+export function matchLabelFromKey(key: string): string | null {
+	const parts = parseMatchKey(key);
+	return parts ? matchLabel(parts.round, parts.instance, parts.number) : null;
 }
