@@ -33,7 +33,7 @@ export default function Matches() {
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
-		if (!eventRegistered) {
+		if (eventRegistered === false) {
 			router.replace("/");
 		}
 	}, [eventRegistered, router]);

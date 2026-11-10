@@ -20,8 +20,9 @@ import styles from "./Home.module.css";
 import { useState, useEffect, useCallback } from "react";
 import ApiDropdown from "./components/ApiDropdown";
 import LoadingOverlay from "./components/LoadingOverlay";
-import { useSetPageTitle, useSetEventRegistered, useEventFilters, useSetEventFilters } from "./components/AppWrapper";
+import { useSetPageTitle, useEventFilters, useSetEventFilters } from "./components/AppWrapper";
 import type { EventFilters } from "./components/AppWrapper";
+import { registerEvent } from "./lib/eventRegistration";
 import { useRouter } from "next/navigation";
 import ServerConnector from "./serverConnector";
 import { DATA_SOURCE } from "./serverConnector/dataSource";
@@ -29,7 +30,6 @@ import { DATA_SOURCE } from "./serverConnector/dataSource";
 export default function Home() {
 	// Global state from AppWrapper
 	const setPageTitle = useSetPageTitle();
-	const setEventRegistered = useSetEventRegistered();
 	const router = useRouter();
 
 	// Event filter state - stored globally so it persists across navigation
@@ -96,7 +96,7 @@ export default function Home() {
 		setIsRegistering(false);
 
 		if (result.Success) {
-			setEventRegistered(true);
+			registerEvent(filters.event, filters.division);
 			router.push("/matches");
 		}
 	};

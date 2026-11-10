@@ -36,7 +36,7 @@ export default function Teams() {
 	});
 
 	useEffect(() => {
-		if (!eventRegistered) {
+		if (eventRegistered === false) {
 			router.replace("/");
 		}
 	}, [eventRegistered, router]);

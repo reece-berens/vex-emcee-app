@@ -16,8 +16,9 @@
  *
  * 3. NavContext - Navigation state and configuration
  *    - Contains the tab configuration for BottomNav
- *    - Tracks whether user has registered for an event (enables/disables tabs)
- *    - Hooks: useNavTabs(), useEventRegistered(), useSetEventRegistered()
+ *    - Tracks whether user has registered for an event (enables/disables tabs),
+ *      read from the cookie in lib/eventRegistration
+ *    - Hooks: useNavTabs(), useEventRegistered()
  *
  * Layout structure:
  * ┌─────────────────────────────┐
@@ -37,6 +38,7 @@ import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { usePathname } from "next/navigation";
 import Header from "./Header";
 import SampleDataNotice from "./SampleDataNotice";
+import { useEventRegistration } from "../lib/eventRegistration";
 
 // ============================================
 // TYPES
@@ -84,14 +86,13 @@ const TitleContext = createContext<{ title: string; setTitle: (title: string) =>
 /** Navigation tabs and event registration state */
 const NavContext = createContext<{
 	tabs: NavTab[];
-	eventRegistered: boolean;
-	setEventRegistered: (value: boolean) => void;
+	/** null until the browser's cookie has been read */
+	eventRegistered: boolean | null;
 	eventFilters: EventFilters;
 	setEventFilters: Dispatch<SetStateAction<EventFilters>>;
 }>({
 	tabs: [],
-	eventRegistered: false,
-	setEventRegistered: () => {},
+	eventRegistered: null,
 	eventFilters: DEFAULT_FILTERS,
 	setEventFilters: () => {},
 });
@@ -119,11 +120,8 @@ export const useSetPageTitle = () => useContext(TitleContext).setTitle;
 /** Get array of navigation tab configurations */
 export const useNavTabs = () => useContext(NavContext).tabs;
 
-/** Get whether user has registered for an event */
+/** Get whether user has registered for an event: null until the browser has been checked */
 export const useEventRegistered = () => useContext(NavContext).eventRegistered;
-
-/** Get function to update event registration state */
-export const useSetEventRegistered = () => useContext(NavContext).setEventRegistered;
 
 /** Get event filter state (program, region, event, division selections) */
 export const useEventFilters = () => useContext(NavContext).eventFilters;
@@ -146,23 +144,7 @@ export const useTriggerRefresh = () => useContext(RefreshContext).trigger;
 export default function AppWrapper({ children, footer }: { children: ReactNode; footer: ReactNode }) {
 	const [scrollY, setScrollY] = useState(0);
 	const [pageTitle, setPageTitle] = useState("VEX Emcee");
-
-	// Start false for SSR, then hydrate from sessionStorage
-	const [eventRegistered, setEventRegisteredState] = useState(false);
-
-	// Hydrate from sessionStorage on mount
-	useEffect(() => {
-		const stored = sessionStorage.getItem("eventRegistered");
-		if (stored === "true") {
-			setEventRegisteredState(true);
-		}
-	}, []);
-
-	// Wrapper to persist to sessionStorage
-	const setEventRegistered = (value: boolean) => {
-		setEventRegisteredState(value);
-		sessionStorage.setItem("eventRegistered", String(value));
-	};
+	const eventRegistered = useEventRegistration();
 
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -277,7 +259,7 @@ export default function AppWrapper({ children, footer }: { children: ReactNode; 
 			<ScrollContext.Provider value={scrollY}>
 				<TitleContext.Provider value={{ title: pageTitle, setTitle: setPageTitle }}>
 					<NavContext.Provider
-						value={{ tabs: navTabs, eventRegistered, setEventRegistered, eventFilters, setEventFilters }}
+						value={{ tabs: navTabs, eventRegistered, eventFilters, setEventFilters }}
 					>
 						{/* Scrollable content area */}
 						<div
