@@ -16,7 +16,7 @@
  */
 
 "use client";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Accordion from "../../components/Accordion";
 import type { Highlight } from "../../lib/highlights";
 import { getTeamSummary, renderStatSections } from "./statSections";
@@ -36,7 +36,6 @@ type TeamCardProps = {
 };
 
 export default function TeamCard({ team, color, highlights, accordions = {}, onToggle, matchId }: TeamCardProps) {
-	const router = useRouter();
 	const summary = getTeamSummary(team);
 
 	return (
@@ -44,9 +43,9 @@ export default function TeamCard({ team, color, highlights, accordions = {}, onT
 			<div className={styles.teamCardHeader}>
 				<div className={styles.teamCardHeaderMain}>
 					<span className={styles.teamNumber}>{team.TeamNumber}</span>
-					<button
+					<Link
 						className={styles.teamLink}
-						onClick={() => router.push(`/team/${team.ID}?from=/match/${matchId}`)}
+						href={`/team/${team.ID}?from=/match/${matchId}`}
 						aria-label={`View team ${team.TeamNumber}`}
 					>
 						<svg
@@ -63,7 +62,7 @@ export default function TeamCard({ team, color, highlights, accordions = {}, onT
 								d="M19.902 4.098a3.75 3.75 0 0 0-5.304 0l-4.5 4.5a3.75 3.75 0 0 0 1.035 6.037.75.75 0 0 1-.646 1.353 5.25 5.25 0 0 1-1.449-8.45l4.5-4.5a5.25 5.25 0 1 1 7.424 7.424l-1.757 1.757a.75.75 0 1 1-1.06-1.06l1.757-1.757a3.75 3.75 0 0 0 0-5.304Zm-7.389 4.267a.75.75 0 0 1 1-.353 5.25 5.25 0 0 1 1.449 8.45l-4.5 4.5a5.25 5.25 0 1 1-7.424-7.424l1.757-1.757a.75.75 0 1 1 1.06 1.06l-1.757 1.757a3.75 3.75 0 1 0 5.304 5.304l4.5-4.5a3.75 3.75 0 0 0-1.035-6.037.75.75 0 0 1-.354-1Z"
 							/>
 						</svg>
-					</button>
+					</Link>
 				</div>
 				<div className={styles.teamCardHeaderDetails}>
 					<span className={styles.teamName}>{team.TeamName}</span>

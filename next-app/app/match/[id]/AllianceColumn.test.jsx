@@ -1,11 +1,8 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { buildMatchInfo } from "../../demoData/build";
 import { DIVISION_ID, EVENT_ID } from "../../demoData/source";
 import AllianceColumn from "./AllianceColumn";
-
-// TeamCard calls useRouter, and there's no Next app around it in a test
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 
 // Q3: 31170C and 8204A (red) against 38851J and 7263M (blue)
 const matchKey = `${EVENT_ID}~${DIVISION_ID}~Qualification~1~3`;
@@ -37,7 +34,7 @@ describe("AllianceColumn", () => {
 	it("names every team link with its team number", () => {
 		renderColumn();
 		for (const team of match.Red.Teams) {
-			expect(screen.getByRole("button", { name: new RegExp(team.TeamNumber) })).toBeTruthy();
+			expect(screen.getByRole("link", { name: new RegExp(team.TeamNumber) })).toBeTruthy();
 		}
 	});
 

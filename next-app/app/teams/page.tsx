@@ -11,6 +11,7 @@
 
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSetPageTitle, useScrollY, useEventRegistered, useRefreshKey } from "../components/AppWrapper";
 import ServerConnector from "../serverConnector";
@@ -154,17 +155,10 @@ export default function Teams() {
 					<section className={`cardback bg-transparent ${styles.section}`}>
 						<div className={styles.cardGrid}>
 							{filteredTeams.map((team) => (
-								<div
+								<Link
 									key={team.ID}
+									href={`/team/${team.ID}`}
 									className={`card ${styles.card}`}
-									tabIndex={0}
-									role="button"
-									onClick={() => router.push(`/team/${team.ID}`)}
-									onKeyDown={(e) => {
-										if (e.key === "Enter" || e.key === " ") {
-											router.push(`/team/${team.ID}`);
-										}
-									}}
 								>
 									<div className={styles.topRow}>
 										<span className={styles.teamNumber}>{team.Number}</span>
@@ -181,7 +175,7 @@ export default function Teams() {
 											Record <span className={styles.recordWLT}>{team.EventWLT}</span>
 										</span>
 									</div>
-								</div>
+								</Link>
 							))}
 						</div>
 					</section>

@@ -90,10 +90,12 @@
 	font-size: var(--font-size-sm);
 }
 
-.navButton:disabled {
+.navButton[aria-disabled="true"] {
 	background-color: var(--background-color3);
 	color: var(--text-muted);
 	opacity: 0.6;
+	box-shadow: none;
+	pointer-events: none;
 }
 
 .navTeamNumber {

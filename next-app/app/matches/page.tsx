@@ -12,6 +12,7 @@
 
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSetPageTitle, useScrollY, useEventRegistered, useRefreshKey } from "../components/AppWrapper";
 import ServerConnector from "../serverConnector";
@@ -61,17 +62,10 @@ export default function Matches() {
 	const groups = groupMatches(matches);
 
 	const renderCard = (match: Match) => (
-		<div
+		<Link
 			key={match.Key}
+			href={`/match/${match.Key}`}
 			className={`card ${styles.card}`}
-			tabIndex={0}
-			role="button"
-			onClick={() => router.push(`/match/${match.Key}`)}
-			onKeyDown={(e) => {
-				if (e.key === "Enter" || e.key === " ") {
-					router.push(`/match/${match.Key}`);
-				}
-			}}
 		>
 			<div className={`${styles.topRow} ${match.Scheduled ? styles.timeIncluded : ""}`}>
 				<span className={styles.matchName}>{matchLabelFromKey(match.Key) ?? match.MatchName}</span>
@@ -214,7 +208,7 @@ export default function Matches() {
 					</span>
 				</div>
 			</div>
-		</div>
+		</Link>
 	);
 
 	return (

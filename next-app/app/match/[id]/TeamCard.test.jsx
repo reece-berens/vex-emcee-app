@@ -1,13 +1,9 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { buildMatchInfo } from "../../demoData/build";
 import { DIVISION_ID, EVENT_ID } from "../../demoData/source";
 import TeamCard from "./TeamCard";
 import { getTeamSummary } from "./statSections";
-
-// There's no Next app around the card in a test, so useRouter gets a stand-in
-const push = vi.hoisted(() => vi.fn());
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 
 const matchKey = `${EVENT_ID}~${DIVISION_ID}~Qualification~1~3`;
 const team = buildMatchInfo(matchKey).MatchInfo.Red.Teams[0]; // 31170C
@@ -29,8 +25,6 @@ const renderCard = (props = {}) =>
 		/>,
 	);
 
-beforeEach(() => push.mockClear());
-
 describe("TeamCard", () => {
 	it("shows the team's number and name", () => {
 		renderCard();
@@ -40,13 +34,14 @@ describe("TeamCard", () => {
 
 	it("names the team link with the team number", () => {
 		renderCard();
-		expect(screen.getByRole("button", { name: /31170C/ })).toBeTruthy();
+		expect(screen.getByRole("link", { name: /31170C/ })).toBeTruthy();
 	});
 
-	it("opens the team page and keeps the match for Back", () => {
+	it("links to the team page and keeps the match for Back", () => {
 		renderCard();
-		fireEvent.click(screen.getByRole("button", { name: /31170C/ }));
-		expect(push).toHaveBeenCalledWith(`/team/${team.ID}?from=/match/${matchKey}`);
+		expect(screen.getByRole("link", { name: /31170C/ }).getAttribute("href")).toBe(
+			`/team/${team.ID}?from=/match/${matchKey}`,
+		);
 	});
 
 	it("shows the highlights it's given", () => {
@@ -85,7 +80,7 @@ describe("a team with no stats yet", () => {
 	it("still shows the team, with no stat sections", () => {
 		renderCard({ team: newTeam });
 		expect(screen.getByText("31170C")).toBeTruthy();
-		expect(screen.getByRole("button", { name: /31170C/ })).toBeTruthy();
+		expect(screen.getByRole("link", { name: /31170C/ })).toBeTruthy();
 		expect(screen.queryByRole("button", { name: "This Event" })).toBeNull();
 		expect(screen.queryByRole("button", { name: "Season Stats" })).toBeNull();
 	});

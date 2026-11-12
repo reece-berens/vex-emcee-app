@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import ServerConnector from "../../serverConnector";
 import SampleDataNotice from "../../components/SampleDataNotice";
 import { pickHighlights } from "../../lib/highlights";
@@ -13,7 +14,6 @@ type Match = VEXEmcee.API.Objects.MatchInfo.V5RC;
 
 export default function MatchDetail() {
 	const { id } = useParams<{ id: string }>();
-	const router = useRouter();
 	const [match, setMatch] = useState<Match | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -61,9 +61,9 @@ export default function MatchDetail() {
 		<div className={styles.page}>
 			{/* Sticky top bar with back button */}
 			<div className={styles.topBar}>
-				<button
+				<Link
 					className={`btn ${styles.backButton}`}
-					onClick={() => router.push("/matches")}
+					href="/matches"
 					aria-label="Back to matches"
 				>
 					<svg
@@ -81,7 +81,7 @@ export default function MatchDetail() {
 							d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z"
 						/>
 					</svg>
-				</button>
+				</Link>
 				<SampleDataNotice placement="inline" />
 			</div>
 

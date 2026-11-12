@@ -434,6 +434,8 @@ p {
 	align-items: center;
 	gap: var(--space-xs);
 	font-size: var(--font-size);
+	text-decoration: none;
+    font-family: inherit;
 	cursor: pointer;
 	border: 1px solid transparent;
 	border-radius: var(--border-radius);

@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter, useParams, useSearchParams } from "next/navigation";
+import type { ReactNode } from "react";
+import Link from "next/link";
+import { useParams, useSearchParams } from "next/navigation";
 import ServerConnector from "../../serverConnector";
 import Accordion from "../../components/Accordion";
 import SampleDataNotice from "../../components/SampleDataNotice";
@@ -11,14 +13,40 @@ import styles from "./TeamDetails.module.css";
 type Team = VEXEmcee.API.Objects.TeamInfo;
 type StatItem = VEXEmcee.API.Objects.Display.SectionDisplay;
 
+// A link can't be disabled, so with nowhere to go it renders without an href.
+// Without an href an <a> loses its link role, so role="link" puts it back (BottomNav does the same).
+function TeamNavLink({ href, children }: { href: string | null; children: ReactNode }) {
+	if (!href) {
+		return (
+			<a
+				className={`btn ${styles.navButton}`}
+				role="link"
+				aria-disabled="true"
+			>
+				{children}
+			</a>
+		);
+	}
+	return (
+		<Link
+			className={`btn ${styles.navButton}`}
+			href={href}
+		>
+			{children}
+		</Link>
+	);
+}
+
 export default function TeamDetail() {
 	const { id } = useParams<{ id: string }>();
-	const router = useRouter();
 	const [team, setTeam] = useState<Team | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const searchParams = useSearchParams();
 	const fromRoute = searchParams.get("from"); // returns "/match/abc" or null
+	const fromQuery = fromRoute ? "?from=" + fromRoute : "";
+	const prevHref = !loading && team?.PreviousTeamID ? `/team/${team.PreviousTeamID}${fromQuery}` : null;
+	const nextHref = !loading && team?.NextTeamID ? `/team/${team.NextTeamID}${fromQuery}` : null;
 
 	useEffect(() => {
 		const fetchTeam = async () => {
@@ -173,11 +201,9 @@ export default function TeamDetail() {
 		<div className={styles.page}>
 			{/* Sticky top bar with back button */}
 			<div className={styles.topBar}>
-				<button
+				<Link
 					className={`btn ${styles.backButton}`}
-					onClick={() => {
-						router.push(fromRoute || "/teams"); // fallback to /teams if no param
-					}}
+					href={fromRoute || "/teams"}
 					aria-label={fromRoute ? "Back to match" : "Back to teams"}
 				>
 					<svg
@@ -195,7 +221,7 @@ export default function TeamDetail() {
 							d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z"
 						/>
 					</svg>
-				</button>
+				</Link>
 				<SampleDataNotice placement="inline" />
 			</div>
 
@@ -203,14 +229,7 @@ export default function TeamDetail() {
 			<div className={styles.content}>
 				{/* Prev/Next navigation - always visible */}
 				<div className={styles.navRow}>
-					<button
-						className={`btn ${styles.navButton}`}
-						onClick={() =>
-							team?.PreviousTeamID &&
-							router.push(`/team/${team.PreviousTeamID + (fromRoute ? "?from=" + fromRoute : "")}`)
-						}
-						disabled={loading || !team?.PreviousTeamID}
-					>
+					<TeamNavLink href={prevHref}>
 						<svg
 							fill="currentColor"
 							viewBox="0 0 24 24"
@@ -226,20 +245,13 @@ export default function TeamDetail() {
 							/>
 						</svg>
 						Prev
-					</button>
+					</TeamNavLink>
 					{loading ? (
 						<div className={`${styles.skeleton} ${styles.skeletonTeamNumber}`} />
 					) : (
 						<span className={styles.navTeamNumber}>{team?.Number}</span>
 					)}
-					<button
-						className={`btn ${styles.navButton}`}
-						onClick={() => 
-                            team?.NextTeamID && 
-                            router.push(`/team/${team.NextTeamID + (fromRoute ? "?from=" + fromRoute : "")}`)
-                        }
-						disabled={loading || !team?.NextTeamID}
-					>
+					<TeamNavLink href={nextHref}>
 						Next
 						<svg
 							fill="currentColor"
@@ -255,7 +267,7 @@ export default function TeamDetail() {
 								d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z"
 							/>
 						</svg>
-					</button>
+					</TeamNavLink>
 				</div>
 
 				{loading && (
