@@ -142,13 +142,23 @@
 	font-weight: 600;
 	letter-spacing: 0.5px;
 	color: var(--background-color3);
-	background-color: var(--ui-purple);
+	background-color: var(--ui-purple-dark);
 	border-radius: var(--border-radius-label);
 	padding: 0px var(--space-sm) 1px;
 }
 
+/* Little dot before the LIVE text */
+.liveText::before {
+	content: "";
+	width: 6px;
+	height: 6px;
+	background-color: currentColor;
+	border-radius: var(--border-radius-pill);
+}
+
+/* Only the dot pulses, so the LIVE text keeps its contrast */
 @media (prefers-reduced-motion: no-preference) {
-	.liveText {
+	.liveText::before {
 		animation: pulse 1.5s steps(4) infinite;
 	}
 }
@@ -159,17 +169,8 @@
 		opacity: 1;
 	}
 	50% {
-		opacity: 0.7;
+		opacity: 0.3;
 	}
-}
-
-/* Little dot before the LIVE text */
-.liveText::before {
-	content: "";
-	width: 6px;
-	height: 6px;
-	background-color: currentColor;
-	border-radius: var(--border-radius-pill);
 }
 
 /* VS Wrapper (VS, WIN, TIE) - only shows on tablet size or larger */
@@ -213,42 +214,50 @@
 	padding: var(--space-xs);
 }
 
+/* Each half is a size container, so the team numbers can shrink to fit it on one line */
 .alliance {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	flex-wrap: wrap;
 	gap: var(--space-xs);
 	padding: var(--space-xs);
 	flex: 1;
+	min-width: 0;
+	container-type: inline-size;
+}
+
+/* 10cqi keeps two six-character team numbers on one line in a 320px-wide screen */
+.teamRed,
+.teamBlue {
+	font-family: var(--font-display);
+	font-size: clamp(11px, 10cqi, 16px);
+	font-weight: 600;
+	white-space: nowrap;
+	color: var(--background-color3);
+	border-radius: var(--border-radius-label);
+	padding: 1px 0.5em;
 }
 
 .teamRed {
-	font-family: var(--font-display);
-	font-weight: 600;
-	color: var(--background-color3);
 	background-color: var(--accent-red);
-	border-radius: var(--border-radius-label);
-	padding: 1px var(--space-sm);
 }
 
 .teamBlue {
-	font-family: var(--font-display);
-	font-weight: 600;
-	color: var(--background-color3);
 	background-color: var(--accent-blue);
-	border-radius: var(--border-radius-label);
-	padding: 1px var(--space-sm);
 }
 
+/* Two equal columns, so each score is centered under its alliance whatever its width */
 .bottomRow {
 	position: relative;
-	display: flex;
-	justify-content: space-around;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	justify-items: center;
+	align-items: center;
 	padding: 0px var(--space-xs) var(--space-xs);
 }
 
 .score {
+	position: relative;
 	font-family: var(--font-display);
 	font-size: var(--font-size-hero);
 	font-weight: 600;
@@ -258,8 +267,58 @@
 	border-bottom: 3px solid transparent;
 }
 
-.score.win {
-	border-bottom: 3px solid var(--ui-purple-dark);
+.score.tieLine {
+	border-bottom-color: var(--ui-purple-dark);
+}
+
+.score.winLine {
+	border-bottom-color: var(--ui-green);
+}
+
+/* Winner and Tie pill, centered between the scores. Positioned outside the flow, so the scores stay centered under their teams */
+.resultTag {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-xs);
+	font-family: var(--font-display);
+	font-size: var(--font-size-xs);
+	font-weight: 500;
+	line-height: 1;
+	letter-spacing: 0.5px;
+	text-transform: uppercase;
+	white-space: nowrap;
+	color: var(--background-color3);
+	border-radius: var(--border-radius-label);
+	/* Letter spacing adds 0.5px after the last letter, so the left side gets 0.5px more to match.
+	   capital letters are sitting slightly high in the line, so the top gets 0.5px more too. */
+	padding: 3.5px var(--space-xs) 2.5px calc(var(--space-xs) + 0.5px);
+}
+
+.tieTag {
+	background-color: var(--ui-purple-dark);
+}
+
+.winnerTag {
+	background-color: var(--ui-green);
+}
+
+/* Arrow inside the Winner pill, on the side of the winning score */
+.winnerTag::before {
+	content: "";
+	border-block: 4px solid transparent;
+}
+
+.winnerTag.pointLeft::before {
+	border-right: 5px solid currentColor;
+}
+
+.winnerTag.pointRight::before {
+	order: 1;
+	border-left: 5px solid currentColor;
 }
 
 /* ============================================

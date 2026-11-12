@@ -112,6 +112,7 @@ export default function Matches() {
 			<div>
 				<div className={styles.middleRow}>
 					<div className={styles.alliance}>
+						<span className="sr-only">Red alliance</span>
 						{match.Red.TeamNumbers.map((team) => (
 							<span
 								key={team}
@@ -122,6 +123,7 @@ export default function Matches() {
 						))}
 					</div>
 					<div className={styles.alliance}>
+						<span className="sr-only">Blue alliance</span>
 						{match.Blue.TeamNumbers.map((team) => (
 							<span
 								key={team}
@@ -184,12 +186,29 @@ export default function Matches() {
 					<span className={styles.vsText}>VS</span>
 				</div>
 				<div className={styles.bottomRow}>
-					<span className={`${styles.score} ${match.Scored && (match.RedWin || match.Tie) ? styles.win : ""}`}>
+					<span
+						className={`${styles.score} ${match.Scored && match.Tie ? styles.tieLine : ""} ${match.Scored && match.RedWin ? styles.winLine : ""}`}
+					>
+						<span className="sr-only">Red </span>
 						{/* {match.Started ? match.Red.Score : "-"} */}
 						{match.Red.Score}
 					</span>
 
-					<span className={`${styles.score} ${match.Scored && (match.BlueWin || match.Tie) ? styles.win : ""}`}>
+					{match.Scored && match.Tie && <span className={`${styles.resultTag} ${styles.tieTag}`}>Tie</span>}
+
+					{match.Scored && (match.RedWin || match.BlueWin) && (
+						<span
+							className={`${styles.resultTag} ${styles.winnerTag} ${match.RedWin ? styles.pointLeft : styles.pointRight}`}
+						>
+							<span aria-hidden="true">Winner</span>
+							<span className="sr-only">{match.RedWin ? "Red wins" : "Blue wins"}</span>
+						</span>
+					)}
+
+					<span
+						className={`${styles.score} ${match.Scored && match.Tie ? styles.tieLine : ""} ${match.Scored && match.BlueWin ? styles.winLine : ""}`}
+					>
+						<span className="sr-only">Blue </span>
 						{/* {match.Started ? match.Blue.Score : "-"} */}
 						{match.Blue.Score}
 					</span>
