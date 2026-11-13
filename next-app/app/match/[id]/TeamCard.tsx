@@ -107,7 +107,11 @@ export default function TeamCard({ team, color, highlights, accordions = {}, onT
 				{team.Stats.filter((s) => s.Name === "This Event").map((stat) => (
 					<Accordion
 						key={stat.Order}
-						title="This Event"
+						title={
+							<>
+								This Event<span className="sr-only">{`, ${team.TeamNumber}`}</span>
+							</>
+						}
 						className={styles.accordionTop}
 						noHoverBorder={true}
 						isOpen={accordions.thisEvent ?? false}
@@ -120,7 +124,11 @@ export default function TeamCard({ team, color, highlights, accordions = {}, onT
 				{team.Stats.filter((s) => s.Name === "Season Stats Entering This Tournament").map((stat) => (
 					<Accordion
 						key={stat.Order}
-						title="Season Stats"
+						title={
+							<>
+								Season Stats<span className="sr-only">{`, ${team.TeamNumber}`}</span>
+							</>
+						}
 						className={styles.accordionBottom}
 						noHoverBorder={true}
 						isOpen={accordions.seasonStats ?? false}

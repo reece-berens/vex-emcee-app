@@ -23,6 +23,14 @@ import styles from "./Matches.module.css";
 
 type Match = VEXEmcee.API.Objects.MatchList.V5RC;
 
+// Unplayed matches come with 0 for both scores, which would look and sound like a 0 to 0 result
+const noScore = (
+	<>
+		<span aria-hidden="true">-</span>
+		<span className="sr-only">no score yet</span>
+	</>
+);
+
 export default function Matches() {
 	const setPageTitle = useSetPageTitle();
 	const router = useRouter();
@@ -184,8 +192,7 @@ export default function Matches() {
 						className={`${styles.score} ${match.Scored && match.Tie ? styles.tieLine : ""} ${match.Scored && match.RedWin ? styles.winLine : ""}`}
 					>
 						<span className="sr-only">Red </span>
-						{/* {match.Started ? match.Red.Score : "-"} */}
-						{match.Red.Score}
+						{match.Scored ? match.Red.Score : noScore}
 					</span>
 
 					{match.Scored && match.Tie && <span className={`${styles.resultTag} ${styles.tieTag}`}>Tie</span>}
@@ -203,8 +210,7 @@ export default function Matches() {
 						className={`${styles.score} ${match.Scored && match.Tie ? styles.tieLine : ""} ${match.Scored && match.BlueWin ? styles.winLine : ""}`}
 					>
 						<span className="sr-only">Blue </span>
-						{/* {match.Started ? match.Blue.Score : "-"} */}
-						{match.Blue.Score}
+						{match.Scored ? match.Blue.Score : noScore}
 					</span>
 				</div>
 			</div>

@@ -54,8 +54,8 @@ describe("TeamCard", () => {
 	it("tells its column which section was opened", () => {
 		const onToggle = vi.fn();
 		renderCard({ onToggle });
-		fireEvent.click(screen.getByRole("button", { name: "This Event" }));
-		fireEvent.click(screen.getByRole("button", { name: "Season Stats" }));
+		fireEvent.click(screen.getByRole("button", { name: "This Event, 31170C" }));
+		fireEvent.click(screen.getByRole("button", { name: "Season Stats, 31170C" }));
 		expect(onToggle.mock.calls).toEqual([
 			["thisEvent", true],
 			["seasonStats", true],
@@ -64,8 +64,8 @@ describe("TeamCard", () => {
 
 	it("shows only the sections it's told are open", () => {
 		renderCard({ accordions: { seasonStats: true } });
-		expect(screen.getByRole("button", { name: "Season Stats" }).getAttribute("aria-expanded")).toBe("true");
-		expect(screen.getByRole("button", { name: "This Event" }).getAttribute("aria-expanded")).toBe("false");
+		expect(screen.getByRole("button", { name: "Season Stats, 31170C" }).getAttribute("aria-expanded")).toBe("true");
+		expect(screen.getByRole("button", { name: "This Event, 31170C" }).getAttribute("aria-expanded")).toBe("false");
 	});
 });
 
@@ -81,7 +81,7 @@ describe("a team with no stats yet", () => {
 		renderCard({ team: newTeam });
 		expect(screen.getByText("31170C")).toBeTruthy();
 		expect(screen.getByRole("link", { name: /31170C/ })).toBeTruthy();
-		expect(screen.queryByRole("button", { name: "This Event" })).toBeNull();
-		expect(screen.queryByRole("button", { name: "Season Stats" })).toBeNull();
+		expect(screen.queryByRole("button", { name: /This Event/ })).toBeNull();
+		expect(screen.queryByRole("button", { name: /Season Stats/ })).toBeNull();
 	});
 });

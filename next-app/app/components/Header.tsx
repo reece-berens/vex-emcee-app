@@ -53,10 +53,11 @@ export default function Header({ scrollY }: { scrollY: number }) {
 				<h3 className="text-bold text-base">{title}</h3>
 			</div>
 
-			{/* Full header layer - appears second, has background */}
+			{/* Full header layer - appears second, has background. Also just a copy of the page's own title, so screen readers skip this too */}
 			<header
 				className="layout-header"
 				style={{ opacity: headerOpacity }}
+				aria-hidden="true"
 			>
 				<h3 className="text-bold text-base">{title}</h3>
 			</header>

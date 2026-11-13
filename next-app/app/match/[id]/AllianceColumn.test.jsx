@@ -84,8 +84,8 @@ describe("AllianceColumn", () => {
 		// No collapse buttons until something is open
 		expect(screen.queryByRole("button", { name: /collapse/i })).toBeNull();
 
-		// Page order: red's two cards, then blue's two
-		const [redFirst, , blueFirst] = screen.getAllByRole("button", { name: "This Event" });
+		const redFirst = screen.getByRole("button", { name: "This Event, 31170C" });
+		const blueFirst = screen.getByRole("button", { name: "This Event, 38851J" });
 		fireEvent.click(redFirst);
 		fireEvent.click(blueFirst);
 
