@@ -20,7 +20,7 @@ export type Extractor = (team: Team) => Highlight | null;
 /** Returns a number from 0 (inclusive) to 1 (exclusive), like Math.random */
 export type RandomFn = () => number;
 
-// Section names from master's MatchInfo/V5RC.cs
+// Section names from the backend's MatchInfo/V5RC.cs
 const THIS_EVENT = "This Event";
 const SEASON = "Season Stats Entering This Tournament";
 

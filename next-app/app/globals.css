@@ -78,7 +78,7 @@
 	   Status Colors
 	   Colors used for match success or other statuses
 	   -------------------------------------------- */
-	--ui-green: #237a3b; /* 5.06:1 with --background-color3, as text on it or as an icon on it */
+	--ui-green: #237a3b; /* 5.06:1 against --background-color3, which is what it sits on for both the text and the icons */
 	--ui-gold: gold;
 
 	/* --------------------------------------------

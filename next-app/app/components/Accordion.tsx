@@ -5,6 +5,9 @@
  * Uses cardback styling for the container.
  *
  * Supports controlled mode (pass isOpen + onToggle) or uncontrolled (defaultOpen).
+ *
+ * Closed content is only squashed to 0 height, so it's still on the page. It gets inert
+ * while closed, so Tab skips its links and buttons and screen readers don't read it.
  */
 
 "use client";
@@ -70,7 +73,12 @@ export default function Accordion({
 				</svg>
 				<span className={styles.title}>{title}</span>
 			</button>
-			<div className={`${styles.content} ${isOpen ? styles.open : ""}`}>{children}</div>
+			<div
+				className={`${styles.content} ${isOpen ? styles.open : ""}`}
+				inert={!isOpen}
+			>
+				{children}
+			</div>
 		</div>
 	);
 }

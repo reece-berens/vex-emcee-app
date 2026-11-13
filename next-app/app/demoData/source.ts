@@ -6,7 +6,7 @@
  *
  * Data points that are included: who the teams are, what they did before this event,
  * and the qualification schedule with results. Every record, ranking and stat string
- * the app shows is worked out from this in build.ts, so they always agree with each other.
+ * the app shows gets calculated from this in build.ts, which keeps them all consistent with each other.
  */
 
 export interface WinLossTie {

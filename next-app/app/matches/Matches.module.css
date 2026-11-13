@@ -294,7 +294,7 @@
 	color: var(--background-color3);
 	border-radius: var(--border-radius-label);
 	/* Letter spacing adds 0.5px after the last letter, so the left side gets 0.5px more to match.
-	   capital letters are sitting slightly high in the line, so the top gets 0.5px more too. */
+	   Capital letters are sitting slightly high in the line, so the top gets 0.5px more too. */
 	padding: 3.5px var(--space-xs) 2.5px calc(var(--space-xs) + 0.5px);
 }
 

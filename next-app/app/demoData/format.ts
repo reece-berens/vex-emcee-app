@@ -1,6 +1,6 @@
 /**
  * Formatting helpers that copy the C# format strings in the backend
- * (VEXEmcee.Logic/InternalLogic on master), so demo strings match the real API exactly.
+ * (VEXEmcee.Logic/InternalLogic), so demo strings match the real API exactly.
  */
 import type { WinLossTie } from "./source";
 

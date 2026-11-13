@@ -4,7 +4,7 @@ import { DEMO_MATCHES, DEMO_TEAMS } from "../demoData/source";
 import type { DemoMatch } from "../demoData/source";
 import { parsePercent, parsePoints, parseRankingPoints, parseRecord, parseSkill } from "./statText";
 
-// Every input below is in the exact format master's C# sends (see demoData/build.ts)
+// Every input below is in the exact format the backend's C# sends (see demoData/build.ts)
 
 describe("parseRecord", () => {
 	it("reads a bare record", () => {

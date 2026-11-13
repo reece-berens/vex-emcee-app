@@ -13,8 +13,7 @@ import styles from "./TeamDetails.module.css";
 type Team = VEXEmcee.API.Objects.TeamInfo;
 type StatItem = VEXEmcee.API.Objects.Display.SectionDisplay;
 
-// A link can't be disabled, so with nowhere to go it renders without an href.
-// Without an href an <a> loses its link role, so role="link" puts it back (BottomNav does the same).
+// When there's no team to go to this is an <a> with no href, which loses its link role, so role="link" adds it back
 function TeamNavLink({ href, children }: { href: string | null; children: ReactNode }) {
 	if (!href) {
 		return (

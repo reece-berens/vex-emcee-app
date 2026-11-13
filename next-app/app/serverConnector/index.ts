@@ -9,7 +9,6 @@ import live from "./live";
 const source = DATA_SOURCE === "live" ? live : demo;
 
 // Named before exporting, so stack traces and React DevTools show a real name
-// (this is what the import/no-anonymous-default-export lint rule asks for)
 const ServerConnector = {
 	GetEventList: source.GetEventList,
 	GetMatchInfo: source.GetMatchInfo,

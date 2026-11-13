@@ -1,9 +1,9 @@
 /**
  * Builds API-shaped responses from the demo source data.
  *
- * Each builder follows the matching C# class on master (VEXEmcee.Logic/InternalLogic),
+ * Each builder follows the matching C# class in the backend (VEXEmcee.Logic/InternalLogic),
  * including its section names, labels and format strings, so pages get exactly what
- * the real API sends. Two known backend bugs are left out on purpose:
+ * the real API sends. There are two bugs in the backend that I didn't copy over here:
  * - match info adds red team 1's "Overall WLT" with an extra "All Matches: " prefix
  * - match info adds up blue team 2's points from blue team 1's matches
  */

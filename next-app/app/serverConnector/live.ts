@@ -15,8 +15,8 @@ const MISSING_URL_MESSAGE =
 
 const hasBaseUrl = Boolean(process.env.NEXT_PUBLIC_BASE_URL);
 
-// Without a base URL, every request would fail with a vague network error.
-// Return a failed response with a clear message instead. The pages already show ErrorMessage.
+// Without a base URL every request would just fail with a vague network error, so this returns
+// a failed response with a clearer message (the pages already show it with ErrorMessage)
 const requireBaseUrl = <Req, Res extends VEXEmcee.API.Responses.BaseResponse>(
 	connector: (request: Req) => Promise<Res>,
 ): ((request: Req) => Promise<Res>) => {

@@ -38,7 +38,7 @@ export function registerEvent(eventId: number, divisionId: number) {
 
 function subscribe(listener: () => void) {
 	listeners.add(listener);
-	// Coming back to the tab is a good time to notice the cookie has expired
+	// Check the cookie again when someone comes back to this tab, since it might have expired while they were away
 	window.addEventListener("focus", listener);
 	return () => {
 		listeners.delete(listener);
