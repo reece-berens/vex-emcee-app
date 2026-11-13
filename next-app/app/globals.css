@@ -549,8 +549,13 @@ input:is(:hover, :focus-visible) {
 .dropdown-arrow {
 	display: flex;
 	align-items: center;
-	transition: transform var(--transition);
 	pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.dropdown-arrow {
+		transition: transform var(--transition);
+	}
 }
 
 /* Rotate arrow when open */
@@ -612,10 +617,22 @@ input:is(:hover, :focus-visible) {
 	padding: 0;
 	list-style: none;
 
-	/* Animate in from slightly above */
-	transform: translateY(-10px) scale(0.95);
 	opacity: 0;
-	animation: dropdownOpen 0.2s ease-out forwards;
+	animation: dropdownFade 0.2s ease-out forwards;
+}
+
+@keyframes dropdownFade {
+	to {
+		opacity: 1;
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	/* Animate in from slightly above */
+	.dropdown-list {
+		transform: translateY(-10px) scale(0.95);
+		animation-name: dropdownOpen;
+	}
 }
 
 @keyframes dropdownOpen {
@@ -705,9 +722,14 @@ input:is(:hover, :focus-visible) {
 }
 
 .card:is(:hover, :focus-visible) {
-	transform: translateY(-2px);
 	box-shadow: var(--shadow-hover);
 	background: var(--ui-purple-light);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.card:is(:hover, :focus-visible) {
+		transform: translateY(-2px);
+	}
 }
 
 /* Card as link - reset link styles */

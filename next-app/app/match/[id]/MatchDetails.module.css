@@ -185,12 +185,17 @@
 
 .scoreBarBlue {
 	background: var(--accent-blue);
-	transition: width 0.3s ease;
 }
 
 .scoreBarRed {
 	background: var(--accent-red);
-	transition: width 0.3s ease;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.scoreBarBlue,
+	.scoreBarRed {
+		transition: width 0.3s ease;
+	}
 }
 
 /* ============================================
@@ -360,7 +365,12 @@
 .teamLink:is(:hover, :focus-visible) {
 	border-color: var(--primary-color);
 	background: var(--ui-purple-light);
-	transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.teamLink:is(:hover, :focus-visible) {
+		transform: translateY(-2px);
+	}
 }
 
 .teamName {
@@ -525,8 +535,13 @@
 .skeleton {
 	background: linear-gradient(90deg, rgba(0, 0, 0, 0.09) 25%, rgba(0, 0, 0, 0.06) 50%, rgba(0, 0, 0, 0.09) 75%);
 	background-size: 200% 100%;
-	animation: shimmer 1.5s infinite;
 	border-radius: var(--border-radius);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.skeleton {
+		animation: shimmer 1.5s infinite;
+	}
 }
 
 .skeletonMatchTitle {

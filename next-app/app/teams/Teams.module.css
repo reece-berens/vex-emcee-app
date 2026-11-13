@@ -73,8 +73,13 @@
 	z-index: -1;
 	opacity: 0;
 	transition: opacity ease-in-out 0.3s;
-	animation: rotate-gradient 2s linear infinite;
 	box-shadow: var(--shadow-focus);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.searchInputWrapper::before {
+		animation: rotate-gradient 2s linear infinite;
+	}
 }
 
 .searchInputWrapper:hover::before,
@@ -201,8 +206,13 @@
 	height: 102px;
 	background: linear-gradient(90deg, rgba(0, 0, 0, 0.09) 25%, rgba(0, 0, 0, 0.06) 50%, rgba(0, 0, 0, 0.09) 75%);
 	background-size: 200% 100%;
-	animation: shimmer 1.5s infinite;
 	border-radius: var(--border-radius);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.skeletonCard {
+		animation: shimmer 1.5s infinite;
+	}
 }
 
 @keyframes shimmer {

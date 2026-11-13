@@ -125,7 +125,12 @@
 	/* Transform set dynamically: translateX(activeIndex * 100%) */
 
 	background: transparent; /* Container is invisible */
-	transition: transform 0.3s ease; /* Smooth slide animation */
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.pill {
+		transition: transform 0.3s ease; /* Smooth slide animation */
+	}
 }
 
 /* The actual visible pill - rendered inside the sliding container */

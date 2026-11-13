@@ -114,9 +114,13 @@ export default function LoadingOverlay({ isOpen }: { isOpen: boolean }) {
 	useEffect(() => {
 		if (!isOpen) return;
 
+		// With reduced motion on, it still turns so you can tell it's working, just 5x slower
+		const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+		const frameMs = reduceMotion ? 200 : 40; // 25fps normally
+
 		const interval = setInterval(() => {
 			setFrame((f) => (f + 1) % TOTAL_FRAMES);
-		}, 40); // ~25fps
+		}, frameMs);
 
 		return () => clearInterval(interval);
 	}, [isOpen]);
