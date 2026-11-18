@@ -26,8 +26,8 @@
 	/* --------------------------------------------
 	   Text Colors
 	   -------------------------------------------- */
-	--text-color: #333; /* Primary text */
-	--text-muted: #7f8797; /* Secondary/muted text */
+	--text-color: #222228; /* Primary text */
+	--text-muted: #545b6a; /* Secondary/muted text. 4.62:1 on --background-color2, the darkest background it sits on */
 
 	/* --------------------------------------------
 	   Brand Colors
@@ -63,16 +63,22 @@
 	   Used for interactive elements (buttons, links, focus states)
 	   -------------------------------------------- */
 	--ui-purple-light: #f8f6fb; /* Hover backgrounds, subtle highlightss */
-	--ui-purple: #8b6bc2; /* Primary accent - buttons, links */
-	--ui-purple-dark: #7356b3; /* Strong emphasis - active states */
+	--ui-purple: #7958ae; /* Primary accent - buttons, links. 5.19:1 with --background-color3 text on it */
+	--ui-purple-dark: #7958ae; /* Strong emphasis - active states. Same purple, so every purple in the app matches */
 	--ui-purple-disabled: #a8a4c9; /* Disabled button state */
 
 	/* --------------------------------------------
 	   VEX Alliance Colors
 	   Red vs Blue theming for match displays
 	   -------------------------------------------- */
-	--accent-red: #ff0035; /* Red alliance */
-	--accent-blue: #0a84ff; /* Blue alliance */
+	--accent-red: #d4042b; /* Red alliance. 4.6:1 on --background-color1, 5.45:1 with white text on it */
+	--accent-blue: #0167cc; /* Blue alliance. 4.65:1 on --background-color1, 5.51:1 with white text on it */
+
+	/* The original brighter colors, only for things that blend them and have no text on top
+	   (the page background and the Teams search ring) */
+	--gradient-red: #ff0035;
+	--gradient-blue: #0a84ff;
+	--gradient-purple: #8b6bc2;
 
 	/* --------------------------------------------
 	   Status Colors
@@ -84,8 +90,8 @@
 	/* --------------------------------------------
 	   Typography
 	   -------------------------------------------- */
-	--font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-	--font-display: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+	--font-family: var(--font-sora), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	--font-display: var(--font-sora), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 	--font-size-hero: 24px; /* Page titles */
 	--font-size-lg: 20px; /* Section headers */
 	--font-size-md: 18px; /* In-between for details page */
@@ -214,7 +220,7 @@ p {
 	color: var(--error-color1);
 }
 .text-display {
-	font-family: var(--font-space-grotesk);
+	font-family: var(--font-display);
 }
 
 /* Background modifiers */
@@ -316,7 +322,7 @@ p {
 		radial-gradient(circle at 75% 30%, rgba(10, 132, 255, 0.75) 0%, transparent 55%),
 		radial-gradient(circle at 25% 70%, rgba(255, 0, 53, 0.7) 0%, transparent 55%),
 		radial-gradient(circle at 50% 50%, #8b6bc273 0%, transparent 55%),
-		linear-gradient(230deg, var(--accent-blue) 0%, var(--ui-purple) 50%, var(--accent-red) 100%);
+		linear-gradient(230deg, var(--gradient-blue) 0%, var(--gradient-purple) 50%, var(--gradient-red) 100%);
 	background-size:
 		100px 100px,
 		180vw 180vh,

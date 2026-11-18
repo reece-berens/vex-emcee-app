@@ -19,16 +19,12 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import BottomNav from "./components/BottomNav";
 import AppWrapper from "./components/AppWrapper";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Sora } from "next/font/google";
 
-const inter = Inter({
+// Sora is a variable font, so one file covers every weight the app uses
+const sora = Sora({
 	subsets: ["latin"],
-	variable: "--font-inter",
-});
-
-const spaceGrotesk = Space_Grotesk({
-	subsets: ["latin"],
-	variable: "--font-space-grotesk",
+	variable: "--font-sora",
 });
 
 /** Next.js metadata - used for <title> and <meta> tags */
@@ -44,7 +40,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 	return (
 		<html
 			lang="en"
-			className={`${inter.variable} ${spaceGrotesk.variable}`}
+			className={sora.variable}
 		>
 			<body className="layout">
 				{/* AppWrapper provides global state context

@@ -14,7 +14,9 @@ import type { DataSourceFunctions } from "./types";
 
 // Fake network delay, long enough for the loading skeletons to show
 const DEMO_DELAY_MS = 400;
-const demoDelay = () => new Promise(resolve => setTimeout(resolve, DEMO_DELAY_MS));
+// Picking an event waits longer, so the loading screen on the home page can be seen
+const REGISTER_DELAY_MS = 2000;
+const demoDelay = (ms = DEMO_DELAY_MS) => new Promise(resolve => setTimeout(resolve, ms));
 
 const demo: DataSourceFunctions = {
 	GetEventList: async request => {
@@ -42,7 +44,7 @@ const demo: DataSourceFunctions = {
 		return buildTeamList();
 	},
 	RegisterEventDivision: async request => {
-		await demoDelay();
+		await demoDelay(REGISTER_DELAY_MS);
 		return buildRegisterEventDivision(request);
 	},
 };
